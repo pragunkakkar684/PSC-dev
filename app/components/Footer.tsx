@@ -29,7 +29,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mx-auto mt-12 max-w-7xl border-t border-slate-700 pt-5 text-[10px] text-slate-500">
-        © 2025 Advisory Global. All rights reserved
+        © 2026 Advisory Global. All rights reserved
       </div>
     </footer>
   );
