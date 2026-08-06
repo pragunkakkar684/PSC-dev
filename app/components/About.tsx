@@ -1,4 +1,4 @@
-import { Globe2 } from 'lucide-react';
+import { CheckCircle2, Globe2 } from 'lucide-react';
 
 const advantages = [
   ['Multidisciplinary Talent', 'Legal, financial audit and strategy.'],
@@ -35,13 +35,18 @@ export default function About() {
             <b className="font-serif text-5xl">98%</b>
             <span className="mt-2 block text-[10px] tracking-widest">CLIENT RETENTION</span>
           </div>
-          <div className="bg-[#071f38] p-8">
+          <div className="bg-[#132c48] p-8">
             <Globe2 size={40} />
-            <span className="mt-4 block text-[10px] tracking-widest">GLOBAL OPERATIONS</span>
+            <span className="mt-4 block text-[10px] tracking-widest">GLOBAL STANDARDS</span>
           </div>
           <div className="bg-[#456a8d] p-8">
-            <b className="font-serif text-5xl">217</b>
-            <span className="mt-2 block text-[10px] tracking-widest">EXPERTS</span>
+            <b className="font-serif text-5xl">217+</b>
+            <span className="mt-2 block text-[10px] tracking-widest">EXPERT COVERAGE</span>
+          </div>
+          <div className="bg-white/10 p-8">
+            <CheckCircle2 size={32} />
+            <b className="mt-3 block font-serif text-2xl">Elite</b>
+            <span className="mt-1 block text-[10px] tracking-widest">TIER 1 CONSULTANTS</span>
           </div>
         </div>
       </div>

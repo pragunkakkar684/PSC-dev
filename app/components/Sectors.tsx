@@ -9,7 +9,7 @@ export default function Sectors() {
   return (
     <section id="sectors" className="bg-navy text-white">
       <div className="mx-auto max-w-7xl px-6 py-18 lg:px-10">
-        <p className="font-mono text-[10px] tracking-[.18em] text-sky-200">OUR EXPERTISE</p>
+        <p className="font-mono text-[10px] tracking-[.18em] text-sky-200">OUR ECOSYSTEM</p>
         <div className="mt-4 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <h2 className="font-serif text-4xl">Sectors We Serve</h2>
           <p className="max-w-sm text-sm leading-6 text-slate-300">
