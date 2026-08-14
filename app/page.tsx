@@ -9,17 +9,32 @@ import About from './components/About';
 import Testimonial from './components/Testimonial';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import {
+  getPublicHeroSection,
+  getPublicPracticeAreas,
+  getPublicIndustries,
+  getPublicInsights,
+  getPublicTeamMembers,
+} from '@/lib/queries/public';
 
-export default function Home() {
+export default async function Home() {
+  const [heroData, practiceData, industryData, insightData, teamData] = await Promise.all([
+    getPublicHeroSection('home'),
+    getPublicPracticeAreas(),
+    getPublicIndustries(),
+    getPublicInsights(),
+    getPublicTeamMembers(),
+  ]);
+
   return (
     <main>
       <SiteHeader />
-      <Hero />
+      <Hero data={heroData} />
       <Stats />
-      <PracticeAreas />
-      <Sectors />
-      <Insights />
-      <Team />
+      <PracticeAreas data={practiceData} />
+      <Sectors data={industryData} />
+      <Insights data={insightData} />
+      <Team data={teamData} />
       <About />
       <Testimonial />
       <Contact />

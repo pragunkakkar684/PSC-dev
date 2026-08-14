@@ -2,6 +2,8 @@ import { ArrowRight, Check, Globe2, Sparkle, ShieldCheck, Infinity as InfinityIc
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import LegacyScroll from '../components/LegacyScroll';
+import Link from 'next/link';
+import { getPublicHeroSection, getPublicTeamMembers, getPublicOfficeLocations } from '@/lib/queries/public';
 
 const values = [
   ['Integrity', 'Uncompromising ethical standards form the bedrock of every decision we make and every partnership we build.'],
@@ -11,34 +13,7 @@ const values = [
   ['Global Perspective', 'Our reach is vast, yet our focus is localized, bridging global expertise with specific regional insights.'],
 ];
 
-const leaders = [
-  [
-    'Marcus Sterling',
-    'MANAGING DIRECTOR & CEO',
-    'Over 30 years of experience in cross-border capital markets and global restructuring.',
-    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85',
-  ],
-  [
-    'Elena Moretti',
-    'PARTNER, GLOBAL REGULATORY',
-    'Formerly a senior advisor at the European Central Bank, specializing in compliance frameworks.',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85',
-  ],
-  [
-    'David Chen',
-    'CHIEF INVESTMENT OFFICER',
-    'Directing global portfolio strategy and macro-economic forecasting for institutional clients.',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=85',
-  ],
-  [
-    'Sarah Whitaker',
-    'GLOBAL HEAD OF PARTNERS',
-    'Expert in multi-stakeholder engagement and international client development.',
-    'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=500&q=85',
-  ],
-];
-
-const whyChoose = [
+const whyChoose: Array<[string, string, React.ElementType]> = [
   ['Integrated Advisory', 'A holistic approach that synchronizes legal, financial and strategic directives into one unified path forward.', Sparkle],
   ['Regulatory Expertise', 'Deep domain knowledge across multi-jurisdictional frameworks ensures compliance and competitive advantage.', ShieldCheck],
   ['Long Term Partnerships', 'We invest in the long-term success of our clients, evolving our services as their enterprise grows and scales.', InfinityIcon],
@@ -58,21 +33,26 @@ const certifications = [
   'IFRS COMPLIANCE ACCREDITED',
 ];
 
-const offices = ['LONDON (HQ)', 'NEW YORK', 'SINGAPORE', 'DUBAI'];
+export default async function AboutPage() {
+  const [hero, dbTeam, dbOffices] = await Promise.all([
+    getPublicHeroSection('about'),
+    getPublicTeamMembers(),
+    getPublicOfficeLocations(),
+  ]);
 
-export default function AboutPage() {
   return (
     <main id="top">
       <SiteHeader />
 
       <section className="mx-auto max-w-7xl px-6 pb-16 pt-10 lg:px-10">
-        <p className="font-mono text-[10px] tracking-[.18em] text-slate-500">ABOUT PSC GLOBAL</p>
+        <p className="font-mono text-[10px] tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'ABOUT PSC GLOBAL'}</p>
         <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-[1.02] tracking-[-.045em] sm:text-6xl">
-          Building Trust Through Expertise, Integrity and Long Term Partnerships.
+          {hero.heading || 'Building Trust Through Expertise, Integrity and Long Term Partnerships.'}
         </h1>
+        <p className="mt-4 max-w-2xl text-slate-600 text-sm leading-6">{hero.subheading}</p>
         <img
           className="mt-8 h-[340px] w-full object-cover sm:h-[500px]"
-          src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=85"
+          src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=85'}
           alt="PSC Global office"
         />
       </section>
@@ -161,23 +141,29 @@ export default function AboutPage() {
           <h2 className="max-w-lg font-serif text-4xl">
             Guided by some of the industry&apos;s most respected minds.
           </h2>
-          <a className="hidden text-xs font-bold md:block" href="#top">
+          <Link className="hidden text-xs font-bold md:block hover:underline" href="/team">
             VIEW FULL LEADERSHIP TEAM <ArrowRight className="inline" size={14} />
-          </a>
+          </Link>
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {leaders.map(([name, role, bio, image]) => (
-            <article key={name}>
-              <img className="h-64 w-full object-cover grayscale" src={image} alt={name} />
-              <h3 className="mt-4 font-serif text-xl">{name}</h3>
-              <p className="mt-1 text-[10px] tracking-widest text-slate-500">{role}</p>
-              <p className="mt-3 text-xs leading-5 text-slate-600">{bio}</p>
+          {dbTeam.slice(0, 4).map((m) => (
+            <article key={m.id}>
+              <Link href={`/partner/${m.slug}`}>
+                <img
+                  className="h-64 w-full object-cover grayscale transition duration-300 hover:grayscale-0"
+                  src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85'}
+                  alt={m.name}
+                />
+                <h3 className="mt-4 font-serif text-xl hover:text-sky-800 transition-colors">{m.name}</h3>
+                <p className="mt-1 text-[10px] tracking-widest text-slate-500 uppercase">{m.roleTitle}</p>
+                <p className="mt-3 text-xs leading-5 text-slate-600 line-clamp-3">{m.shortBio}</p>
+              </Link>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-navy text-white">
+      <section className="bg-navy text-white" id="offices">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 lg:px-10">
           <div>
             <p className="font-mono text-[10px] tracking-[.18em] text-sky-200">GLOBAL PRESENCE</p>
@@ -186,11 +172,14 @@ export default function AboutPage() {
               We&apos;re strategically positioned across the world&apos;s most vital financial
               hubs, ensuring that our expertise is always within reach.
             </p>
-            {offices.map((x) => (
-              <a className="mt-4 flex border-b border-slate-700 pb-3 text-xs tracking-widest" href="#top" key={x}>
-                {x}
-                <ArrowRight className="ml-auto" size={14} />
-              </a>
+            {dbOffices.map((o) => (
+              <div className="mt-4 flex flex-col border-b border-slate-700/80 pb-3" key={o.id}>
+                <div className="flex items-center justify-between text-xs tracking-widest font-bold">
+                  <span>{o.city.toUpperCase()} {o.isHeadquarters ? '(HQ)' : ''}</span>
+                  <ArrowRight size={14} />
+                </div>
+                <span className="text-xs text-slate-300 mt-1">{o.fullAddress}</span>
+              </div>
             ))}
           </div>
           <div className="flex min-h-64 flex-col items-center justify-center gap-3 bg-slate-200 py-8 text-ink">
@@ -208,12 +197,12 @@ export default function AboutPage() {
           Discover how PSC Global&apos;s integrated advisory can transform your strategic position.
         </p>
         <div className="mt-7 flex justify-center gap-3">
-          <a href="#contact" className="bg-ink px-5 py-3 text-xs font-bold text-white">
+          <Link href="/contact" className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-slate-800">
             BOOK A CONSULTATION
-          </a>
-          <a href="#contact" className="border border-ink px-5 py-3 text-xs font-bold">
+          </Link>
+          <Link href="/contact" className="border border-ink px-5 py-3 text-xs font-bold transition hover:bg-slate-100">
             CONTACT US
-          </a>
+          </Link>
         </div>
       </section>
 

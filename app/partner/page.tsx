@@ -13,7 +13,7 @@ const journey = [
   ],
 ];
 
-const expertise = [
+const expertise: Array<[React.ElementType, string, string]> = [
   [Landmark, 'Corporate Law', 'Structuring sophisticated multinational entities and ensuring robust governance frameworks.'],
   [FileText, 'Tax Advisory', 'Optimizing cross-border tax strategies while ensuring strict compliance with emerging global standards.'],
   [ShieldCheck, 'Risk & Assurance', 'Developing comprehensive risk mitigation protocols for volatile regulatory environments.'],

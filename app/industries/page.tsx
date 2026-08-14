@@ -1,42 +1,8 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
-
-const industries = [
-  ['Manufacturing', 'Optimizing supply chains and navigating industrial regulation.'],
-  ['Infrastructure', 'Long-term advisory for large-scale capital projects.'],
-  ['Real Estate', 'Strategic portfolio management and market analysis.'],
-  ['Aviation', 'Navigating complex international aerospace compliance.'],
-  ['Energy', 'Advising on the transition to sustainable power models.'],
-  ['Banking & Finance', 'Securing assets in a volatile global regulatory climate.'],
-  ['Healthcare', 'Balancing clinical innovation with operational governance.'],
-  ['NGOs', 'Ensuring transparency and impact in global development.'],
-  ['Technology', 'Scaling digital solutions within legal frameworks.'],
-  ['E-Commerce', 'Structuring cross-border retail and logistics.'],
-  ['Media', 'Content rights and digital distribution strategies.'],
-  ['Startups', 'Agile advisory for rapid scaling and fundraising.'],
-];
-
-const people = [
-  [
-    'Adrian Thorne',
-    'PARTNER, INFRASTRUCTURE & ENERGY',
-    'Expert in long-term project finance and regulatory structuring for emerging energy markets.',
-    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85',
-  ],
-  [
-    'Elena Rostova',
-    'DIRECTOR, TECH & STARTUPS',
-    'Advising on scale-up strategies, cross-border IP protection, and venture capital compliance.',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85',
-  ],
-  [
-    'Marcus Vane',
-    'HEAD OF BANKING & FINANCE',
-    'Strategic advisor for global financial institutions navigating digital transformation and risk.',
-    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85',
-  ],
-];
+import Link from 'next/link';
+import { getPublicHeroSection, getPublicIndustries, getPublicTeamMembers } from '@/lib/queries/public';
 
 const challenges = [
   'Regulatory Compliance',
@@ -58,259 +24,106 @@ const approach = [
   [
     '02',
     'Integrate',
-    'Our solutions are never siloed. We weave regulatory, financial, and strategic advice into a single, cohesive industrial framework.',
+    'Our multidisciplinary teams merge financial, legal, and operational expertise into a single cohesive strategy.',
   ],
   [
     '03',
-    'Deliver',
-    'Execution is measured against industry-standard KPIs, ensuring that our advisory translates into tangible, long-term business resilience.',
+    'Execute',
+    'We partner with leadership to deploy solutions with precision, ensuring resilience against market volatility.',
   ],
 ];
 
-const synergies = [
-  {
-    label: 'MANUFACTURING ALIGNMENT',
-    tags: ['RISK MANAGEMENT', 'CORPORATE LAW', 'BUSINESS ADVISORY'],
-  },
-  {
-    label: 'TECH & E-COMMERCE ALIGNMENT',
-    tags: ['INTELLECTUAL PROPERTY', 'GLOBAL TAX', 'M&A'],
-  },
-];
+export default async function IndustriesPage() {
+  const [hero, dbIndustries, dbTeam] = await Promise.all([
+    getPublicHeroSection('industries'),
+    getPublicIndustries(),
+    getPublicTeamMembers(),
+  ]);
 
-const perspectives = [
-  [
-    'REGULATORY UPDATE',
-    'The Impact of New Global Carbon Tax Frameworks on Manufacturing.',
-    'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=700&q=85',
-  ],
-  [
-    'INDUSTRY INSIGHT',
-    'Digital Sovereignty: How Tech Firms Are Navigating EU Data Laws.',
-    'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=700&q=85',
-  ],
-  [
-    'CASE STUDY',
-    'Scaling Real Estate Portfolios in High-Inflation Environments.',
-    'https://images.unsplash.com/photo-1494412651409-8963ce7935a7?auto=format&fit=crop&w=700&q=85',
-  ],
-];
-
-const businessAdvice = [
-  [
-    'SECTOR EXPERIENCE',
-    'Our partners spend their careers within specific industries, ensuring we speak your language and anticipate your unique hurdles.',
-  ],
-  [
-    'INTEGRATED EXPERTISE',
-    'We connect legal, financial, and strategic dots to provide a panoramic view of your business environment.',
-  ],
-  [
-    'LONG-TERM PARTNERSHIP',
-    'We are not transactional. We grow with our clients, evolving our advisory as their industry matures.',
-  ],
-];
-
-export default function IndustriesPage() {
   return (
     <main id="top">
       <SiteHeader />
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-2 lg:px-10 lg:py-18">
+      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[1fr_.9fr] lg:px-10 lg:py-18">
         <div>
-          <p className="font-mono text-[10px] tracking-[.18em] text-slate-500">INDUSTRIES WE SERVE</p>
-          <h1 className="mt-4 max-w-xl font-serif text-5xl font-black leading-[1.02] tracking-[-.04em] text-ink sm:text-6xl">
-            Industry Expertise Built Around Real Business Challenges.
+          <p className="font-mono text-[10px] tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'SECTOR SPECIALIZATION'}</p>
+          <h1 className="mt-4 max-w-xl font-serif text-5xl leading-[1.02] tracking-[-.04em] text-ink sm:text-6xl">
+            {hero.heading || 'Deep Domain & Sector Expertise.'}
           </h1>
           <p className="mt-6 max-w-md text-sm leading-7 text-slate-600">
-            We combine deep sectoral knowledge with rigorous advisory
-            frameworks to navigate the complexities of global markets. Our
-            approach is tailored to the specific regulatory and economic
-            drivers of your industry.
+            {hero.subheading || 'Tailored counsel across energy, financial services, tech, healthcare, and infrastructure.'}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a className="flex items-center justify-center gap-2 bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white" href="#industries">
-              EXPLORE INDUSTRIES <ArrowRight size={14} />
+          <div className="mt-8 flex gap-3">
+            <a href="#portfolio" className="flex items-center gap-2 bg-ink px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
+              Explore Sectors <ArrowRight size={15} />
             </a>
-            <a className="flex items-center justify-center border border-ink px-5 py-3 text-xs font-bold tracking-wide" href="#experts">
-              TALK TO OUR INDUSTRY EXPERTS
-            </a>
+            <Link href="/contact" className="flex items-center gap-2 border border-ink px-5 py-3 text-sm font-medium transition hover:bg-slate-100">
+              Speak With Sector Leads <ArrowUpRight size={15} />
+            </Link>
           </div>
         </div>
-        <img
-          className="h-[420px] w-full object-cover"
-          src="https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1100&q=85"
-          alt="City skyline"
-        />
-      </section>
-
-      <section className="bg-[#fdf9f8] px-6 py-16 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="font-serif text-4xl font-bold text-ink">
-              Advisory Built Around Industry Context.
-            </h2>
-            <p className="mt-5 max-w-md text-sm leading-7 text-slate-600">
-              Generic advice often fails to account for the nuanced pressures
-              of specific sectors. At PSC Global, we bridge the gap between
-              high-level strategy and operational reality.
-            </p>
-            <p className="mt-5 max-w-md border-l-2 border-ink pl-4 text-sm italic leading-6 text-slate-600">
-              &quot;Understanding the legislative landscape of a sector is
-              only half the battle. The other half is anticipating how global
-              shifts will disrupt local operations.&quot;
-            </p>
-          </div>
+        <div className="relative">
           <img
-            className="h-72 w-full object-cover md:h-auto"
-            src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=85"
-            alt="Modern interior"
+            className="h-[360px] w-full object-cover"
+            src={hero.imageUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=85'}
+            alt="City skyline"
           />
         </div>
       </section>
 
-      <section id="industries" className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <p className="font-serif text-4xl font-bold text-ink">Industries We Support</p>
-        <div className="mt-6 h-0.5 w-10 bg-ink" />
-        <div className="mt-7 grid border border-slate-200 sm:grid-cols-2 lg:grid-cols-4">
-          {industries.map(([name, copy]) => (
-            <article className="border-b border-r border-slate-200 p-8" key={name}>
-              <h3 className="font-serif text-2xl text-ink">{name}</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
-              <a className="mt-6 inline-flex items-center gap-1 text-[11px] font-bold tracking-wide text-ink" href="#contact">
-                EXPLORE INDUSTRY <ArrowUpRight size={13} />
-              </a>
+      {/* Dynamic Industry Portfolio */}
+      <section id="portfolio" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+        <p className="font-mono text-[10px] tracking-[.18em] text-slate-500">INDUSTRY PORTFOLIO</p>
+        <h2 className="mt-4 font-serif text-4xl text-ink">Industries We Empower</h2>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {dbIndustries.map((ind) => (
+            <article key={ind.id} className="border border-slate-200 bg-white p-7 transition hover:-translate-y-1 hover:shadow-xl">
+              {ind.imageUrl && (
+                <img src={ind.imageUrl} alt={ind.name} className="h-44 w-full object-cover mb-5 rounded" />
+              )}
+              <h3 className="font-serif text-2xl text-ink">{ind.name}</h3>
+              <p className="mt-3 text-xs leading-6 text-slate-600">{ind.shortDescription || 'Tailored advisory for sector excellence.'}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-navy text-white">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-          <h2 className="text-center font-serif text-4xl font-bold">
-            Challenges Shared Across Industries.
-          </h2>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {challenges.map((x) => {
-              const words = x.split(' ');
-              const last = words.pop();
-              const head = last.slice(0, 2);
-              const tail = last.slice(2);
-              return (
-                <div className="border border-slate-700 p-6 font-serif text-xl leading-tight" key={x}>
-                  {words.length > 0 && <>{words.join(' ')} </>}
-                  <span className="border-b border-slate-500">{head}</span>
-                  {tail}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
+      {/* Sector Leadership */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <h2 className="font-serif text-4xl text-ink">
-          <span className="italic">Integrated Advisory.</span> Industry-Specific Solutions.
-        </h2>
-        <div className="mt-14 grid gap-10 md:grid-cols-3">
-          {approach.map(([no, title, copy]) => (
-            <article key={no}>
-              <b className="font-serif text-5xl font-bold text-slate-200">{no}</b>
-              <h3 className="mt-4 font-serif text-2xl text-ink">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-y border-slate-200 px-6 py-16 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
-          <div>
-            <h2 className="font-serif text-3xl text-ink">Cross-Disciplinary Synergy</h2>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-600">
-              How our specialized practice areas align with core industry needs.
-            </p>
-          </div>
-          {synergies.map(({ label, tags }) => (
-            <div className="bg-slate-50 p-6" key={label}>
-              <p className="font-mono text-[10px] tracking-[.14em] text-slate-500">{label}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <span className="bg-ink px-3 py-2 text-[10px] font-bold tracking-wide text-white" key={tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="experts" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <h2 className="text-center font-serif text-4xl text-ink">Experts Who Understand Your Industry.</h2>
+        <h2 className="text-center font-serif text-4xl text-ink">Sector Leadership</h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {people.map(([name, role, copy, image]) => (
-            <article key={name}>
-              <img className="h-72 w-full object-cover" src={image} alt={name} />
-              <h3 className="mt-4 font-serif text-2xl text-ink">{name}</h3>
-              <small className="text-[10px] font-bold tracking-widest text-slate-500">{role}</small>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
+          {dbTeam.slice(0, 3).map((m) => (
+            <article key={m.id}>
+              <Link href={`/partner/${m.slug}`}>
+                <img
+                  className="h-72 w-full object-cover grayscale transition hover:grayscale-0"
+                  src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85'}
+                  alt={m.name}
+                />
+                <h3 className="mt-4 font-serif text-xl text-ink hover:text-sky-800 transition-colors">{m.name}</h3>
+                <p className="mt-1 text-xs font-bold tracking-wide text-slate-500 uppercase">{m.roleTitle}</p>
+                <p className="mt-2 text-xs text-slate-600 line-clamp-2">{m.focusArea || m.shortBio}</p>
+              </Link>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-[#f7f3f2] px-6 py-16">
+      {/* Approach */}
+      <section className="bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-end justify-between">
-            <h2 className="font-serif text-4xl text-ink">Latest Industry Perspectives.</h2>
-            <a className="text-xs font-bold tracking-wide text-ink" href="#top">
-              VIEW ALL INSIGHTS →
-            </a>
-          </div>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {perspectives.map(([tag, title, img]) => (
-              <article key={title}>
-                <img className="h-40 w-full object-cover" src={img} alt="" />
-                <p className="mt-4 font-mono text-[10px] tracking-[.14em] text-slate-500">{tag}</p>
-                <p className="mt-2 font-serif text-xl font-bold text-ink">{title}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-navy px-6 py-20 text-white">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
-          <h2 className="font-serif text-4xl font-bold leading-tight">
-            Business Advice Begins With Industry Understanding.
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-2">
-            {businessAdvice.map(([label, copy]) => (
-              <div key={label}>
-                <p className="font-mono text-[10px] tracking-[.14em] text-slate-400">{label}</p>
+          <p className="font-mono text-[10px] tracking-[.18em] text-sky-200">OUR METHODOLOGY</p>
+          <h2 className="mt-4 font-serif text-4xl">The PSC Industry Approach</h2>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {approach.map(([num, title, copy]) => (
+              <div key={title} className="border border-slate-700 bg-slate-900/50 p-7">
+                <span className="font-serif text-3xl text-sky-400">{num}</span>
+                <h3 className="mt-4 font-serif text-2xl">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-300">{copy}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section id="contact" className="px-6 py-24 text-center">
-        <h2 className="mx-auto max-w-3xl font-serif text-5xl font-black leading-tight text-ink">
-          Let&apos;s Discuss Your Industry Challenges.
-        </h2>
-        <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-slate-600">
-          Our specialists are ready to provide a preliminary assessment of
-          your strategic position within your sector.
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <a href="#experts" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white">
-            TALK TO OUR INDUSTRY EXPERTS
-          </a>
-          <a href="#top" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide">
-            BOOK A CONSULTATION
-          </a>
         </div>
       </section>
 

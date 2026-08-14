@@ -63,7 +63,7 @@ const NAV = [
 ];
 
 export default function SiteHeader() {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLabel, setActiveLabel] = useState("About");
 

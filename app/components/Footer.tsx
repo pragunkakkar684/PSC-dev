@@ -1,11 +1,34 @@
 'use client';
 
+import Link from 'next/link';
+import PublicNewsletterForm from './PublicNewsletterForm';
+
 const footerLinks = [
-  ['PRACTICE', ['Strategy', 'Analytics', 'Digital', 'M&A']],
-  ['COMPANY', ['About', 'Careers', 'Insights', 'Offices']],
+  {
+    title: 'PRACTICE',
+    items: [
+      { name: 'Practice Areas', href: '/practice-areas' },
+      { name: 'Industries', href: '/industries' },
+      { name: 'GCC Advisory', href: '/gcc' },
+      { name: 'Events & Seminars', href: '/event' },
+    ],
+  },
+  {
+    title: 'COMPANY',
+    items: [
+      { name: 'About Firm', href: '/about' },
+      { name: 'Leadership Team', href: '/team' },
+      { name: 'Insights & Research', href: '/insights' },
+      { name: 'Contact & Offices', href: '/contact' },
+    ],
+  },
 ];
 
-const legalLinks = ['Privacy Policy', 'Terms of Service', 'Cookie Policy'];
+const legalLinks = [
+  { name: 'Privacy Policy', href: '#' },
+  { name: 'Terms of Service', href: '#' },
+  { name: 'Cookie Policy', href: '#' },
+];
 
 export default function Footer() {
   return (
@@ -14,43 +37,34 @@ export default function Footer() {
         <div>
           <h2 className="font-serif text-3xl">PSC Global</h2>
           <p className="mt-4 text-sm leading-6 text-slate-400">
-            Architectural excellence in consulting, redefining strategy for business.
+            Architectural excellence in strategic advisory, cross-border compliance, tax policy, and legal governance.
           </p>
         </div>
-        {footerLinks.map(([title, items]) => (
-          <div key={title as string}>
-            <b className="text-[10px] tracking-widest">{title as string}</b>
-            {(items as string[]).map((x) => (
-              <a className="mt-3 block text-sm text-slate-400 hover:text-white" href="#top" key={x}>
-                {x}
-              </a>
+
+        {footerLinks.map((col) => (
+          <div key={col.title}>
+            <b className="text-[10px] tracking-widest text-slate-300">{col.title}</b>
+            {col.items.map((x) => (
+              <Link key={x.name} href={x.href} className="mt-3 block text-sm text-slate-400 hover:text-white transition-colors">
+                {x.name}
+              </Link>
             ))}
           </div>
         ))}
+
         <div>
-          <b className="text-[10px] tracking-widest">NEWSLETTER</b>
-          <p className="mt-3 text-sm text-slate-400">Receive our quarterly global report.</p>
-          <form className="mt-4 flex" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="Email address"
-              className="w-full border border-slate-700 bg-transparent px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="shrink-0 bg-white px-4 py-2 text-xs font-semibold text-ink transition hover:bg-slate-200"
-            >
-              Join
-            </button>
-          </form>
+          <b className="text-[10px] tracking-widest text-slate-300">GLOBAL NEWSLETTER</b>
+          <p className="mt-3 mb-4 text-sm text-slate-400">Receive our quarterly global regulatory report.</p>
+          <PublicNewsletterForm />
         </div>
       </div>
-      <div className="mx-auto mt-12 flex max-w-7xl flex-col gap-3 border-t border-slate-700 pt-5 text-[10px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-        <span>© 2026 Advisory Global Firm. All rights reserved</span>
+
+      <div className="mx-auto mt-12 flex max-w-7xl flex-col gap-3 border-t border-slate-700/80 pt-5 text-[10px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <span>© {new Date().getFullYear()} PSC Global Firm. All rights reserved.</span>
         <div className="flex gap-5">
           {legalLinks.map((x) => (
-            <a key={x} href="#top" className="hover:text-white">
-              {x}
+            <a key={x.name} href={x.href} className="hover:text-white transition-colors">
+              {x.name}
             </a>
           ))}
         </div>
