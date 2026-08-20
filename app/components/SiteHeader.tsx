@@ -1,7 +1,9 @@
 'use client';
 
-import { ArrowRight, ArrowUpRight, Menu, X, Globe2 } from "lucide-react";
+import { ArrowRight, Menu, X, Globe2 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 
 const ABOUT_LINKS = [
@@ -52,20 +54,67 @@ const INSIGHTS_COLUMNS = [
 ];
 
 const NAV = [
-  { label: "About", key: "about", type: "narrow" },
-  { label: "Our Team", key: "team", type: "narrow" },
-  { label: "Practice Areas", key: "practice", type: "full" },
-  { label: "Industries", key: "industries", type: "full" },
-  { label: "Insights", key: "insights", type: "full" },
-  { label: "Events", key: null },
-  { label: "Contact", key: null },
-  { label: "Client Portal", key: null },
+  { label: "About", key: "about", type: "narrow", href: "/about" },
+  { label: "Our Team", key: "team", type: "narrow", href: "/team" },
+  { label: "Practice Areas", key: "practice", type: "full", href: "/practice-areas" },
+  { label: "Industries", key: "industries", type: "full", href: "/industries" },
+  { label: "Insights", key: "insights", type: "full", href: "/insights" },
+  { label: "Events", key: null, href: "/event" },
+  { label: "Contact", key: null, href: "/contact" },
+  { label: "Client Portal", key: null, href: "/client-portal" },
 ];
+
+const ABOUT_HREFS: Record<string, string> = {
+  "Company Overview": "/about",
+  "Our Story": "/about#story",
+  Leadership: "/team",
+  "Why PSC": "/about#why-psc",
+  "Global Presence": "/about#global-presence",
+  "Awards & Recognitions": "/about#awards",
+  "Memberships & Certifications": "/about#memberships",
+  Careers: "/contact#careers",
+};
+
+const TEAM_HREFS: Record<string, string> = {
+  Leadership: "/team#leadership",
+  Partners: "/partner",
+  Mentors: "/team#mentors",
+};
+
+const INDUSTRY_HREFS: Record<string, string> = {
+  Manufacturing: "/industries#manufacturing",
+  Infrastructure: "/industries#infrastructure",
+  "Real Estate": "/industries#real-estate",
+  Aviation: "/industries#aviation",
+  Energy: "/industries#energy",
+  "Banking & Financial Services": "/industries#banking-financial-services",
+  Healthcare: "/industries#healthcare",
+  NGOs: "/industries#ngos",
+  Technology: "/industries#technology",
+  "E-Commerce": "/industries#e-commerce",
+  Media: "/industries#media",
+  Startups: "/industries#startups",
+};
+
+const INSIGHTS_HREFS: Record<string, string> = {
+  "Upcoming Events": "/event",
+  Webinars: "/insights#webinars",
+  Seminars: "/event#seminars",
+  Conferences: "/event#conferences",
+  "Event Recordings": "/event#recordings",
+  "Event Gallery": "/event#gallery",
+};
+
+const sectionHref = (page: string, label: string) =>
+  `${page}#${label.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 
 export default function SiteHeader() {
   const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeLabel, setActiveLabel] = useState("About");
+  const pathname = usePathname();
+  const activeLabel = NAV.find((item) =>
+    item.href === pathname || pathname.startsWith(`${item.href}/`)
+  )?.label;
 
   const activeNav = NAV.find((n) => n.key === active);
 
@@ -132,7 +181,10 @@ export default function SiteHeader() {
           white-space: nowrap;
           transition: color .15s ease, border-color .15s ease;
         }
-        .psc-nav a:hover { color: var(--ink); }
+        .psc-nav a:hover {
+          color: var(--ink);
+          border-bottom-color: var(--ink);
+        }
         .psc-nav a.is-active {
           color: var(--ink);
           font-weight: 700;
@@ -349,10 +401,10 @@ export default function SiteHeader() {
         className="psc-header"
         onMouseLeave={() => setActive(null)}
       >
-        <a href="#top" className="psc-logo">
+        <Link href="/" className="psc-logo">
           <span>PSC</span>
           <span>Global</span>
-        </a>
+        </Link>
 
         <button className="psc-burger" onClick={() => setMobileOpen((v) => !v)} aria-label="Toggle navigation">
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -362,20 +414,16 @@ export default function SiteHeader() {
           {NAV.map((item) => (
             <a
               key={item.label}
-              href="#"
+              href={item.href}
               className={activeLabel === item.label ? "is-active" : ""}
               onMouseEnter={() => setActive(item.key)}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveLabel(item.label);
-              }}
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <a href="#contact" className="psc-cta">
+        <a href="/contact" className="psc-cta">
           Book
           <br />
           Consultation
@@ -391,13 +439,13 @@ export default function SiteHeader() {
                 </p>
                 <div className="psc-link-list">
                   {ABOUT_LINKS.map((l) => (
-                    <a href="#" key={l}>
+                    <a href={ABOUT_HREFS[l] || "/about"} key={l}>
                       {l}
                       <ArrowRight size={14} />
                     </a>
                   ))}
                 </div>
-                <a href="#" className="psc-explore">
+                <a href="/about" className="psc-explore">
                   Explore PSC <ArrowRight size={14} />
                 </a>
               </div>
@@ -411,13 +459,13 @@ export default function SiteHeader() {
                 </p>
                 <div className="psc-link-list">
                   {TEAM_LINKS.map((l) => (
-                    <a href="#" key={l} style={{ textTransform: "uppercase", fontSize: 13, fontWeight: 600, letterSpacing: "0.04em" }}>
+                    <a href={TEAM_HREFS[l] || "/team"} key={l} style={{ textTransform: "uppercase", fontSize: 13, fontWeight: 600, letterSpacing: "0.04em" }}>
                       {l}
                       <ArrowRight size={14} />
                     </a>
                   ))}
                 </div>
-                <a href="#" className="psc-explore">
+                <a href="/team" className="psc-explore">
                   Meet Our Experts <ArrowRight size={14} />
                 </a>
               </div>
@@ -431,7 +479,7 @@ export default function SiteHeader() {
                       <p className="psc-col-title">{col.title}</p>
                       <div className="psc-col-list">
                         {col.items.map((i) => (
-                          <a href="#" key={i}>{i}</a>
+                          <a href={sectionHref("/practice-areas", i)} key={i}>{i}</a>
                         ))}
                       </div>
                     </div>
@@ -445,8 +493,8 @@ export default function SiteHeader() {
                     <strong>Global Capability Center</strong>
                     <p>Our GCC model helps enterprise leaders scale specialized functions with architectural precision.</p>
                   </div>
-                  <a href="#" className="psc-gcc-link">Explore GCC →</a>
-                  <a href="#" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></a>
+                  <a href="/gcc" className="psc-gcc-link">Explore GCC →</a>
+                  <a href="/practice-areas" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></a>
                 </div>
               </div>
             )}
@@ -459,7 +507,7 @@ export default function SiteHeader() {
                     <p className="psc-menu-desc">
                       Sector-focused expertise backed by multidisciplinary advisory capabilities.
                     </p>
-                    <a href="#" className="psc-explore" style={{ marginTop: 0 }}>
+                    <a href="/industries" className="psc-explore" style={{ marginTop: 0 }}>
                       Explore All Industries <ArrowRight size={14} />
                     </a>
                   </div>
@@ -467,7 +515,7 @@ export default function SiteHeader() {
                     {INDUSTRY_COLUMNS.map((col, idx) => (
                       <div className="psc-col-list" key={idx} style={{ gap: 20, borderLeft: idx > 0 ? "1px solid var(--line)" : "none", paddingLeft: idx > 0 ? 32 : 0 }}>
                         {col.map((i) => (
-                          <a href="#" key={i}>{i}</a>
+                          <a href={INDUSTRY_HREFS[i] || "/industries"} key={i}>{i}</a>
                         ))}
                       </div>
                     ))}
@@ -483,7 +531,7 @@ export default function SiteHeader() {
                     {INSIGHTS_COLUMNS.map((col, idx) => (
                       <div className="psc-col-list" key={idx} style={{ gap: 20 }}>
                         {col.map((i) => (
-                          <a href="#" key={i} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 16, color: "var(--ink)" }}>{i}</a>
+                          <a href={INSIGHTS_HREFS[i] || "/insights"} key={i} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 16, color: "var(--ink)" }}>{i}</a>
                         ))}
                       </div>
                     ))}
@@ -494,8 +542,8 @@ export default function SiteHeader() {
                     <p className="psc-spotlight-title">
                       Global Infrastructure &amp; Sustainable Finance Summit
                     </p>
-                    <a href="#" className="reg">Register <ArrowRight size={14} /></a>
-                    <a href="#" className="view">View All Events →</a>
+                    <a href="/event#register" className="reg">Register <ArrowRight size={14} /></a>
+                    <a href="/event" className="view">View All Events →</a>
                   </div>
                 </div>
               </div>
@@ -508,14 +556,14 @@ export default function SiteHeader() {
             {NAV.map((item) => (
               <a
                 key={item.label}
-                href="#"
-                onClick={(e) => { e.preventDefault(); setActiveLabel(item.label); setMobileOpen(false); }}
-                style={{ fontSize: 13, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--nav-text)", textDecoration: "none", fontWeight: activeLabel === item.label ? 700 : 500 }}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                style={{ fontSize: 13, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--nav-text)", textDecoration: activeLabel === item.label ? "underline" : "none", textUnderlineOffset: 4, fontWeight: activeLabel === item.label ? 700 : 500 }}
               >
                 {item.label}
               </a>
             ))}
-            <a href="#contact" className="psc-cta" style={{ display: "inline-block" }}>Book Consultation</a>
+            <a href="/contact" className="psc-cta" style={{ display: "inline-block" }}>Book Consultation</a>
           </div>
         )}
       </header>
