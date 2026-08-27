@@ -97,35 +97,15 @@ export default function PagesCMSPage() {
           description="Edit hero headings, sub-headings, Cloudinary hero images, and call-to-action buttons for key site pages."
         />
 
-        {/* Page Selector Tabs */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px', padding: '6px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-          {heroes.map((h) => {
-            const isSelected = selectedSlug === h.pageSlug;
-            return (
-              <button
-                key={h.pageSlug}
-                type="button"
-                onClick={() => handleSelectPage(h.pageSlug)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  border: 'none',
-                  background: isSelected ? 'rgba(59,130,246,0.15)' : 'transparent',
-                  color: isSelected ? '#60a5fa' : 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
-                }}
-              >
-                <Layout size={14} />
-                <span>{h.pageSlug.replace('-', ' ')}</span>
-              </button>
-            );
-          })}
+        {/* Page Selector Tabs - Restricted to Home Page */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', padding: '12px 16px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+          <div style={{ padding: '6px 12px', background: 'rgba(59,130,246,0.15)', color: '#60a5fa', borderRadius: '8px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Layout size={16} />
+            <span>HOME PAGE HERO (ACTIVE)</span>
+          </div>
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+            Only the Home Page is editable right now. Non-home pages are restricted.
+          </span>
         </div>
 
         {error && (

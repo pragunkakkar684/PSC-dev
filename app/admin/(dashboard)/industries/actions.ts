@@ -62,6 +62,7 @@ export async function createIndustryAction(data: any) {
     .returning();
 
   revalidatePath('/admin/industries');
+  revalidatePath('/');
   return created;
 }
 
@@ -86,6 +87,7 @@ export async function updateIndustryAction(id: number, data: any) {
 
   revalidatePath('/admin/industries');
   revalidatePath(`/admin/industries/${id}`);
+  revalidatePath('/');
   return updated;
 }
 
@@ -94,6 +96,7 @@ export async function deleteIndustryAction(id: number) {
 
   await db.delete(industries).where(eq(industries.id, id));
   revalidatePath('/admin/industries');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -106,5 +109,6 @@ export async function toggleIndustryPublishAction(id: number, isPublished: boole
     .where(eq(industries.id, id));
 
   revalidatePath('/admin/industries');
+  revalidatePath('/');
   return { success: true };
 }

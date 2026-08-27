@@ -89,5 +89,11 @@ export async function updateHeroSectionAction(pageSlug: string, data: any) {
   }
 
   revalidatePath('/admin/pages');
+  revalidatePath('/');
+  if (pageSlug === 'home') {
+    revalidatePath('/', 'layout');
+  } else {
+    revalidatePath(`/${pageSlug}`);
+  }
   return updated;
 }

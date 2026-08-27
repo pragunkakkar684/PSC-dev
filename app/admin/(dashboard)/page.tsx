@@ -172,6 +172,51 @@ export default async function AdminDashboard() {
           />
         </div>
 
+        {/* Home Page CMS Control Notice */}
+        <div style={{
+          marginBottom: '28px',
+          padding: '20px',
+          background: 'rgba(59,130,246,0.08)',
+          border: '1px solid rgba(59,130,246,0.2)',
+          borderRadius: '12px',
+        }}>
+          <div style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#60a5fa', marginBottom: '6px' }}>
+            🎯 Home Page CMS Mode Active
+          </div>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+            Changes made in this CMS immediately update the live Home page (<code>/</code>). Non-home page editing is currently restricted.
+          </p>
+        </div>
+
+        {/* Quick Links for Home Page Editing */}
+        <div className="dashboard-section-title">Home Page Sections (Editable)</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+          <a href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>1. Hero Banner</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Edit Eyebrow, Heading, Subheading & Hero Image</div>
+          </a>
+          <a href="/admin/practice-areas" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>2. Practice Areas</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.practiceAreas} Core Competency Cards on Home</div>
+          </a>
+          <a href="/admin/industries" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>3. Sectors & Industries</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.industries} Sector & Industry Cards on Home</div>
+          </a>
+          <a href="/admin/insights" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>4. Insights Articles</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.insights} Articles on Home Page</div>
+          </a>
+          <a href="/admin/team" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>5. Team Members</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.team.total} Leadership Profiles on Home</div>
+          </a>
+          <a href="/admin/testimonials" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>6. Testimonials</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Client Testimonial Cards on Home</div>
+          </a>
+        </div>
+
         {/* System status */}
         <div style={{
           marginTop: '12px',
@@ -185,25 +230,8 @@ export default async function AdminDashboard() {
         }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
           <span style={{ fontSize: '13px', color: '#34d399', fontWeight: '500' }}>
-            Database connected · Auth active · Ready for content management
+            Database connected · Real-time cache revalidation enabled for Home Page
           </span>
-        </div>
-
-        {/* Part 1 notice */}
-        <div style={{
-          marginTop: '24px',
-          padding: '16px 20px',
-          background: 'rgba(245,158,11,0.05)',
-          border: '1px solid rgba(245,158,11,0.12)',
-          borderRadius: '10px',
-        }}>
-          <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#fbbf24', marginBottom: '6px' }}>
-            CMS — Part 1 Complete
-          </div>
-          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-            Authentication, route protection, database schema, Cloudinary integration, and the CMS shell are ready.
-            Content CRUD modules (Team, Events, Insights, etc.) will be implemented in Part 2.
-          </p>
         </div>
       </div>
     </>
