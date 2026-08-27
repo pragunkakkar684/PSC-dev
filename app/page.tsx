@@ -17,6 +17,8 @@ import {
   getPublicTeamMembers,
 } from '@/lib/queries/public';
 
+export const revalidate = 0;
+
 export default async function Home() {
   const [heroData, practiceData, industryData, insightData, teamData] = await Promise.all([
     getPublicHeroSection('home'),

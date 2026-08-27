@@ -10,8 +10,8 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
+  isHomeItem?: boolean;
   adminOnly?: boolean;
-  implemented?: boolean;
 }
 
 interface AdminSidebarProps {
@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   {
     label: 'Dashboard',
     href: '/admin',
-    implemented: true,
+    isHomeItem: true,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <rect x="1.5" y="1.5" width="5" height="5" rx="1" />
@@ -33,8 +33,52 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    label: 'Team',
+    label: 'Home Hero Banner',
+    href: '/admin/pages',
+    isHomeItem: true,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <path d="M3 1.5h7l3 3V14a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 2.5 14V2a.5.5 0 0 1 .5-.5z" />
+        <path d="M10 1.5V4.5H13" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Practice Areas',
+    href: '/admin/practice-areas',
+    isHomeItem: true,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="8" cy="8" r="6.5" />
+        <path d="M8 4v4l3 2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Sectors & Industries',
+    href: '/admin/industries',
+    isHomeItem: true,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <path d="M1.5 14V8l4-4 4 4V14M9.5 14V10M6.5 14V10" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M9.5 4.5l1-1 4 4V14" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Insights Articles',
+    href: '/admin/insights',
+    isHomeItem: true,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <path d="M2 12.5h12M2 9.5h8M2 6.5h10M2 3.5h6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Team Members',
     href: '/admin/team',
+    isHomeItem: true,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <circle cx="6" cy="5" r="2.5" />
@@ -45,68 +89,9 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    label: 'Events',
-    href: '/admin/events',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <rect x="1.5" y="2.5" width="13" height="12" rx="1.5" />
-        <path d="M1.5 6.5h13M5 1v3M11 1v3" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Insights',
-    href: '/admin/insights',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M2 12.5h12M2 9.5h8M2 6.5h10M2 3.5h6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Practice Areas',
-    href: '/admin/practice-areas',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="8" cy="8" r="6.5" />
-        <path d="M8 4v4l3 2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Industries',
-    href: '/admin/industries',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M1.5 14V8l4-4 4 4V14M9.5 14V10M6.5 14V10" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M9.5 4.5l1-1 4 4V14" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Pages',
-    href: '/admin/pages',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 1.5h7l3 3V14a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 2.5 14V2a.5.5 0 0 1 .5-.5z" />
-        <path d="M10 1.5V4.5H13" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'FAQs',
-    href: '/admin/faqs',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="8" cy="8" r="6.5" />
-        <path d="M6.5 6a1.5 1.5 0 0 1 3 0c0 1-1.5 1.5-1.5 2.5" strokeLinecap="round" />
-        <circle cx="8" cy="11.25" r="0.5" fill="currentColor" stroke="none" />
-      </svg>
-    ),
-  },
-  {
     label: 'Testimonials',
     href: '/admin/testimonials',
+    isHomeItem: true,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <path d="M3 3.5C3 2.67 3.67 2 4.5 2h7c.83 0 1.5.67 1.5 1.5v6c0 .83-.67 1.5-1.5 1.5H5l-2.5 2.5V3.5z" />
@@ -114,8 +99,9 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    label: 'Media',
+    label: 'Media Library',
     href: '/admin/media',
+    isHomeItem: true,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" />
@@ -125,8 +111,42 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    label: 'Contact Submissions',
+    label: 'Events',
+    href: '/admin/events',
+    isHomeItem: false,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <rect x="1.5" y="2.5" width="13" height="12" rx="1.5" />
+        <path d="M1.5 6.5h13M5 1v3M11 1v3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'FAQs',
+    href: '/admin/faqs',
+    isHomeItem: false,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="8" cy="8" r="6.5" />
+        <path d="M6.5 6a1.5 1.5 0 0 1 3 0c0 1-1.5 1.5-1.5 2.5" strokeLinecap="round" />
+        <circle cx="8" cy="11.25" r="0.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Offices',
+    href: '/admin/office-locations',
+    isHomeItem: false,
+    icon: (
+      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+        <path d="M2.5 14.5h11M4 14.5V3.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v11M6 5.5h1M9 5.5h1M6 8.5h1M9 8.5h1M6 11.5h1M9 11.5h1" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Contact Form Submissions',
     href: '/admin/contact-submissions',
+    isHomeItem: true,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" />
@@ -135,36 +155,10 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    label: 'Newsletter',
-    href: '/admin/newsletter',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M2 8l6-5 6 5M2 8v5.5A.5.5 0 0 0 2.5 14h11a.5.5 0 0 0 .5-.5V8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Offices',
-    href: '/admin/office-locations',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M2.5 14.5h11M4 14.5V3.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v11M6 5.5h1M9 5.5h1M6 8.5h1M9 8.5h1M6 11.5h1M9 11.5h1" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Navigation',
-    href: '/admin/navigation',
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-        <path d="M2.5 4h11M2.5 8h11M2.5 12h11" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
     label: 'Settings',
     href: '/admin/settings',
     adminOnly: true,
+    isHomeItem: false,
     icon: (
       <svg width="16" height="16" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
         <circle cx="8" cy="8" r="2" />
@@ -199,13 +193,16 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         <div className="sidebar-logo">PSC</div>
         <div>
           <div className="sidebar-title">PSC Global</div>
-          <div className="sidebar-cms-label">CMS</div>
+          <div className="sidebar-cms-label">Home CMS</div>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-        {visibleNav.map((item) => (
+        <div style={{ padding: '4px 10px', fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          Home Page CMS
+        </div>
+        {visibleNav.filter(item => item.isHomeItem).map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -213,10 +210,23 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           >
             <span className="sidebar-icon">{item.icon}</span>
             <span className="sidebar-label">{item.label}</span>
-            {!item.implemented && (
-              <span className="sidebar-badge">Soon</span>
-            )}
           </Link>
+        ))}
+
+        <div style={{ padding: '12px 10px 4px 10px', fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          Other Pages (Disabled)
+        </div>
+        {visibleNav.filter(item => !item.isHomeItem).map((item) => (
+          <div
+            key={item.href}
+            className="sidebar-link"
+            style={{ opacity: 0.45, cursor: 'not-allowed' }}
+            title="Only Home Page is editable right now"
+          >
+            <span className="sidebar-icon">{item.icon}</span>
+            <span className="sidebar-label">{item.label}</span>
+            <span className="sidebar-badge" style={{ background: '#334155', color: '#94a3b8' }}>Disabled</span>
+          </div>
         ))}
       </nav>
 

@@ -70,6 +70,7 @@ export async function createPracticeAreaAction(data: any) {
     .returning();
 
   revalidatePath('/admin/practice-areas');
+  revalidatePath('/');
   return created;
 }
 
@@ -94,6 +95,7 @@ export async function updatePracticeAreaAction(id: number, data: any) {
 
   revalidatePath('/admin/practice-areas');
   revalidatePath(`/admin/practice-areas/${id}`);
+  revalidatePath('/');
   return updated;
 }
 
@@ -102,6 +104,7 @@ export async function deletePracticeAreaAction(id: number) {
 
   await db.delete(practiceAreas).where(eq(practiceAreas.id, id));
   revalidatePath('/admin/practice-areas');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -114,6 +117,7 @@ export async function togglePracticeAreaPublishAction(id: number, isPublished: b
     .where(eq(practiceAreas.id, id));
 
   revalidatePath('/admin/practice-areas');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -135,5 +139,6 @@ export async function savePracticeAreaServicesAction(
   }
 
   revalidatePath(`/admin/practice-areas/${practiceAreaId}`);
+  revalidatePath('/');
   return { success: true };
 }

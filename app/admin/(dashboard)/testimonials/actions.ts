@@ -43,6 +43,7 @@ export async function createTestimonialAction(data: any) {
     .returning();
 
   revalidatePath('/admin/testimonials');
+  revalidatePath('/');
   return created;
 }
 
@@ -58,6 +59,7 @@ export async function updateTestimonialAction(id: number, data: any) {
     .returning();
 
   revalidatePath('/admin/testimonials');
+  revalidatePath('/');
   return updated;
 }
 
@@ -66,6 +68,7 @@ export async function deleteTestimonialAction(id: number) {
 
   await db.delete(testimonials).where(eq(testimonials.id, id));
   revalidatePath('/admin/testimonials');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -78,5 +81,6 @@ export async function toggleTestimonialPublishAction(id: number, isPublished: bo
     .where(eq(testimonials.id, id));
 
   revalidatePath('/admin/testimonials');
+  revalidatePath('/');
   return { success: true };
 }

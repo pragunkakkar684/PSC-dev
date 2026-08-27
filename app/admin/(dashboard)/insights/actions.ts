@@ -91,6 +91,7 @@ export async function createInsightAction(data: any) {
     .returning();
 
   revalidatePath('/admin/insights');
+  revalidatePath('/');
   return created;
 }
 
@@ -116,6 +117,7 @@ export async function updateInsightAction(id: number, data: any) {
 
   revalidatePath('/admin/insights');
   revalidatePath(`/admin/insights/${id}`);
+  revalidatePath('/');
   return updated;
 }
 
@@ -124,6 +126,7 @@ export async function deleteInsightAction(id: number) {
 
   await db.delete(insightsArticles).where(eq(insightsArticles.id, id));
   revalidatePath('/admin/insights');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -136,6 +139,7 @@ export async function toggleInsightPublishAction(id: number, isPublished: boolea
     .where(eq(insightsArticles.id, id));
 
   revalidatePath('/admin/insights');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -148,5 +152,6 @@ export async function toggleInsightFeaturedAction(id: number, isFeatured: boolea
     .where(eq(insightsArticles.id, id));
 
   revalidatePath('/admin/insights');
+  revalidatePath('/');
   return { success: true };
 }

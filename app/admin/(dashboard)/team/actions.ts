@@ -74,6 +74,7 @@ export async function createTeamMemberAction(data: any) {
     .returning();
 
   revalidatePath('/admin/team');
+  revalidatePath('/');
   return created;
 }
 
@@ -98,6 +99,7 @@ export async function updateTeamMemberAction(id: number, data: any) {
 
   revalidatePath('/admin/team');
   revalidatePath(`/admin/team/${id}`);
+  revalidatePath('/');
   return updated;
 }
 
@@ -106,6 +108,7 @@ export async function deleteTeamMemberAction(id: number) {
 
   await db.delete(teamMembers).where(eq(teamMembers.id, id));
   revalidatePath('/admin/team');
+  revalidatePath('/');
   return { success: true };
 }
 
@@ -118,6 +121,7 @@ export async function toggleTeamMemberPublishAction(id: number, isPublished: boo
     .where(eq(teamMembers.id, id));
 
   revalidatePath('/admin/team');
+  revalidatePath('/');
   return { success: true };
 }
 
