@@ -34,7 +34,7 @@ export default async function Home() {
       <PracticeAreas data={practiceData} />
       <Sectors data={industryData} />
       <Insights data={insightData} />
-      <Team data={teamData} />
+      <Team  data={teamData}/>
       <About />
       <Testimonial />
       <Contact />

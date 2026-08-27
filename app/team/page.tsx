@@ -23,89 +23,161 @@ const closingPoints = [
   ['Trusted Relationships', 'Built on discretion, rigor, and long-term partnership, we are the quiet force behind sustained corporate excellence.'],
 ];
 
+// Fallback data shaped to match the three team tiers shown on the page:
+// 'leadership' -> Leadership grid, 'partner' -> Partners grid, 'mentor'/'advisor' -> Mentors list.
+// `specialty` is an optional extra field for the Partners tier (e.g. "Corporate Law") — if your
+// dbTeam records don't carry this field yet, it will simply be omitted from the card.
+const defaultTeam = [
+  { id: '1', slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Founder & CEO', category: 'leadership', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world\u2019s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
+  { id: '2', slug: 'helena-thorne', name: 'Helena Thorne', roleTitle: 'Partner, Digital Transformation', category: 'leadership', shortBio: 'Helena leads our transformation labs, bridging the gap between legacy infrastructure and emergent AI-driven business models.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
+  { id: '3', slug: 'marcus-oh', name: 'Marcus Oh', roleTitle: 'Principal, Global Logistics', category: 'leadership', shortBio: 'Marcus specializes in complex logistics and supply chain optimization, having managed projects exceeding $4B in annual spend.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
+  { id: '4', slug: 'sarah-jenkins', name: 'Sarah Jenkins', roleTitle: 'Partner, Tax Strategy', category: 'leadership', shortBio: 'Sarah advises multinational clients on cross-border tax structuring and long-term fiscal planning.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
+  { id: '5', slug: 'eleanor-vance', name: 'Eleanor Vance', roleTitle: 'Senior Partner', specialty: 'Corporate Law', category: 'partner', shortBio: 'Eleanor leads our corporate law practice, specializing in complex M&A and governance structuring.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
+  { id: '6', slug: 'david-chen', name: 'David Chen', roleTitle: 'Partner', specialty: 'Risk & Assurance', category: 'partner', shortBio: 'David oversees audit and compliance engagements for institutional clients across global markets.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
+  { id: '7', slug: 'amira-rossi', name: 'Amira Rossi', roleTitle: 'Partner', specialty: 'Business Advisory', category: 'partner', shortBio: 'Amira advises growth-stage enterprises on operational strategy and organizational design.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
+  { id: '8', slug: 'robert-sterling', name: 'Robert Sterling', roleTitle: 'Senior Advisor, Global Markets', category: 'mentor', shortBio: 'Robert brings over 40 years of institutional experience guiding Fortune 500 companies through complex market transitions and cross-border expansions.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=85' },
+  { id: '9', slug: 'evelyn-hayes', name: 'Dr. Evelyn Hayes', roleTitle: 'Senior Advisor, Regulatory Affairs', category: 'mentor', shortBio: 'A former chief regulator, Dr. Hayes advises our structural teams on anticipating policy shifts and building resilient compliance frameworks.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=85' },
+];
+
 export default async function OurTeamPage() {
   const [hero, dbTeam] = await Promise.all([
     getPublicHeroSection('team'),
     getPublicTeamMembers(),
   ]);
 
-  const partners = dbTeam.filter((m) => m.category === 'partner' || m.category === 'leadership');
-  const mentors = dbTeam.filter((m) => m.category === 'mentor' || m.category === 'advisor');
+  const team = dbTeam.length > 1 ? dbTeam : defaultTeam;
+  const leadership = team.filter((m) => m.category === 'leadership');
+  const partnersList = team.filter((m) => m.category === 'partner');
+  const mentors = team.filter((m) => m.category === 'mentor' || m.category === 'advisor');
 
   return (
     <main id="top">
       <SiteHeader />
 
-      <section className="relative flex min-h-[560px] items-end overflow-hidden">
+      {/* HERO */}
+      <section className="relative flex h-[calc(100vh-88px)] items-end overflow-hidden">
         <img
           className="absolute inset-0 h-full w-full object-cover"
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=85'}
           alt="PSC Global team meeting"
         />
         <div className="absolute inset-0 bg-navy/60" />
-        <div className="relative mx-auto w-full max-w-7xl px-6 py-16 text-white lg:px-10">
-          <p className="font-mono text-[10px] tracking-[.18em] text-slate-200 uppercase">{hero.eyebrow || 'OUR TEAM'}</p>
-          <h1 className="mt-4 max-w-2xl font-serif text-5xl leading-[1.02] tracking-[-.04em] sm:text-6xl">
+        <div className="relative mx-auto w-full max-w-7xl px-6 py-20 text-white lg:px-10">
+          <p className="font-mono text-xs tracking-[.18em] text-slate-200 uppercase">{hero.eyebrow || 'OUR TEAM'}</p>
+          <h1 className="mt-4 max-w-2xl font-serif text-6xl leading-[1.02] tracking-[-.045em] sm:text-7xl">
             {hero.heading || 'Meet The Experts Behind PSC Global.'}
           </h1>
-          <p className="mt-6 max-w-lg text-sm leading-7 text-slate-200">
-            {hero.subheading || 'Our multidisciplinary team of Chartered Accountants, legal professionals, tax strategists, and corporate advisors bring decades of institutional experience.'}
+          <p className="mt-6 max-w-lg text-base leading-7 text-slate-200 lg:text-lg">
+            {hero.subheading || 'Our multidisciplinary team of Chartered Accountants, legal professionals, tax strategists, and business consultants works together to solve complex business challenges with clarity and confidence.'}
           </p>
-          <a
-            href="#leadership"
-            className="mt-8 inline-flex items-center gap-3 bg-white px-5 py-3 text-xs font-bold text-ink transition hover:bg-slate-100"
-          >
-            EXPLORE LEADERSHIP <ArrowDown size={14} />
-          </a>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#leadership"
+              className="inline-flex items-center gap-3 bg-white px-5 py-3 text-xs font-bold text-ink transition hover:bg-slate-100"
+            >
+              MEET OUR PARTNERS <ArrowDown size={14} />
+            </a>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-3 border border-white px-5 py-3 text-xs font-bold text-white transition hover:bg-white hover:text-ink"
+            >
+              BOOK A CONSULTATION
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Leadership & Partners */}
-      <section id="leadership" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <p className="text-center font-mono text-[10px] tracking-[.18em] text-slate-500">
-          EXECUTIVE STEWARDSHIP
-        </p>
-        <h2 className="mt-4 text-center font-serif text-4xl text-ink">Leadership &amp; Partners</h2>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {(partners.length > 0 ? partners : dbTeam).map((m) => (
-            <article key={m.id} className="group border border-slate-200 bg-white p-4 transition hover:shadow-xl">
+      {/* PHILOSOPHY */}
+      <section className="border-t border-slate-200 px-6 py-24 lg:px-10">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="font-serif text-4xl leading-tight text-ink lg:text-5xl">
+            A Philosophy Rooted in Structural Integrity
+          </h2>
+          <p className="mx-auto mt-10 max-w-2xl font-serif text-2xl italic leading-snug text-slate-700 lg:text-3xl">
+            &ldquo;Strong businesses are built on thoughtful advice, enduring relationships and
+            uncompromising integrity.&rdquo;
+          </p>
+        </div>
+        <div className="mx-auto mt-16 grid max-w-6xl gap-10 border-t border-slate-200 pt-10 text-left sm:grid-cols-2 lg:grid-cols-4">
+          {philosophyPoints.map(([title, copy]) => (
+            <div key={title}>
+              <b className="text-xs tracking-widest text-slate-500">{title}</b>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* LEADERSHIP */}
+      <section id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+        <div className="flex items-center justify-between">
+          <h2 className="font-serif text-5xl text-ink lg:text-6xl">Leadership</h2>
+          <Link href="/team/structure" className="hidden items-center gap-2 text-xs font-bold tracking-wide hover:underline md:flex">
+            VIEW FULL STRUCTURE <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {(leadership.length > 0 ? leadership : team).map((m) => (
+            <article key={m.id} className="profile-card group">
               <Link href={`/partner/${m.slug}`}>
-                <div className="relative overflow-hidden">
-                  <img
-                    className="h-64 w-full object-cover grayscale transition duration-300 group-hover:grayscale-0"
-                    src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85'}
-                    alt={m.name}
-                  />
-                  <span className="absolute left-2 top-2 bg-navy px-2 py-0.5 text-[8px] font-bold tracking-widest text-white uppercase">
-                    {m.category}
-                  </span>
-                </div>
-                <h3 className="mt-4 font-serif text-xl text-ink group-hover:text-sky-800 transition-colors">{m.name}</h3>
-                <p className="mt-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase">{m.roleTitle}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-600 line-clamp-3">{m.shortBio}</p>
+                <img
+                  className="h-72 w-full object-cover grayscale transition duration-300 group-hover:grayscale-0"
+                  src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85'}
+                  alt={m.name}
+                />
+                <h3 className="mt-4 font-serif text-2xl text-ink transition-colors group-hover:text-sky-800">{m.name}</h3>
+                <p className="mt-1 text-xs font-bold tracking-wide text-slate-500 uppercase">{m.roleTitle}</p>
               </Link>
             </article>
           ))}
         </div>
       </section>
 
-      {/* Advisors & Mentors */}
-      {mentors.length > 0 && (
-        <section className="bg-[#fdf9f8] px-6 py-20 lg:px-10">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="text-center font-serif text-4xl text-ink">Senior Advisors &amp; Mentors</h2>
-            <div className="mt-12 grid gap-8 md:grid-cols-2">
-              {mentors.map((m) => (
-                <article className="flex flex-col gap-6 border border-slate-200 bg-white p-7 sm:flex-row" key={m.id}>
+      {/* PARTNERS */}
+      {partnersList.length > 0 && (
+        <section className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+          <h2 className="border-b border-slate-200 pb-8 font-serif text-5xl text-ink lg:text-6xl">Partners</h2>
+          <div className="mt-12 grid gap-10 md:grid-cols-3">
+            {partnersList.map((m) => (
+              <article key={m.id} className="profile-card">
+                <Link href={`/partner/${m.slug}`} className="group block">
                   <img
-                    className="h-48 w-full object-cover grayscale sm:w-44 shrink-0"
+                    className="h-72 w-full object-cover grayscale transition duration-300 group-hover:grayscale-0"
+                    src={m.imageUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85'}
+                    alt={m.name}
+                  />
+                  <h3 className="mt-4 font-serif text-2xl text-ink transition-colors group-hover:text-sky-800">{m.name}</h3>
+                  <p className="mt-1 text-xs font-bold tracking-wide text-slate-500 uppercase">{m.roleTitle}</p>
+                  {'specialty' in m && m.specialty ? (
+                    <p className="mt-1 text-sm font-medium text-sky-800">{m.specialty as string}</p>
+                  ) : null}
+                  <span className="mt-3 inline-flex items-center gap-2 text-xs font-bold tracking-wide text-ink">
+                    VIEW PROFILE <ArrowRight size={12} />
+                  </span>
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* MENTORS */}
+      {mentors.length > 0 && (
+        <section className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-24 lg:px-10">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="font-serif text-5xl text-ink lg:text-6xl">Mentors</h2>
+            <div className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-2">
+              {mentors.map((m) => (
+                <article className="profile-card flex flex-col gap-6 sm:flex-row sm:items-start" key={m.id}>
+                  <img
+                    className="h-48 w-full shrink-0 object-cover grayscale sm:w-44"
                     src={m.imageUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=85'}
                     alt={m.name}
                   />
                   <div>
-                    <h3 className="font-serif text-2xl text-ink">{m.name}</h3>
+                    <h3 className="font-serif text-2xl text-ink lg:text-3xl">{m.name}</h3>
                     <p className="mt-1 text-xs font-bold tracking-wide text-slate-500 uppercase">{m.roleTitle}</p>
-                    <p className="mt-3 text-xs leading-6 text-slate-600">{m.shortBio}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{m.shortBio}</p>
                   </div>
                 </article>
               ))}
@@ -114,40 +186,54 @@ export default async function OurTeamPage() {
         </section>
       )}
 
-      {/* Philosophy */}
-      <section className="bg-navy px-6 py-20 text-white lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <p className="font-mono text-[10px] tracking-[.18em] text-sky-200">OUR PHILOSOPHY</p>
-          <h2 className="mt-4 font-serif text-4xl">How We Work</h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {philosophyPoints.map(([title, copy]) => (
-              <div key={title}>
-                <b className="text-[10px] tracking-widest text-sky-300">{title}</b>
-                <p className="mt-3 text-xs leading-6 text-slate-300">{copy}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Disciplines */}
-      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <h2 className="text-center font-serif text-4xl text-ink">Multidisciplinary Synergy</h2>
-        <div className="mt-12 space-y-12">
+      {/* DISCIPLINES */}
+      <section className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+        <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">Expertise Across Disciplines</h2>
+        <div className="mt-16 divide-y divide-slate-200">
           {disciplines.map(([title, copy, image, align]) => (
             <div
-              className={`flex flex-col gap-8 md:items-center ${
+              className={`flex flex-col gap-8 py-12 first:pt-0 last:pb-0 md:items-center ${
                 align === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'
               }`}
               key={title}
             >
-              <img className="h-64 w-full object-cover md:w-1/2" src={image} alt={title} />
+              <img className="h-64 w-full object-cover md:h-80 md:w-1/2" src={image} alt={title} />
               <div className="md:w-1/2">
-                <h3 className="font-serif text-3xl text-ink">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-slate-600">{copy}</p>
+                <h3 className="font-serif text-3xl text-ink lg:text-4xl">{title}</h3>
+                <p className="mt-4 text-sm leading-7 text-slate-600 lg:text-base">{copy}</p>
+                <Link href="/services" className="mt-5 inline-flex items-center gap-2 text-xs font-bold tracking-wide text-ink hover:underline">
+                  EXPLORE <ArrowRight size={12} />
+                </Link>
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* CLOSING STATEMENT */}
+      <section className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-3">
+          {closingPoints.map(([title, copy]) => (
+            <div key={title}>
+              <h3 className="font-serif text-2xl">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">{copy}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="flex flex-col items-center justify-center px-6 py-24 text-center">
+        <h2 className="font-serif text-5xl leading-tight text-ink lg:text-6xl">
+          Let&apos;s Start The Conversation.
+        </h2>
+        <div className="mt-8 flex justify-center gap-3">
+          <Link href="/contact" className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-slate-800">
+            BOOK A CONSULTATION
+          </Link>
+          <Link href="/team" className="border border-ink px-5 py-3 text-xs font-bold text-ink transition hover:bg-slate-100">
+            MEET OUR EXPERTS
+          </Link>
         </div>
       </section>
 

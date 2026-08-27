@@ -39,7 +39,7 @@ export default function ClientPortalLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#fdf9f8]">
+    <div className="client-portal-shell min-h-screen bg-[#fdf9f8]">
       <header className="flex items-center justify-between border-b border-slate-200 bg-[#fdf9f8] px-8 py-4">
         <div className="flex items-center gap-4">
           <Link href="/" className="font-serif text-2xl tracking-wide text-ink">

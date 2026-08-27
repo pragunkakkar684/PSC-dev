@@ -5,13 +5,89 @@ import { getPublicInsightBySlug } from '@/lib/queries/public';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock, FileText, User } from 'lucide-react';
 
+// Placeholder articles shown only when the database has no matching row.
+// Slugs match the fallback cards in insights/page.tsx so links between
+// the listing and detail pages never 404 while the DB is empty.
+const defaultArticlesBySlug: Record<
+  string,
+  {
+    title: string;
+    summary: string;
+    tag: string;
+    contentType: string;
+    imageUrl: string | null;
+    readTimeMins: number;
+    publishedAt: string;
+    fileUrl: string | null;
+    author: { name: string; roleTitle: string; imageUrl: string | null } | null;
+    body: string;
+  }
+> = {
+  'navigating-cross-border-ma-2024': {
+    title: 'Navigating the Complexity of Cross-Border M&A in 2024.',
+    summary:
+      'As geopolitical landscapes shift, structural integrity in transaction planning becomes paramount. Our definitive guide to mitigating regulatory risk and structuring for long-term value creation.',
+    tag: 'STRATEGIC ADVISORY',
+    contentType: 'Report',
+    imageUrl: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=85',
+    readTimeMins: 12,
+    publishedAt: '2024-10-24',
+    fileUrl: null,
+    author: {
+      name: 'Dr. Julian Vance',
+      roleTitle: 'Managing Partner',
+      imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80',
+    },
+    body: 'Cross-border M&A activity in 2024 is being reshaped by a wave of national security screening regimes and diverging antitrust philosophies across major economies.\n\nDealmakers can no longer treat regulatory clearance as a late-stage formality. Structuring decisions made at term sheet stage now materially affect the probability and timeline of closing, particularly in transactions touching critical infrastructure, data, or semiconductors.\n\nOur advisory work across recent transactions highlights a consistent pattern: acquirers who build a joint regulatory workstream from day one of due diligence close with meaningfully less friction than those who treat it as a closing-condition checklist.',
+  },
+  'implications-new-global-minimum-tax-regime': {
+    title: 'Implications of the New Global Minimum Tax Regime.',
+    summary: 'An analysis of structural adjustments required by multinational entities to comply with recent OECD directives.',
+    tag: 'TAX POLICY',
+    contentType: 'Article',
+    imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=85',
+    readTimeMins: 6,
+    publishedAt: '2024-10-14',
+    fileUrl: null,
+    author: null,
+    body: 'The rollout of the global minimum tax continues to reshape how multinational groups approach effective tax rate planning, particularly under Pillar Two\u2019s top-up tax provisions.\n\nOrganizations with operations across multiple low-tax jurisdictions should expect increased scrutiny and should begin modeling exposure well ahead of local implementation deadlines.',
+  },
+  'real-estate-infrastructure-2025-outlook': {
+    title: 'Real Estate Infrastructure: 2025 Outlook.',
+    summary: 'Evaluating capital allocation strategies in an era of fluctuating interest rates and stringent sustainability mandates.',
+    tag: 'INDUSTRY',
+    contentType: 'Report',
+    imageUrl: null,
+    readTimeMins: 7,
+    publishedAt: '2024-10-10',
+    fileUrl: null,
+    author: null,
+    body: 'Institutional real estate portfolios are entering 2025 under a materially different cost-of-capital environment than the decade prior, forcing a re-underwriting of hold periods and exit assumptions across asset classes.\n\nSustainability-linked financing terms are increasingly setting the floor for building specification, not the ceiling, as lenders price climate risk directly into loan covenants.',
+  },
+  'architecting-corporate-governance-frameworks': {
+    title: 'Architecting Corporate Governance Frameworks.',
+    summary: 'Building resilient internal controls that withstand intense regulatory scrutiny and shareholder activism.',
+    tag: 'RISK ADVISORY',
+    contentType: 'Article',
+    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=85',
+    readTimeMins: 8,
+    publishedAt: '2024-10-05',
+    fileUrl: null,
+    author: null,
+    body: 'Boards are facing a widening gap between the pace of activist campaigns and the cadence of traditional governance review cycles.\n\nResilient governance frameworks now require real-time escalation pathways and pre-negotiated response protocols, rather than the annual review structures that defined the last decade of practice.',
+  },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = await getPublicInsightBySlug(slug);
-  if (article) {
+  const fallback = defaultArticlesBySlug[slug];
+  const resolved = article || fallback;
+
+  if (resolved) {
     return {
-      title: `${article.title} | PSC Global Insights`,
-      description: article.summary || article.title,
+      title: `${resolved.title} | PSC Global Insights`,
+      description: resolved.summary || resolved.title,
     };
   }
   return {
@@ -21,7 +97,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function InsightArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const article = await getPublicInsightBySlug(slug);
+  const dbArticle = await getPublicInsightBySlug(slug);
+
+  // Fall back to placeholder content only when the DB has no matching row.
+  const article = dbArticle || defaultArticlesBySlug[slug];
 
   if (!article) {
     notFound();
@@ -68,12 +147,16 @@ export default async function InsightArticlePage({ params }: { params: Promise<{
           </div>
         )}
 
-        {article.imageUrl && (
+        {article.imageUrl ? (
           <img
             src={article.imageUrl}
             alt={article.title}
             className="mt-8 h-[400px] w-full object-cover rounded-lg"
           />
+        ) : (
+          <div className="mt-8 flex h-[400px] w-full items-center justify-center rounded-lg bg-slate-100">
+            <span className="font-serif text-4xl tracking-wide text-slate-300 uppercase">{article.contentType}</span>
+          </div>
         )}
 
         {article.summary && (

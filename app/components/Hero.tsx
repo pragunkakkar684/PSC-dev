@@ -7,13 +7,13 @@ interface HeroProps {
 
 export default function Hero({ data }: HeroProps) {
   const eyebrow = data?.eyebrow || 'GLOBAL STRATEGY & ADVISORY';
-  const heading = data?.heading || 'Navigating Regulatory Complexity Across Borders.';
+  const heading = data?.heading || 'Helping Businesses Navigate Growth with Confidence.';
   const subheading =
     data?.subheading ||
-    'Comprehensive Audit, Tax, Legal, and Strategic Business Advisory services for the progressive future. Built on decades of trust and global execution.';
+    'Comprehensive Audit, Tax, Legal, and Strategic Business Advisory services for the modern global enterprise. Trust built on decades of excellence.';
   const bgUrl =
     data?.imageUrl ||
-    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1800&q=85';
+    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1800&q=85';
   const cta1Text = data?.cta1Text || 'Explore Practice Areas';
   const cta1Href = data?.cta1Href || '/practice-areas';
   const cta2Text = data?.cta2Text || 'Book a Consultation';
@@ -22,16 +22,19 @@ export default function Hero({ data }: HeroProps) {
   return (
     <section
       id="top"
-      className="flex min-h-[590px] items-center bg-cover bg-center text-white"
+      className="flex h-[90dvh] min-h-[600px] items-center bg-cover bg-center text-white"
       style={{
         backgroundImage: `linear-gradient(90deg,rgba(0,22,43,.9),rgba(0,22,43,.35)),url(${bgUrl})`,
       }}
     >
       <div className="animate-rise mx-auto w-full max-w-7xl px-6 py-20 lg:px-10">
-        <p className="mb-5 font-mono text-[11px] tracking-[.18em] text-sky-200 uppercase">
+        <p
+          className="mb-5 text-[11px] tracking-[.18em] text-sky-200 uppercase"
+          style={{ fontFamily: "'Plus Jakarta Sans', Arial, sans-serif" }}
+        >
           {eyebrow}
         </p>
-        <h1 className="font-serif text-5xl leading-[1.12] tracking-[-.045em] sm:text-6xl max-w-3xl">
+        <h1 className="font-serif font-semibold text-6xl leading-[1.12] tracking-[-.02em] sm:text-7xl max-w-3xl">
           {heading}
         </h1>
         <p className="mt-6 max-w-xl text-base leading-7 text-slate-200">
@@ -40,15 +43,15 @@ export default function Hero({ data }: HeroProps) {
         <div className="mt-8 flex flex-wrap gap-4">
           <a
             href={cta2Href}
-            className="inline-flex items-center gap-3 bg-sky-100 px-5 py-3.5 text-sm font-semibold text-slate-900 transition hover:-translate-y-1 hover:shadow-xl"
+            className="inline-flex items-center gap-3 bg-slate-600/80 px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:-translate-y-1 hover:bg-slate-600 hover:shadow-xl"
           >
             {cta2Text} <ArrowUpRight size={17} />
           </a>
           <a
             href={cta1Href}
-            className="inline-flex items-center gap-3 border border-white/70 px-5 py-3.5 text-sm font-semibold transition hover:-translate-y-1 hover:bg-white/10"
+            className="inline-flex items-center gap-3 bg-white/95 px-5 py-3.5 text-sm font-semibold text-slate-900 transition hover:-translate-y-1 hover:bg-white hover:shadow-xl"
           >
-            {cta1Text} <ArrowUpRight size={17} />
+            {cta1Text}
           </a>
         </div>
       </div>

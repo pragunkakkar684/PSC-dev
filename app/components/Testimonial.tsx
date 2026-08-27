@@ -1,21 +1,76 @@
+'use client';
+
 import { Quote } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+const testimonials = [
+  {
+    quote:
+      'PSC Global has been instrumental in our expansion across three continents. Their integrated approach to tax and legal simplified what would have otherwise been a logistical nightmare.',
+    name: 'Jonathan Walters',
+    role: 'CEO, TechStream Industries',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80',
+  },
+  {
+    quote:
+      'The depth of regulatory expertise across every market we entered gave our board the confidence to move fast without cutting corners.',
+    name: 'Priya Anand',
+    role: 'CFO, Meridian Logistics',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80',
+  },
+  {
+    quote:
+      'PSC Global didn\u2019t just advise us through our merger \u2014 they anticipated every regulatory hurdle before it became a problem.',
+    name: 'David Chen',
+    role: 'Managing Director, Halcyon Capital',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+  },
+];
+
+const INTERVAL_MS = 5000;
 
 export default function Testimonial() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % testimonials.length);
+    }, INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, []);
+
+  const active = testimonials[index];
+
   return (
-    <section className="mx-auto max-w-4xl px-6 py-20 text-center">
-      <Quote className="mx-auto fill-sky-100 text-sky-100" size={56} />
-      <blockquote className="mt-3 text-base font-bold leading-7">
-        &ldquo;PSC Global has been instrumental in our expansion across three continents. Their integrated approach
-        simplified a logistical nightmare.&rdquo;
-        <cite className="mt-5 block text-xs font-normal not-italic text-slate-500">
-          Jonathan Walters
-          <br />
-          CEO, TechNova Industries
-        </cite>
-      </blockquote>
-      <div className="mt-6 flex justify-center gap-2">
-        <span className="h-1.5 w-5 rounded-full bg-ink" />
-        <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+    <section className="mx-auto flex min-h-[75vh] max-w-5xl flex-col justify-center px-6 py-24 lg:px-10">
+      <Quote className="fill-[#e7f1ff] text-[#e7f1ff]" size={64} />
+      <div key={index} className="animate-rise mt-2 text-center">
+        <blockquote className="mx-auto max-w-3xl text-2xl leading-relaxed text-navy">
+          &ldquo;{active.quote}&rdquo;
+        </blockquote>
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <img
+            src={active.avatar}
+            alt={active.name}
+            className="h-12 w-12 rounded-full object-cover grayscale"
+          />
+          <div className="text-left">
+            <p className="text-sm font-semibold text-ink">{active.name}</p>
+            <p className="text-sm text-slate-500">{active.role}</p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 flex justify-center gap-2">
+        {testimonials.map((t, i) => (
+          <button
+            key={t.name}
+            aria-label={`Show testimonial from ${t.name}`}
+            onClick={() => setIndex(i)}
+            className={`h-2 rounded-full transition-all ${
+              i === index ? 'w-5 bg-sky-600' : 'w-2 bg-slate-300'
+            }`}
+          />
+        ))}
       </div>
     </section>
   );

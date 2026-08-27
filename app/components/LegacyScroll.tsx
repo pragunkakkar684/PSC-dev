@@ -74,11 +74,11 @@ export default function LegacyScroll() {
         <div ref={clipRef} className="mx-auto mt-10 w-full max-w-7xl overflow-hidden px-6 lg:px-10">
           <div
             ref={trackRef}
-            className="flex gap-12 will-change-transform"
+            className="flex gap-8 will-change-transform"
             style={{ transform: `translateX(${translateX}px)` }}
           >
             {legacy.map(([year, title, copy]) => (
-              <article className="w-[260px] shrink-0" key={year}>
+              <article className="w-55 shrink-0" key={year}>
                 <div className="flex items-center gap-2 border-t border-slate-600 pt-4">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-200" />
                   <b className="font-serif text-2xl text-sky-200">{year}</b>

@@ -55,7 +55,7 @@ const INSIGHTS_COLUMNS = [
 
 const NAV = [
   { label: "About", key: "about", type: "narrow", href: "/about" },
-  { label: "Our Team", key: "team", type: "narrow", href: "/team" },
+  { label: "Our Team", key: "team", type: "full", href: "/team" },
   { label: "Practice Areas", key: "practice", type: "full", href: "/practice-areas" },
   { label: "Industries", key: "industries", type: "full", href: "/industries" },
   { label: "Insights", key: "insights", type: "full", href: "/insights" },
@@ -121,7 +121,7 @@ export default function SiteHeader() {
   return (
     <div className="psc-root">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
         .psc-root {
           --ink: #12203f;
@@ -134,12 +134,12 @@ export default function SiteHeader() {
           --line: #e7e0d3;
           --steel: #3c5972;
           --gcc-bg: #eaf1f8;
-          font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+          font-family: 'Plus Jakarta Sans', Arial, sans-serif;
           color: var(--ink);
           background: var(--cream);
           position: relative;
         }
-        .psc-serif { font-family: 'Fraunces', Georgia, serif; }
+        .psc-serif { font-family: 'Playfair Display', Georgia, serif; }
 
         .psc-header {
           position: sticky;
@@ -154,7 +154,7 @@ export default function SiteHeader() {
           border-bottom: 1px solid var(--line);
         }
         .psc-logo {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Playfair Display', Georgia, serif;
           font-size: 26px;
           line-height: 0.86;
           letter-spacing: -0.01em;
@@ -235,11 +235,41 @@ export default function SiteHeader() {
         }
         .psc-menu-full {
           width: 100%;
-          background: var(--cream);
+          background: #fff;
           border-top: 1px solid var(--line);
           border-bottom: 1px solid var(--line);
           box-shadow: 0 24px 48px -18px rgba(18,32,63,0.14);
           padding: 40px 48px 44px;
+        }
+
+        .psc-team-grid {
+          display: grid;
+          grid-template-columns: 300px 1fr;
+          gap: 40px;
+          align-items: start;
+        }
+        .psc-team-photo {
+          position: relative;
+          overflow: hidden;
+          height: 340px;
+        }
+        .psc-team-photo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .psc-team-caption {
+          position: absolute;
+          bottom: 16px;
+          right: 16px;
+          background: #fff;
+          padding: 8px 14px;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--ink);
         }
 
         .psc-eyebrow {
@@ -251,7 +281,7 @@ export default function SiteHeader() {
           margin: 0 0 10px;
         }
         .psc-menu-heading {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Playfair Display', Georgia, serif;
           font-size: 20px;
           margin: 0 0 12px;
         }
@@ -305,7 +335,7 @@ export default function SiteHeader() {
         .psc-cols-3 { grid-template-columns: repeat(3, 1fr); }
         .psc-cols-5 { grid-template-columns: repeat(5, 1fr); }
         .psc-col-title {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Playfair Display', Georgia, serif;
           font-size: 17px;
           margin: 0 0 14px;
           padding-bottom: 12px;
@@ -368,7 +398,7 @@ export default function SiteHeader() {
         .psc-spotlight .psc-eyebrow { color: var(--eyebrow); }
         .psc-spotlight-date { font-size: 13px; color: #55647c; margin-bottom: 10px; }
         .psc-spotlight-title {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Playfair Display', Georgia, serif;
           font-size: 22px;
           line-height: 1.25;
           margin: 0 0 18px;
@@ -451,23 +481,34 @@ export default function SiteHeader() {
               </div>
             )}
 
-            {activeNav.type === "narrow" && activeNav.key === "team" && (
-              <div className="psc-menu-narrow">
-                <p className="psc-serif psc-menu-heading" style={{ fontSize: 22 }}>Our Team</p>
-                <p className="psc-menu-desc">
-                  Meet the professionals behind PSC Global. We bring together diverse expertise to solve complex challenges.
-                </p>
-                <div className="psc-link-list">
-                  {TEAM_LINKS.map((l) => (
-                    <a href={TEAM_HREFS[l] || "/team"} key={l} style={{ textTransform: "uppercase", fontSize: 13, fontWeight: 600, letterSpacing: "0.04em" }}>
-                      {l}
-                      <ArrowRight size={14} />
+            {activeNav.key === "team" && (
+              <div className="psc-menu-full">
+                <div className="psc-team-grid">
+                  <div>
+                    <p className="psc-serif psc-menu-heading" style={{ fontSize: 22 }}>Our Team</p>
+                    <p className="psc-menu-desc">
+                      Meet the professionals behind PSC Global. We bring together diverse expertise to solve complex challenges.
+                    </p>
+                    <div className="psc-link-list">
+                      {TEAM_LINKS.map((l) => (
+                        <a href={TEAM_HREFS[l] || "/team"} key={l} style={{ textTransform: "uppercase", fontSize: 13, fontWeight: 600, letterSpacing: "0.04em" }}>
+                          {l}
+                          <ArrowRight size={14} />
+                        </a>
+                      ))}
+                    </div>
+                    <a href="/team" className="psc-explore">
+                      Meet Our Experts <ArrowRight size={14} />
                     </a>
-                  ))}
+                  </div>
+                  <div className="psc-team-photo">
+                    <img
+                      src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1200&auto=format&fit=crop"
+                      alt="PSC Global Executive Board"
+                    />
+                    <span className="psc-team-caption">PSC Global Executive Board</span>
+                  </div>
                 </div>
-                <a href="/team" className="psc-explore">
-                  Meet Our Experts <ArrowRight size={14} />
-                </a>
               </div>
             )}
 
@@ -531,7 +572,7 @@ export default function SiteHeader() {
                     {INSIGHTS_COLUMNS.map((col, idx) => (
                       <div className="psc-col-list" key={idx} style={{ gap: 20 }}>
                         {col.map((i) => (
-                          <a href={INSIGHTS_HREFS[i] || "/insights"} key={i} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 16, color: "var(--ink)" }}>{i}</a>
+                          <a href={INSIGHTS_HREFS[i] || "/insights"} key={i} style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, color: "var(--ink)" }}>{i}</a>
                         ))}
                       </div>
                     ))}

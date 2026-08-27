@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import RevealProvider from './components/RevealProvider';
 
 export const metadata: Metadata = {
   title: 'PSC Global — Strategic Corporate Advisory & Global Compliance Excellence',
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><RevealProvider />{children}</body></html>;
 }
