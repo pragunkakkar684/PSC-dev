@@ -272,7 +272,7 @@ export default async function GCCPage() {
       <section className="border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <h2 className="font-serif text-4xl text-ink lg:text-5xl">The Implementation Journey</h2>
-          <div className="mt-16 grid grid-cols-5 items-start gap-4 border-t border-dashed border-slate-300 pt-8">
+          <div className="mt-16 grid grid-cols-2 items-start gap-8 border-t border-dashed border-slate-300 pt-8 sm:grid-cols-3 lg:grid-cols-5">
             {journeySteps.map((step, i) => (
               <div key={step} className="text-center">
                 <p className="font-serif text-5xl text-slate-200 lg:text-6xl">{String(i + 1).padStart(2, '0')}</p>

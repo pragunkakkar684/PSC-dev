@@ -424,6 +424,29 @@ export default function SiteHeader() {
           .psc-cta { display: none; }
           .psc-burger { display: block; }
           .psc-menu-wrap { position: static; }
+          .psc-header { padding: 0 24px; }
+          .psc-menu-full { padding: 28px 24px 32px; }
+          .psc-team-grid,
+          .psc-full-grid { grid-template-columns: 1fr; gap: 28px; }
+          .psc-team-photo { height: 260px; }
+          .psc-cols-5 { grid-template-columns: repeat(2, 1fr); }
+          .psc-gcc-banner { flex-wrap: wrap; }
+          .psc-gcc-link,
+          .psc-gcc-view { margin-left: 0; }
+        }
+        @media (max-width: 640px) {
+          .psc-header { height: 72px; padding: 0 18px; }
+          .psc-logo { font-size: 22px; }
+          .psc-mobile-menu { top: 72px !important; padding: 18px !important; }
+          .psc-menu-narrow { width: 100%; margin: 0; padding: 24px 18px; }
+          .psc-menu-full { padding: 24px 18px 28px; }
+          .psc-cols-3,
+          .psc-cols-5,
+          .psc-cols { grid-template-columns: 1fr; gap: 20px; }
+          .psc-gcc-banner { align-items: flex-start; padding: 18px; }
+          .psc-gcc-banner p { max-width: none; }
+          .psc-spotlight { padding-left: 0; padding-top: 24px; border-left: 0; border-top: 1px solid var(--line); }
+          .psc-menu-wrap { top: 72px; }
         }
       `}</style>
 
@@ -593,7 +616,7 @@ export default function SiteHeader() {
         )}
 
         {mobileOpen && (
-          <div style={{ position: "absolute", top: 88, left: 0, right: 0, background: "#fff", borderBottom: "1px solid var(--line)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div className="psc-mobile-menu" style={{ position: "absolute", top: 88, left: 0, right: 0, background: "#fff", borderBottom: "1px solid var(--line)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
             {NAV.map((item) => (
               <a
                 key={item.label}

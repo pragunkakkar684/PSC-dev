@@ -63,8 +63,8 @@ export default function ClientPortalLayout({ children }) {
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-[1440px]">
-        <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-slate-200 px-4 py-8">
+      <div className="client-portal-body mx-auto flex max-w-[1440px]">
+        <aside className="client-portal-sidebar sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-slate-200 px-4 py-8">
           <nav className="space-y-1">
             {navItems.map(([label, Icon, href]) => {
               const isActive = href === '/client-portal' ? pathname === href : pathname?.startsWith(href);
@@ -96,7 +96,7 @@ export default function ClientPortalLayout({ children }) {
           </div>
         </aside>
 
-        <main className="flex-1 px-10 py-12">{children}</main>
+        <main className="min-w-0 flex-1 px-10 py-12">{children}</main>
       </div>
     </div>
   );

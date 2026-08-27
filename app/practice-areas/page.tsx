@@ -189,7 +189,7 @@ export default async function PracticeAreasPage() {
             src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'}
             alt="Business meeting"
           />
-          <div className="absolute -bottom-10 -left-10 w-64 bg-navy p-5 text-sm leading-6 text-white">
+          <div className="absolute -bottom-10 left-0 w-64 bg-navy p-5 text-sm leading-6 text-white sm:-left-10">
             &quot;Architecture in business is not just about structure; it&apos;s about the resilience to withstand global shifts.&quot;
           </div>
         </div>
