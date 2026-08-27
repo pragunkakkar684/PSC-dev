@@ -1,4 +1,4 @@
-export default function PortalAssistanceCTA({ title = 'Need Assistance?', copy }) {
+export default function PortalAssistanceCTA({ title = 'Need Assistance?', copy }: { title?: string; copy?: string }) {
   return (
     <div className="mt-14 flex flex-wrap items-center justify-between gap-6 border border-slate-200 bg-white px-8 py-8">
       <div className="max-w-sm">

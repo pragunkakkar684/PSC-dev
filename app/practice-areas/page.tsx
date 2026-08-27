@@ -259,7 +259,7 @@ export default async function PracticeAreasPage() {
             >
                 <div className="aspect-[4/3] w-full overflow-hidden">
                   <img
-                    src={pa.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'}
+                    src={(pa as any).imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'}
                     alt={pa.name}
                     className="h-full w-full object-cover"
                   />
@@ -270,7 +270,7 @@ export default async function PracticeAreasPage() {
                     {pa.number || `0${idx + 1}`} {pa.name.toUpperCase()}
                   </p>
                   <h2 className="mt-4 max-w-lg font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
-                    {pa.heading || pa.name}
+                    {(pa as any).heading || pa.name}
                   </h2>
                   <p className="mt-6 max-w-md text-base leading-7 text-slate-600">
                     {pa.shortDescription}

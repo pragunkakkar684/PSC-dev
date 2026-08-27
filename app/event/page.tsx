@@ -178,7 +178,7 @@ export default async function EventsPage() {
               </p>
               {featured.date && (
                 <div className="hidden sm:block">
-                  <CountdownTimer targetDate={featured.date} targetTime={featured.timeStart} timezone={featured.timezone} />
+                  <CountdownTimer targetDate={featured.date} targetTime={featured.timeStart ?? undefined} timezone={featured.timezone ?? undefined} />
                 </div>
               )}
             </div>
@@ -218,7 +218,7 @@ export default async function EventsPage() {
                 {/* countdown shown here on small screens, hidden on desktop where it sits in the header row */}
                 {featured.date && (
                   <div className="mt-6 sm:hidden">
-                    <CountdownTimer targetDate={featured.date} targetTime={featured.timeStart} timezone={featured.timezone} />
+                    <CountdownTimer targetDate={featured.date} targetTime={featured.timeStart ?? undefined} timezone={featured.timezone ?? undefined} />
                   </div>
                 )}
 
@@ -234,8 +234,8 @@ export default async function EventsPage() {
                       <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </a>
                   )}
-                  {featured.agendaUrl && (
-                    <a href={featured.agendaUrl} className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink">
+                  {(featured as any).agendaUrl && (
+                    <a href={(featured as any).agendaUrl} className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink">
                       <Download size={14} /> DOWNLOAD AGENDA
                     </a>
                   )}

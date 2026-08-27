@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, Phone, Users, Video } from 'lucide-react';
 
-const formats = [
+const formats: Array<[string, React.ElementType]> = [
   ['Video Meeting', Video],
   ['Phone Call', Phone],
   ['In Person', Users],

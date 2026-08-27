@@ -18,7 +18,7 @@ import {
   Wallet,
 } from 'lucide-react';
 
-const navItems = [
+const navItems: Array<[string, React.ElementType, string]> = [
   ['DASHBOARD', LayoutDashboard, '/client-portal'],
   ['MY ENGAGEMENTS', Handshake, '/client-portal/engagements'],
   ['TASKS', CheckCircle2, '/client-portal/tasks'],
@@ -29,13 +29,13 @@ const navItems = [
   ['PAYMENTS', Wallet, '/client-portal/payments'],
 ];
 
-const supportItems = [
+const supportItems: Array<[string, React.ElementType, string]> = [
   ['BOOK MEETING', CalendarPlus, '/client-portal/book-meeting'],
   ['RAISE SUPPORT TICKET', LifeBuoy, '/client-portal/support'],
   ['KNOWLEDGE CENTRE', BookOpen, '/client-portal/knowledge-centre'],
 ];
 
-export default function ClientPortalLayout({ children }) {
+export default function ClientPortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (

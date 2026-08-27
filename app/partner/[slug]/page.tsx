@@ -187,7 +187,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (resolved) {
     return {
       title: `${resolved.name} — ${resolved.roleTitle || 'Partner'} | PSC Global`,
-      description: ('shortBio' in resolved ? resolved.shortBio : resolved.quote) || 'Executive advisory partner profile at PSC Global.',
+      description: ('shortBio' in resolved && resolved.shortBio) || ('quote' in resolved && (resolved as any).quote) || 'Executive advisory partner profile at PSC Global.',
     };
   }
   return {

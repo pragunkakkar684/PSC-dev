@@ -19,14 +19,21 @@ export async function getWorldFeatures() {
   return 'features' in collection ? collection.features : [collection];
 }
 
-type Office = { id: string; city: string; isHeadquarters?: boolean };
+export type Office = {
+  id: string | number;
+  city: string;
+  isHeadquarters?: boolean;
+  fullAddress?: string | null;
+  phone?: string | null;
+  email?: string | null;
+};
 
 export async function OfficeMap({
   offices,
   coordinates,
   label,
 }: {
-  offices: Office[];
+  offices: readonly Office[];
   coordinates: Record<string, [number, number]>;
   label: string;
 }) {
@@ -86,7 +93,7 @@ export async function OfficeMap({
 
         {/* Landmass — fades in once on load */}
         <g style={{ animation: 'officeMapLandFade 1s ease-out both' }}>
-          {worldFeatures.map((f, i) => (
+          {worldFeatures.map((f: any, i: number) => (
             <path
               key={i}
               d={pathGenerator(f as GeoPermissibleObjects) || ''}

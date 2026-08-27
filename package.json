@@ -38,6 +38,7 @@
     "@types/react-dom": "^19",
     "@types/react-simple-maps": "^3.0.6",
     "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
     "dotenv": "^16.4.7",
     "drizzle-kit": "^0.30.5",
     "eslint": "^9",
