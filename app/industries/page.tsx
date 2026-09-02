@@ -1,4 +1,5 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
@@ -22,18 +23,18 @@ const approach = [
 ] as const;
 
 const defaultIndustries = [
-  { id: '1', name: 'Manufacturing', shortDescription: 'Optimizing supply chains and navigating industrial regulation.' },
-  { id: '2', name: 'Infrastructure', shortDescription: 'Long-term advisory for large-scale capital projects.' },
-  { id: '3', name: 'Real Estate', shortDescription: 'Strategic portfolio management and asset protection.' },
-  { id: '4', name: 'Aviation', shortDescription: 'Navigating complex international aerospace compliance.' },
-  { id: '5', name: 'Energy', shortDescription: 'Advising on the transition to sustainable power models.' },
-  { id: '6', name: 'Banking & Finance', shortDescription: 'Securing assets in a volatile global regulatory climate.' },
-  { id: '7', name: 'Healthcare', shortDescription: 'Balancing clinical innovation with operational governance.' },
-  { id: '8', name: 'NGOs', shortDescription: 'Ensuring transparency and impact in global development.' },
-  { id: '9', name: 'Technology', shortDescription: 'Scaling digital solutions within legal frameworks.' },
-  { id: '10', name: 'E-Commerce', shortDescription: 'Structuring cross-border retail and logistics.' },
-  { id: '11', name: 'Media', shortDescription: 'Content rights and digital distribution strategies.' },
-  { id: '12', name: 'Startups', shortDescription: 'Agile advisory for rapid scaling and fundraising.' },
+  { id: '1', slug: 'manufacturing', name: 'Manufacturing', shortDescription: 'Optimizing supply chains and navigating industrial regulation.' },
+  { id: '2', slug: 'infrastructure', name: 'Infrastructure', shortDescription: 'Long-term advisory for large-scale capital projects.' },
+  { id: '3', slug: 'real-estate', name: 'Real Estate', shortDescription: 'Strategic portfolio management and asset protection.' },
+  { id: '4', slug: 'aviation', name: 'Aviation', shortDescription: 'Navigating complex international aerospace compliance.' },
+  { id: '5', slug: 'energy', name: 'Energy', shortDescription: 'Advising on the transition to sustainable power models.' },
+  { id: '6', slug: 'banking-finance', name: 'Banking & Finance', shortDescription: 'Securing assets in a volatile global regulatory climate.' },
+  { id: '7', slug: 'healthcare', name: 'Healthcare', shortDescription: 'Balancing clinical innovation with operational governance.' },
+  { id: '8', slug: 'ngos', name: 'NGOs', shortDescription: 'Ensuring transparency and impact in global development.' },
+  { id: '9', slug: 'technology', name: 'Technology', shortDescription: 'Scaling digital solutions within legal frameworks.' },
+  { id: '10', slug: 'e-commerce', name: 'E-Commerce', shortDescription: 'Structuring cross-border retail and logistics.' },
+  { id: '11', slug: 'media', name: 'Media', shortDescription: 'Content rights and digital distribution strategies.' },
+  { id: '12', slug: 'startups', name: 'Startups', shortDescription: 'Agile advisory for rapid scaling and fundraising.' },
 ];
 
 const defaultTeam = [
@@ -101,7 +102,7 @@ export default async function IndustriesPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_.9fr] lg:px-10">
+      <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_.9fr] lg:px-10">
         <div>
           <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'INDUSTRIES WE SERVE'}</p>
           <h1 className="mt-4 max-w-xl font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
@@ -124,10 +125,10 @@ export default async function IndustriesPage() {
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1000&q=85'}
           alt="City skyline"
         />
-      </section>
+      </AnimatedSection>
 
       {/* ADVISORY CONTEXT */}
-      <section className="bg-slate-50 px-6 py-20 lg:px-10">
+      <AnimatedSection className="bg-slate-50 px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
           <div>
             <h2 className="max-w-md font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
@@ -146,10 +147,10 @@ export default async function IndustriesPage() {
             alt="Modern interior workspace"
           />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* INDUSTRY PORTFOLIO */}
-      <section id="portfolio" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <AnimatedSection id="portfolio" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <h2 className="font-serif text-4xl text-ink lg:text-5xl">Industries We Support</h2>
         <div className="mt-2 h-0.5 w-10 bg-ink" />
 
@@ -160,16 +161,16 @@ export default async function IndustriesPage() {
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 {ind.shortDescription || 'Tailored advisory for sector excellence.'}
               </p>
-              <Link href={`/industries/${ind.id}`} className="mt-4 flex items-center gap-1 text-xs font-bold tracking-wide text-ink">
+              <Link href={`/industries/${ind.slug ?? ind.id}`} className="mt-4 flex items-center gap-1 text-xs font-bold tracking-wide text-ink">
                 EXPLORE INDUSTRY <ArrowUpRight size={12} />
               </Link>
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* SHARED CHALLENGES */}
-      <section className="bg-navy px-6 py-20 text-white lg:px-10">
+      <AnimatedSection className="bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-serif text-4xl italic lg:text-5xl">Challenges Shared Across Industries.</h2>
           <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -180,10 +181,10 @@ export default async function IndustriesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* APPROACH */}
-      <section className="bg-sky-50 px-6 py-20 lg:px-10">
+      <AnimatedSection className="bg-sky-50 px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-serif text-4xl text-ink lg:text-5xl">
             <em className="italic">Integrated Advisory.</em> Industry-Specific Solutions.
@@ -198,10 +199,10 @@ export default async function IndustriesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CROSS DISCIPLINARY SYNERGY */}
-      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
           <div>
             <h2 className="font-serif text-3xl text-ink lg:text-4xl">Cross Disciplinary Synergy</h2>
@@ -224,10 +225,10 @@ export default async function IndustriesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* EXPERTS */}
-      <section className="border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center font-serif text-4xl text-ink lg:text-5xl">Experts Who Understand Your Industry.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
@@ -245,10 +246,10 @@ export default async function IndustriesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* INSIGHTS */}
-      <section className="border-t border-slate-200 bg-slate-50 px-6 py-20 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 bg-slate-50 px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-end justify-between">
             <h2 className="font-serif text-4xl text-ink lg:text-5xl">Latest Industry Perspectives.</h2>
@@ -266,10 +267,10 @@ export default async function IndustriesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CLOSING STATEMENT */}
-      <section className="bg-navy px-6 py-20 text-white lg:px-10">
+      <AnimatedSection className="bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
           <h2 className="font-serif text-4xl leading-[1.05] lg:text-5xl">
             Business Advice Begins With Industry Understanding.
@@ -286,10 +287,10 @@ export default async function IndustriesPage() {
             </div>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="bg-sky-50 px-6 py-24 text-center lg:px-10">
+      <AnimatedSection className="bg-sky-50 px-6 py-24 text-center lg:px-10">
         <h2 className="font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
           Let&apos;s Discuss Your
           <br />
@@ -306,7 +307,7 @@ export default async function IndustriesPage() {
             BOOK A CONSULTATION
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

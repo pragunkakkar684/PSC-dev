@@ -260,6 +260,28 @@ export async function getPublicPracticeAreas() {
   return [];
 }
 
+export async function getPublicPracticeAreaBySlug(slug: string) {
+  try {
+    const [area] = await db
+      .select()
+      .from(practiceAreas)
+      .where(and(eq(practiceAreas.slug, slug), eq(practiceAreas.isPublished, true)))
+      .limit(1);
+
+    if (area) {
+      const srv = await db
+        .select()
+        .from(practiceAreaServices)
+        .where(eq(practiceAreaServices.practiceAreaId, area.id))
+        .orderBy(asc(practiceAreaServices.sortOrder));
+      return { ...area, services: srv };
+    }
+  } catch (err) {
+    console.error(`Error querying practiceArea by slug ${slug}:`, err);
+  }
+  return null;
+}
+
 // ─── 6. INDUSTRIES ───────────────────────────────────────────────────────────
 export async function getPublicIndustries() {
   try {
@@ -275,6 +297,21 @@ export async function getPublicIndustries() {
   }
 
   return [];
+}
+
+export async function getPublicIndustryBySlug(slug: string) {
+  try {
+    const [ind] = await db
+      .select()
+      .from(industries)
+      .where(and(eq(industries.slug, slug), eq(industries.isPublished, true)))
+      .limit(1);
+
+    if (ind) return ind;
+  } catch (err) {
+    console.error(`Error querying industry by slug ${slug}:`, err);
+  }
+  return null;
 }
 
 // ─── 7. EVENTS ───────────────────────────────────────────────────────────────
@@ -311,6 +348,35 @@ export async function getPublicEvents() {
   }
 
   return [];
+}
+
+export async function getPublicEventBySlug(slug: string) {
+  try {
+    const [ev] = await db
+      .select()
+      .from(events)
+      .where(and(eq(events.slug, slug), eq(events.isPublished, true)))
+      .limit(1);
+
+    if (ev) {
+      const agenda = await db
+        .select()
+        .from(eventAgendaItems)
+        .where(eq(eventAgendaItems.eventId, ev.id))
+        .orderBy(asc(eventAgendaItems.sortOrder));
+
+      const speakers = await db
+        .select()
+        .from(eventSpeakers)
+        .where(eq(eventSpeakers.eventId, ev.id))
+        .orderBy(asc(eventSpeakers.sortOrder));
+
+      return { ...ev, agenda, speakers };
+    }
+  } catch (err) {
+    console.error(`Error querying event by slug ${slug}:`, err);
+  }
+  return null;
 }
 
 // ─── 8. INSIGHTS ARTICLES ────────────────────────────────────────────────────
@@ -356,7 +422,12 @@ export async function getPublicInsightBySlug(slug: string) {
         const [a] = await db.select().from(teamMembers).where(eq(teamMembers.id, article.authorId)).limit(1);
         author = a || null;
       }
-      return { ...article, author };
+
+      const content =
+        (article as any).content ??
+        ((article as any).body ? [{ type: 'paragraph', text: (article as any).body }] : []);
+
+      return { ...article, author, content };
     }
   } catch (err) {
     console.error(`Error querying insight by slug ${slug}:`, err);

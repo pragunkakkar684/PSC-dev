@@ -1,4 +1,8 @@
+'use client';
+
 import { Shield, CheckCircle2 } from 'lucide-react';
+import AnimatedSection from './AnimatedSection';
+import { useStaggerAnimation } from './useStaggerAnimation';
 
 const advantages = [
   ['Multidisciplinary Talent', 'One-stop shop for tax, legal, and audit under a unified strategy.'],
@@ -7,8 +11,10 @@ const advantages = [
 ];
 
 export default function About() {
+  const listRef = useStaggerAnimation<HTMLOListElement>('li');
+
   return (
-    <section id="about" className="flex min-h-screen items-center bg-navy text-white">
+    <AnimatedSection id="about" className="flex min-h-screen items-center bg-navy text-white">
       <div className="mx-auto grid w-full max-w-7xl gap-16 px-6 py-20 lg:grid-cols-[1.1fr_.9fr] lg:px-10">
         <div>
           <p
@@ -24,7 +30,7 @@ export default function About() {
             At PSC Global, we don&rsquo;t just provide services; we build enduring partnerships. Our firm stands
             at the intersection of local expertise and global reach.
           </p>
-          <ol className="mt-10 space-y-7">
+          <ol ref={listRef} className="mt-10 space-y-7">
             {advantages.map(([title, copy], i) => (
               <li className="flex gap-4" key={title}>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e7f1ff] text-sm font-semibold text-navy">
@@ -67,6 +73,6 @@ export default function About() {
           </div>
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }

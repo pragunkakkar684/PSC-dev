@@ -1,5 +1,9 @@
+'use client';
+
 import type { InsightsArticle } from '@/lib/db/schema';
 import Link from 'next/link';
+import AnimatedSection from './AnimatedSection';
+import { useStaggerAnimation } from './useStaggerAnimation';
 
 interface InsightsProps {
   data?: InsightsArticle[] | null;
@@ -22,9 +26,10 @@ export default function Insights({ data }: InsightsProps) {
   const hasDbData = data && data.length > 0;
   const featured = hasDbData ? data.find((a) => a.isFeatured) || data[0] : null;
   const list = hasDbData ? data.filter((a) => a.id !== featured?.id).slice(0, 2) : [];
+  const sideRef = useStaggerAnimation<HTMLDivElement>('article');
 
   return (
-    <section id="insights" className="bg-[#fdf9f6]">
+    <AnimatedSection id="insights" className="bg-[#fdf9f6]">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="flex items-center justify-between border-b border-slate-200 pb-5">
           <h2 className="font-serif text-4xl sm:text-5xl">Featured Insights &amp; Reports</h2>
@@ -74,7 +79,7 @@ export default function Insights({ data }: InsightsProps) {
             </article>
           )}
 
-          <div className="space-y-8">
+          <div ref={sideRef} className="space-y-8">
             {hasDbData
               ? list.map((art) => (
                   <article className="insight-card flex gap-4 border-b border-slate-200 pb-6" key={art.id}>
@@ -115,6 +120,6 @@ export default function Insights({ data }: InsightsProps) {
           </div>
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }

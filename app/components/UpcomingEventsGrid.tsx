@@ -78,7 +78,10 @@ export default function UpcomingEventsGrid({ events }: { events: any[] }) {
                 <p className="mt-6 text-xs text-slate-500">
                   {ev.timeStart} · {ev.location} {ev.duration ? `· ${ev.duration}` : ''}
                 </p>
-                <Link href={`/events/${ev.id}`} className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-ink">
+                <Link
+                  href={`/events/${ev.slug ?? ev.id}`}
+                  className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-ink"
+                >
                   VIEW DETAILS
                   <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>

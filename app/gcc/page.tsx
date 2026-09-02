@@ -1,5 +1,6 @@
 import { Building2, Landmark, Scale, Users, ArrowRight } from 'lucide-react';
 import { Suspense } from 'react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import { OfficeMap } from '../components/OfficeMap';
@@ -125,7 +126,7 @@ export default async function GCCPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <div>
           <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'GLOBAL CAPABILITY CENTER'}</p>
           <h1 className="mt-4 max-w-lg font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
@@ -151,10 +152,10 @@ export default async function GCCPage() {
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=85'}
           alt="GCC office"
         />
-      </section>
+      </AnimatedSection>
 
       {/* WHY INDIA / STATS */}
-      <section className="mx-auto grid max-w-7xl gap-10 border-t border-slate-200 px-6 py-20 lg:grid-cols-[1fr_1.4fr] lg:px-10">
+      <AnimatedSection className="mx-auto grid max-w-7xl gap-10 border-t border-slate-200 px-6 py-20 lg:grid-cols-[1fr_1.4fr] lg:px-10">
         <div>
           <h2 className="font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
             Why India Has Become The Global Capability Hub.
@@ -171,10 +172,10 @@ export default async function GCCPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* COMPLEXITY CHALLENGE */}
-      <section className="bg-ink px-6 py-20 lg:px-10">
+      <AnimatedSection className="bg-ink px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <p className="text-center font-mono text-xs tracking-[.18em] text-slate-400 uppercase">
             Establishing Global Operations
@@ -193,10 +194,10 @@ export default async function GCCPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* STRUCTURAL INTEGRITY */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-10">
         <img
           className="h-[420px] w-full object-cover grayscale"
           src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?auto=format&fit=crop&w=1000&q=85"
@@ -217,10 +218,10 @@ export default async function GCCPage() {
             MEET OUR LEADERSHIP TEAM
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* INTEGRATED ADVISORY MODEL */}
-      <section className="bg-slate-50 px-6 py-24 lg:px-10">
+      <AnimatedSection className="bg-slate-50 px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-5xl">
           <h2 className="text-center font-serif text-4xl text-ink lg:text-5xl">The Integrated Advisory Model</h2>
           <p className="mt-4 text-center text-sm text-slate-600 lg:text-base">
@@ -238,10 +239,10 @@ export default async function GCCPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CAPABILITY ARCHITECTURE */}
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <h2 className="font-serif text-4xl text-ink lg:text-5xl">
           Comprehensive Capability
           <br />
@@ -266,10 +267,10 @@ export default async function GCCPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* IMPLEMENTATION JOURNEY */}
-      <section className="border-t border-slate-200 px-6 py-24 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <h2 className="font-serif text-4xl text-ink lg:text-5xl">The Implementation Journey</h2>
           <div className="mt-16 grid grid-cols-2 items-start gap-8 border-t border-dashed border-slate-300 pt-8 sm:grid-cols-3 lg:grid-cols-5">
@@ -281,10 +282,10 @@ export default async function GCCPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* GLOBAL REACH */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 border-t border-slate-200 px-6 py-24 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid max-w-7xl items-center gap-12 border-t border-slate-200 px-6 py-24 lg:grid-cols-2 lg:px-10">
         <div>
           <h2 className="font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
             Global Reach.
@@ -316,10 +317,10 @@ export default async function GCCPage() {
             label="OUR GLOBAL FOOTPRINT"
           />
         </Suspense>
-      </section>
+      </AnimatedSection>
 
       {/* STRATEGIC INSIGHTS */}
-      <section className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="flex items-end justify-between">
           <h2 className="font-serif text-4xl text-ink lg:text-5xl">Strategic Insights</h2>
           <Link href="/insights" className="hidden items-center gap-1 text-xs font-bold tracking-wide text-ink sm:flex">
@@ -336,10 +337,10 @@ export default async function GCCPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* SERVICES */}
-      <section id="services" className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection id="services" className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
         <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">GCC Advisory &amp; Support Services</h2>
         <div className="mt-12 space-y-12">
           {services.map(([title, copy, image, align]) => (
@@ -357,10 +358,10 @@ export default async function GCCPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="bg-sky-50 px-6 py-24 text-center lg:px-10">
+      <AnimatedSection className="bg-sky-50 px-6 py-24 text-center lg:px-10">
         <h2 className="font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
           Let&apos;s Build Your India
           <br />
@@ -377,11 +378,11 @@ export default async function GCCPage() {
             VIEW CASE STUDIES
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* FAQS */}
       {faqs.length > 0 && (
-        <section className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-16 lg:px-10">
+        <AnimatedSection className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-16 lg:px-10">
           <div className="mx-auto max-w-2xl">
             <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">GCC Frequently Asked Questions</h2>
             <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
@@ -396,7 +397,7 @@ export default async function GCCPage() {
               ))}
             </div>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       <Footer />

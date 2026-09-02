@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
@@ -55,7 +56,7 @@ export default async function OurTeamPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="relative flex h-[calc(100vh-88px)] items-end overflow-hidden">
+      <AnimatedSection className="relative flex h-[calc(100vh-88px)] items-end overflow-hidden">
         <img
           className="absolute inset-0 h-full w-full object-cover"
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=85'}
@@ -85,10 +86,10 @@ export default async function OurTeamPage() {
             </Link>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* PHILOSOPHY */}
-      <section className="border-t border-slate-200 px-6 py-24 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-serif text-4xl leading-tight text-ink lg:text-5xl">
             A Philosophy Rooted in Structural Integrity
@@ -106,10 +107,10 @@ export default async function OurTeamPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* LEADERSHIP */}
-      <section id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+      <AnimatedSection id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-5xl text-ink lg:text-6xl">Leadership</h2>
           <Link href="/team/structure" className="hidden items-center gap-2 text-xs font-bold tracking-wide hover:underline md:flex">
@@ -131,11 +132,11 @@ export default async function OurTeamPage() {
             </article>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* PARTNERS */}
       {partnersList.length > 0 && (
-        <section className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+        <AnimatedSection className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
           <h2 className="border-b border-slate-200 pb-8 font-serif text-5xl text-ink lg:text-6xl">Partners</h2>
           <div className="mt-12 grid gap-10 md:grid-cols-3">
             {partnersList.map((m) => (
@@ -158,12 +159,12 @@ export default async function OurTeamPage() {
               </article>
             ))}
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* MENTORS */}
       {mentors.length > 0 && (
-        <section className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-24 lg:px-10">
+        <AnimatedSection className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-24 lg:px-10">
           <div className="mx-auto max-w-7xl">
             <h2 className="font-serif text-5xl text-ink lg:text-6xl">Mentors</h2>
             <div className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-2">
@@ -183,11 +184,11 @@ export default async function OurTeamPage() {
               ))}
             </div>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* DISCIPLINES */}
-      <section className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
         <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">Expertise Across Disciplines</h2>
         <div className="mt-16 divide-y divide-slate-200">
           {disciplines.map(([title, copy, image, align]) => (
@@ -208,10 +209,10 @@ export default async function OurTeamPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CLOSING STATEMENT */}
-      <section className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
+      <AnimatedSection className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-3">
           {closingPoints.map(([title, copy]) => (
             <div key={title}>
@@ -220,10 +221,10 @@ export default async function OurTeamPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="flex flex-col items-center justify-center px-6 py-24 text-center">
+      <AnimatedSection className="flex flex-col items-center justify-center px-6 py-24 text-center">
         <h2 className="font-serif text-5xl leading-tight text-ink lg:text-6xl">
           Let&apos;s Start The Conversation.
         </h2>
@@ -235,7 +236,7 @@ export default async function OurTeamPage() {
             MEET OUR EXPERTS
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

@@ -8,6 +8,7 @@ import {
   Users,
   Sparkles,
 } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import PublicContactForm from '../components/PublicContactForm';
@@ -88,7 +89,7 @@ export default async function ContactPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <div>
           <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'CONTACT US'}</p>
           <h1 className="mt-4 max-w-lg font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
@@ -111,10 +112,10 @@ export default async function ContactPage() {
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1100&q=85'}
           alt="Meeting in progress"
         />
-      </section>
+      </AnimatedSection>
 
       {/* ROUTES */}
-      <section className="border-t border-slate-200 px-6 py-16 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-16 lg:px-10">
         <div className="mx-auto w-full max-w-7xl border border-slate-200 bg-[#fdf9f8]">
           {routes.map(([Icon, title, copy]) => (
             <a
@@ -147,10 +148,10 @@ export default async function ContactPage() {
             </a>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* GLOBAL OFFICES */}
-      <section className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
+      <AnimatedSection className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
           <div>
             <p className="max-w-xs text-base leading-7 text-slate-300">
@@ -181,10 +182,10 @@ export default async function ContactPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CONTACT FORM */}
-      <section id="contact-form" className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-20 lg:px-10">
+      <AnimatedSection id="contact-form" className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <h2 className="font-serif text-5xl leading-tight text-ink lg:text-6xl">
@@ -210,10 +211,10 @@ export default async function ContactPage() {
 
           <PublicContactForm />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* STEPS */}
-      <section className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
+      <AnimatedSection className="border-t border-slate-700/60 bg-navy px-6 py-20 text-white lg:px-10">
         <div className="mx-auto max-w-7xl">
           <h2 className="font-serif text-5xl lg:text-6xl">What Happens After You Contact PSC?</h2>
           <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -229,10 +230,10 @@ export default async function ContactPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* TEAM LEADERSHIP */}
-      <section id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-20 lg:px-10">
         <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">Speak Directly With Our Leadership</h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {team.slice(0, 3).map((m) => (
@@ -254,11 +255,11 @@ export default async function ContactPage() {
             </article>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* FAQS */}
       {faqs.length > 0 && (
-        <section className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-20 lg:px-10">
+        <AnimatedSection className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-20 lg:px-10">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">Frequently Asked Questions</h2>
             <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
@@ -273,11 +274,11 @@ export default async function ContactPage() {
               ))}
             </div>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* CTA */}
-      <section className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
+      <AnimatedSection className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
         <h2 className="mx-auto max-w-2xl font-serif text-5xl leading-tight text-ink lg:text-6xl">
           Let&apos;s Build Something Meaningful Together.
         </h2>
@@ -289,7 +290,7 @@ export default async function ContactPage() {
             CALL OUR TEAM
           </a>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

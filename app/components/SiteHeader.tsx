@@ -59,10 +59,13 @@ const NAV = [
   { label: "Practice Areas", key: "practice", type: "full", href: "/practice-areas" },
   { label: "Industries", key: "industries", type: "full", href: "/industries" },
   { label: "Insights", key: "insights", type: "full", href: "/insights" },
-  { label: "Events", key: null, href: "/event" },
+  { label: "Events", key: null, href: "/events" },
   { label: "Contact", key: null, href: "/contact" },
   { label: "Client Portal", key: null, href: "/client-portal" },
 ];
+
+// Where the "Book Consultation" button in the header sends people.
+const BOOK_CONSULTATION_HREF = "/book-consultation";
 
 const ABOUT_HREFS: Record<string, string> = {
   "Company Overview": "/about",
@@ -97,12 +100,12 @@ const INDUSTRY_HREFS: Record<string, string> = {
 };
 
 const INSIGHTS_HREFS: Record<string, string> = {
-  "Upcoming Events": "/event",
+  "Upcoming Events": "/events",
   Webinars: "/insights#webinars",
-  Seminars: "/event#seminars",
-  Conferences: "/event#conferences",
-  "Event Recordings": "/event#recordings",
-  "Event Gallery": "/event#gallery",
+  Seminars: "/events#seminars",
+  Conferences: "/events#conferences",
+  "Event Recordings": "/events#recordings",
+  "Event Gallery": "/events#gallery",
 };
 
 const sectionHref = (page: string, label: string) =>
@@ -476,7 +479,7 @@ export default function SiteHeader() {
           ))}
         </nav>
 
-        <a href="/contact" className="psc-cta">
+        <a href={BOOK_CONSULTATION_HREF} className="psc-cta">
           Book
           <br />
           Consultation
@@ -627,7 +630,7 @@ export default function SiteHeader() {
                 {item.label}
               </a>
             ))}
-            <a href="/contact" className="psc-cta" style={{ display: "inline-block" }}>Book Consultation</a>
+            <a href={BOOK_CONSULTATION_HREF} className="psc-cta" style={{ display: "inline-block" }}>Book Consultation</a>
           </div>
         )}
       </header>

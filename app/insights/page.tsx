@@ -1,13 +1,11 @@
 import { ArrowRight, ArrowUpRight, Download } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 import { getPublicHeroSection, getPublicInsights } from '@/lib/queries/public';
 import InsightsGrid from './InsightsGrid';
 
-// Placeholder insights shown only when the database has no entries yet.
-// Slugs here intentionally match the fallback article detail pages in
-// insights/[slug]/page.tsx so "Read Article" links never 404.
 const defaultInsights = [
   {
     id: 'default-1',
@@ -38,6 +36,20 @@ const defaultInsights = [
   },
   {
     id: 'default-3',
+    slug: 'navigating-regulatory-complexity-2025',
+    title: 'Navigating Regulatory Complexity: What Businesses Need to Know in 2025.',
+    summary:
+      'As global markets continue to interconnect, the regulatory frameworks governing them are evolving at an unprecedented pace. Organizations must proactively adapt their compliance strategies to maintain operational resilience and strategic advantage.',
+    tag: 'REGULATORY UPDATE',
+    contentType: 'Article',
+    imageUrl: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85',
+    readTimeMins: 8,
+    publishedAt: '2024-10-12',
+    isFeatured: false,
+    fileUrl: null,
+  },
+  {
+    id: 'default-4',
     slug: 'real-estate-infrastructure-2025-outlook',
     title: 'Real Estate Infrastructure: 2025 Outlook.',
     summary: 'Evaluating capital allocation strategies in an era of fluctuating interest rates and stringent sustainability mandates.',
@@ -50,7 +62,7 @@ const defaultInsights = [
     fileUrl: null,
   },
   {
-    id: 'default-4',
+    id: 'default-5',
     slug: 'architecting-corporate-governance-frameworks',
     title: 'Architecting Corporate Governance Frameworks.',
     summary: 'Building resilient internal controls that withstand intense regulatory scrutiny and shareholder activism.',
@@ -106,7 +118,7 @@ export default async function InsightsPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_.9fr] lg:px-10">
+      <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_.9fr] lg:px-10">
         <div>
           <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'KNOWLEDGE & THOUGHT LEADERSHIP'}</p>
           <h1 className="mt-4 max-w-xl font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
@@ -133,11 +145,11 @@ export default async function InsightsPage() {
           <div className="absolute -top-5 -right-5 h-16 w-16 border-t border-r border-slate-300" />
           <div className="absolute -bottom-5 -left-5 h-16 w-16 border-b border-l border-slate-300" />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* FEATURED INSIGHT */}
       {featured && (
-        <section className="bg-navy px-6 py-20 text-white lg:px-10">
+        <AnimatedSection className="bg-navy px-6 py-20 text-white lg:px-10">
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
             {featured.imageUrl && (
               <img src={featured.imageUrl} alt={featured.title} className="h-96 w-full object-cover" />
@@ -160,16 +172,16 @@ export default async function InsightsPage() {
               </Link>
             </div>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* FILTERS + GRID */}
-      <section id="articles" className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <AnimatedSection id="articles" className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <InsightsGrid articles={otherArticles} />
-      </section>
+      </AnimatedSection>
 
       {/* REGULATORY UPDATES */}
-      <section className="bg-navy px-6 py-24 text-white lg:px-10">
+      <AnimatedSection className="bg-navy px-6 py-24 text-white lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-end justify-between">
             <h2 className="font-serif text-5xl lg:text-6xl">Regulatory Updates.</h2>
@@ -190,10 +202,10 @@ export default async function InsightsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* KEY JUDGEMENTS */}
-      <section className="mx-auto max-w-5xl px-6 py-24 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-5xl px-6 py-24 lg:px-10">
         <h2 className="font-serif text-5xl text-ink lg:text-6xl">Key Judgements.</h2>
         <div className="mt-12 divide-y divide-slate-200 border-t border-slate-200">
           {judgements.map((j) => (
@@ -209,10 +221,10 @@ export default async function InsightsPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* RESEARCH & KNOWLEDGE CENTRE */}
-      <section className="border-t border-slate-200 bg-slate-50 px-6 py-24 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 bg-slate-50 px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <h2 className="font-serif text-5xl text-ink lg:text-6xl">Research &amp; Knowledge Centre.</h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -228,10 +240,10 @@ export default async function InsightsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* NEED PRACTICAL SUPPORT */}
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <h2 className="max-w-md font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">Need Practical Support?</h2>
         <p className="mt-4 max-w-md text-base leading-7 text-slate-600">
           Our insights are the foundation of our practice. We translate these perspectives into actionable strategies for your business.
@@ -251,7 +263,7 @@ export default async function InsightsPage() {
             </Link>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

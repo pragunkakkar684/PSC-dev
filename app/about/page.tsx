@@ -1,4 +1,5 @@
 import { ArrowRight, Check, Globe2, Sparkle, ShieldCheck, Infinity as InfinityIcon } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import LegacyScroll from '../components/LegacyScroll';
@@ -104,7 +105,7 @@ export default async function AboutPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto flex max-w-7xl flex-col justify-center px-6 pb-16 pt-10 lg:px-10">
+      <AnimatedSection className="mx-auto flex max-w-7xl flex-col justify-center px-6 pb-16 pt-10 lg:px-10">
         <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'ABOUT PSC GLOBAL'}</p>
         <h1 className="mt-4 max-w-5xl font-serif text-6xl leading-[1.02] tracking-[-.045em] sm:text-7xl">
           {hero.heading || 'Building Trust Through Expertise, Integrity and Long Term Partnerships.'}
@@ -117,10 +118,10 @@ export default async function AboutPage() {
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=85'}
           alt="PSC Global office"
         />
-      </section>
+      </AnimatedSection>
 
       {/* WHO WE ARE */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 border-t border-slate-200 px-6 py-20 md:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid max-w-7xl items-center gap-12 border-t border-slate-200 px-6 py-20 md:grid-cols-2 lg:px-10">
         <div>
           <p className="font-serif text-4xl lg:text-5xl">Who We Are</p>
           <p className="mt-6 font-serif text-xl italic leading-8 text-slate-700 lg:text-2xl">
@@ -142,12 +143,12 @@ export default async function AboutPage() {
             alt="Board room"
           />
         </div>
-      </section>
+      </AnimatedSection>
 
       <LegacyScroll />
 
       {/* VISION & VALUES */}
-      <section className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
         <p className="font-mono text-xs tracking-[.18em] text-slate-500">OUR CORE</p>
         <div className="mt-4 flex items-center justify-between">
           <h2 className="font-serif text-5xl lg:text-6xl">Vision &amp; Values</h2>
@@ -164,10 +165,10 @@ export default async function AboutPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* WHY CHOOSE */}
-      <section className="flex items-center border-t border-slate-200 bg-slate-50 px-6 py-20">
+      <AnimatedSection className="flex items-center border-t border-slate-200 bg-slate-50 px-6 py-20">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center font-serif text-5xl lg:text-6xl">Why Businesses Choose PSC</h2>
           <p className="mt-4 text-center text-sm text-slate-500 lg:text-base">
@@ -188,10 +189,10 @@ export default async function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* AWARDS & RECOGNITIONS */}
-      <section className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
         <h2 className="text-center font-serif text-5xl lg:text-6xl">Awards &amp; Recognitions</h2>
         <div className="mt-10 grid gap-3 sm:grid-cols-4">
           {awards.map(([big, label]) => (
@@ -211,10 +212,10 @@ export default async function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* TEAM */}
-      <section className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="mx-auto flex max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
         <div className="flex items-end justify-between">
           <h2 className="max-w-lg font-serif text-5xl lg:text-6xl">
             Guided by some of the industry&apos;s most respected minds.
@@ -239,10 +240,10 @@ export default async function AboutPage() {
             </article>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* GLOBAL PRESENCE */}
-      <section className="flex items-center border-t border-slate-700/60 bg-navy text-white" id="offices">
+      <AnimatedSection className="flex items-center border-t border-slate-700/60 bg-navy text-white" id="offices">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 lg:px-10">
           <div>
             <p className="font-mono text-xs tracking-[.18em] text-sky-200">GLOBAL PRESENCE</p>
@@ -268,10 +269,10 @@ export default async function AboutPage() {
             label="PSC GLOBAL | GLOBAL REACH & CONNECTIVITY"
           />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
+      <AnimatedSection className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
         <h2 className="font-serif text-5xl leading-[1.05] lg:text-6xl">Let&apos;s Build Your Next Chapter Together.</h2>
         <p className="mx-auto mt-4 max-w-lg text-sm text-slate-600 lg:text-base">
           Discover how PSC Global&apos;s integrated advisory can transform your strategic position.
@@ -284,7 +285,7 @@ export default async function AboutPage() {
             CONTACT US
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

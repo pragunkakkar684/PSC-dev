@@ -1,5 +1,8 @@
+'use client';
+
 import { ArrowUpRight, Compass } from 'lucide-react';
 import type { PracticeArea } from '@/lib/db/schema';
+import { useStaggerAnimation } from './useStaggerAnimation';
 
 interface PracticeAreasProps {
   data?: Array<PracticeArea & { services?: Array<{ name: string }> }> | null;
@@ -33,6 +36,7 @@ const defaultAreas = [
 
 export default function PracticeAreas({ data }: PracticeAreasProps) {
   const hasDbData = data && data.length > 0;
+  const gridRef = useStaggerAnimation<HTMLDivElement>('article');
 
   return (
     <section
@@ -53,11 +57,11 @@ export default function PracticeAreas({ data }: PracticeAreasProps) {
         </h2>
         <div className="mx-auto mt-5 h-0.5 w-10 bg-navy" />
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div ref={gridRef} className="mt-12 grid gap-4 md:grid-cols-3">
           {hasDbData
             ? data.map((pa, idx) => (
                 <article
-                  className={`relative min-h-44 border border-slate-200 p-8 transition hover:-translate-y-1 hover:shadow-xl ${
+                  className={`relative min-h-44 border border-slate-200 p-8 transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:shadow-xl ${
                     idx === 0 ? 'bg-navy text-white md:col-span-2' : idx === 1 ? 'bg-[#e7f1ff]' : ''
                   }`}
                   key={pa.id}
@@ -85,7 +89,7 @@ export default function PracticeAreas({ data }: PracticeAreasProps) {
               ))
             : defaultAreas.map(([no, tag, title, copy, style], i) => (
                 <article
-                  className={`relative min-h-44 border border-slate-200 p-8 transition hover:-translate-y-1 hover:shadow-xl ${style}`}
+                  className={`relative min-h-44 border border-slate-200 p-8 transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:shadow-xl ${style}`}
                   key={title}
                 >
                   <div className="flex items-start justify-between">

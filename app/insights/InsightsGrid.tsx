@@ -9,7 +9,6 @@ const filters = ['ALL INSIGHTS', 'ARTICLES', 'PUBLICATIONS', 'JUDGEMENTS', 'WEBI
 function matchesFilter(art: any, filter: string) {
   if (filter === 'ALL INSIGHTS') return true;
   const type = (art.contentType || '').toUpperCase();
-  // Matches e.g. "ARTICLE" -> "ARTICLES", or an already-plural contentType.
   return `${type}S` === filter || type === filter;
 }
 

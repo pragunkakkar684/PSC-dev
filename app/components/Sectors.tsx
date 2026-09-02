@@ -1,4 +1,8 @@
+'use client';
+
 import type { Industry } from '@/lib/db/schema';
+import AnimatedSection from './AnimatedSection';
+import { useStaggerAnimation } from './useStaggerAnimation';
 
 interface SectorsProps {
   data?: Industry[] | null;
@@ -25,9 +29,10 @@ const defaultSectors = [
 
 export default function Sectors({ data }: SectorsProps) {
   const hasDbData = data && data.length > 0;
+  const cardRef = useStaggerAnimation<HTMLDivElement>('article');
 
   return (
-    <section id="sectors" className="flex min-h-screen items-center bg-navy text-white">
+    <AnimatedSection id="sectors" className="flex min-h-screen items-center bg-navy text-white">
       <div className="mx-auto w-full max-w-7xl px-6 py-14 lg:px-10">
         <p
           className="text-[10px] tracking-[.18em] text-sky-200"
@@ -42,7 +47,7 @@ export default function Sectors({ data }: SectorsProps) {
             infrastructure to digital finance, we build bridges between potential and performance.
           </p>
         </div>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={cardRef} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {hasDbData
             ? data.map((ind) => {
                 const img =
@@ -50,7 +55,7 @@ export default function Sectors({ data }: SectorsProps) {
                   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=70';
                 return (
                   <article
-                    className="flex h-[62vh] min-h-[380px] items-end bg-cover bg-center p-5 grayscale transition hover:-translate-y-1 hover:grayscale-0"
+                    className="flex h-[62vh] min-h-[380px] items-end bg-cover bg-center p-5 grayscale transition duration-200 ease-out hover:-translate-y-0.5 hover:grayscale-0"
                     style={{
                       backgroundImage: `linear-gradient(0deg,rgba(0,18,38,.95),rgba(0,18,38,.08)),url(${img})`,
                     }}
@@ -62,7 +67,7 @@ export default function Sectors({ data }: SectorsProps) {
               })
             : defaultSectors.map(([title, image]) => (
                 <article
-                  className="flex h-[62vh] min-h-[380px] items-end bg-cover bg-center p-5 grayscale transition hover:-translate-y-1 hover:grayscale-0"
+                  className="flex h-[62vh] min-h-[380px] items-end bg-cover bg-center p-5 grayscale transition duration-200 ease-out hover:-translate-y-0.5 hover:grayscale-0"
                   style={{
                     backgroundImage: `linear-gradient(0deg,rgba(0,18,38,.95),rgba(0,18,38,.08)),url(${image})`,
                   }}
@@ -73,6 +78,6 @@ export default function Sectors({ data }: SectorsProps) {
               ))}
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }

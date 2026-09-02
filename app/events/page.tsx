@@ -8,6 +8,7 @@ import {
   PlayCircle,
   Video,
 } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import CountdownTimer from '../components/CountdownTimer';
@@ -18,6 +19,7 @@ import { getPublicHeroSection, getPublicEvents } from '@/lib/queries/public';
 const defaultEvents = [
   {
     id: 'ev1',
+    slug: 'navigating-indias-changing-regulatory-landscape',
     title: 'The 2025 Global Capital Flows & Regulatory Outlook',
     description: 'An executive briefing on anticipated shifts in cross-border investment strategies, emerging regulatory frameworks in key jurisdictions, and strategies for capital preservation in a volatile macroeconomic environment.',
     eventType: 'WEBINAR',
@@ -40,6 +42,7 @@ const defaultEvents = [
   },
   {
     id: 'ev2',
+    slug: 'emerging-markets-southeast-asian-corridor',
     title: 'Emerging Markets: The Southeast Asian Corridor',
     description: 'Strategic entry points and risk mitigation for expansion into rapid-growth ASEAN economies.',
     eventType: 'SEMINAR',
@@ -56,6 +59,7 @@ const defaultEvents = [
   },
   {
     id: 'ev3',
+    slug: 'data-privacy-global-compliance-architecture',
     title: 'Data Privacy & Global Compliance Architecture',
     description: 'Structuring multinational operations to adhere to fragmented data sovereignty laws.',
     eventType: 'WEBINAR',
@@ -72,6 +76,7 @@ const defaultEvents = [
   },
   {
     id: 'ev4',
+    slug: 'cross-border-tax-strategies-2025',
     title: 'Cross-Border Tax Strategies for 2025',
     description: 'Navigating BEPS 2.0 implementation and optimization strategies for corporate treasuries.',
     eventType: 'ROUNDTABLE',
@@ -144,7 +149,7 @@ export default async function EventsPage() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <div>
           <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'EXECUTIVE ROUNDTABLES & WEBINARS'}</p>
           <h1 className="mt-4 max-w-lg font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
@@ -166,11 +171,11 @@ export default async function EventsPage() {
           <div className="absolute -top-5 -right-5 h-16 w-16 border-t border-r border-slate-300" />
           <div className="absolute -bottom-5 -left-5 h-16 w-16 border-b border-l border-slate-300" />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* FEATURED EVENT */}
       {featured && (
-        <section className="border-t border-slate-200 px-6 py-20 lg:px-10">
+        <AnimatedSection className="border-t border-slate-200 px-6 py-20 lg:px-10">
           <div className="mx-auto max-w-7xl">
             <div className="flex items-center justify-between gap-6">
               <p className="flex items-center gap-3 font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
@@ -207,9 +212,11 @@ export default async function EventsPage() {
                   </span>
                 </div>
 
-                <h2 className="mt-6 max-w-xl font-serif text-4xl leading-[1.08] text-ink lg:text-5xl">
-                  {featured.title}
-                </h2>
+                <Link href={`/events/${featured.slug ?? featured.id}`} className="group mt-6 block max-w-xl">
+                  <h2 className="font-serif text-4xl leading-[1.08] text-ink transition-colors group-hover:text-sky-700 lg:text-5xl">
+                    {featured.title}
+                  </h2>
+                </Link>
 
                 <p className="mt-5 max-w-lg text-sm leading-7 text-slate-600 lg:text-base">
                   {featured.description}
@@ -223,12 +230,19 @@ export default async function EventsPage() {
                 )}
 
                 <div className="mt-8 flex flex-wrap items-center gap-6">
+                  <Link
+                    href={`/events/${featured.slug ?? featured.id}`}
+                    className="group flex items-center gap-1.5 border-b border-ink pb-0.5 text-xs font-bold tracking-wide text-ink transition-colors hover:border-sky-600 hover:text-sky-700"
+                  >
+                    VIEW EVENT DETAILS
+                    <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </Link>
                   {featured.registrationUrl && (
                     <a
                       href={featured.registrationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-1.5 border-b border-ink pb-0.5 text-xs font-bold tracking-wide text-ink transition-colors hover:border-sky-600 hover:text-sky-700"
+                      className="group flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink"
                     >
                       REGISTER VIA {featured.location?.toUpperCase() || 'EVENT LINK'}
                       <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -265,11 +279,11 @@ export default async function EventsPage() {
               )}
             </div>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* SPEAKERS */}
-      <section className="bg-slate-50 px-6 py-20 lg:px-10">
+      <AnimatedSection className="bg-slate-50 px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <p className="flex items-center gap-3 font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
             <span className="h-px w-6 bg-slate-400" /> Meet the Speakers
@@ -299,20 +313,20 @@ export default async function EventsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* MORE UPCOMING EVENTS */}
-      <section id="upcoming" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <AnimatedSection id="upcoming" className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <p className="flex items-center gap-3 font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
           <span className="h-px w-6 bg-slate-400" /> More Upcoming Events
         </p>
         <div className="mt-10">
           <UpcomingEventsGrid events={upcomingList} />
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* EVENT ARCHIVE */}
-      <section className="border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between">
             <p className="flex items-center gap-3 font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
@@ -354,10 +368,10 @@ export default async function EventsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CONTINUE READING / RELATED PRACTICE AREAS */}
-      <section className="border-t border-slate-200 bg-slate-50 px-6 py-20 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 bg-slate-50 px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
           <div>
             <h3 className="font-serif text-2xl text-ink">Continue Reading</h3>
@@ -388,10 +402,10 @@ export default async function EventsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
+      <AnimatedSection className="flex flex-col items-center justify-center border-t border-slate-200 px-6 py-24 text-center">
         <h2 className="mx-auto max-w-2xl font-serif text-5xl leading-tight text-ink lg:text-6xl">Join The Conversation</h2>
         <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-slate-600 lg:text-base">
           Stay ahead of market shifts. Register for our upcoming events or schedule a private briefing with our strategic advisory team.
@@ -404,7 +418,7 @@ export default async function EventsPage() {
             BOOK A CONSULTATION
           </Link>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

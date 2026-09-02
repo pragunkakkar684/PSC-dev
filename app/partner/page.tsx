@@ -1,4 +1,5 @@
 import { Briefcase, FileText, Globe, Landmark, ShieldCheck, Tags } from 'lucide-react';
+import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 
@@ -27,7 +28,7 @@ export default function PartnerProfilePage() {
     <main id="top">
       <SiteHeader />
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
+      <AnimatedSection className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <img
           className="h-[560px] w-full object-cover"
           src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=85"
@@ -61,9 +62,9 @@ export default function PartnerProfilePage() {
             </a>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
-      <section className="border-t border-slate-200 px-6 py-20 lg:px-10">
+      <AnimatedSection className="border-t border-slate-200 px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[280px_1fr]">
           <h2 className="font-serif text-4xl leading-tight text-ink">
             Professional Journey &amp; Approach
@@ -80,9 +81,9 @@ export default function PartnerProfilePage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
+      <AnimatedSection className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <h2 className="font-serif text-4xl text-ink">Areas of Expertise</h2>
         <div className="mt-6 border-t border-slate-200" />
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -94,9 +95,9 @@ export default function PartnerProfilePage() {
             </article>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
-      <section id="contact" className="bg-navy px-6 py-24 text-center text-white">
+      <AnimatedSection id="contact" className="bg-navy px-6 py-24 text-center text-white">
         <h2 className="mx-auto max-w-3xl font-serif text-5xl leading-tight">
           Let&apos;s Discuss Your Business Challenges.
         </h2>
@@ -108,7 +109,7 @@ export default function PartnerProfilePage() {
             CONTACT PSC
           </a>
         </div>
-      </section>
+      </AnimatedSection>
 
       <Footer />
     </main>

@@ -1,9 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
-import logo from '../logo.png';
 import PublicNewsletterForm from './PublicNewsletterForm';
 
 const footerLinks = [
@@ -36,17 +34,28 @@ const legalLinks = [
 export default function Footer() {
   return (
     <footer className="bg-[#07110f] px-6 py-14 text-white lg:px-10">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+        .psc-footer-logo {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 26px;
+          line-height: 0.86;
+          letter-spacing: -0.01em;
+          color: #ffffff;
+          text-decoration: none;
+        }
+        .psc-footer-logo span { display: block; }
+      `}</style>
+
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
 
         {/* Logo & Description */}
         <div>
-          <Image
-            src={logo}
-            alt="PSC Global"
-            width={130}
-            height={130}
-            className="h-auto w-24"
-          />
+          <Link href="/" className="psc-footer-logo">
+            <span>PSC</span>
+            <span>Global</span>
+          </Link>
 
           <p className="mt-4 text-sm leading-6 text-slate-400">
             Architectural excellence in strategic advisory, cross-border
