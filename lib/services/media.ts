@@ -14,7 +14,8 @@ import { eq } from 'drizzle-orm';
 
 export interface UploadResult {
   success: true;
-  cloudinaryId: string;
+  publicId: string;
+  cloudinaryId?: string;
   url: string;
   resourceType: 'image' | 'document';
   sizeBytes: number;
@@ -66,7 +67,7 @@ export async function uploadMedia(
 
     // 3. Record in database
     await db.insert(mediaFiles).values({
-      cloudinaryId: result.public_id,
+      publicId: result.public_id,
       url: result.secure_url,
       resourceType: validation.resourceType!,
       originalName,
@@ -78,7 +79,7 @@ export async function uploadMedia(
 
     return {
       success: true,
-      cloudinaryId: result.public_id,
+      publicId: result.public_id,
       url: result.secure_url,
       resourceType: validation.resourceType!,
       sizeBytes: buffer.length,
@@ -99,14 +100,14 @@ export async function uploadMedia(
  * Deletes a file from Cloudinary and removes the record from the database.
  */
 export async function deleteMedia(
-  cloudinaryId: string,
+  publicId: string,
   resourceType: 'image' | 'document' = 'image',
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await cloudinary.uploader.destroy(cloudinaryId, {
+    await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType === 'document' ? 'raw' : 'image',
     });
-    await db.delete(mediaFiles).where(eq(mediaFiles.cloudinaryId, cloudinaryId));
+    await db.delete(mediaFiles).where(eq(mediaFiles.publicId, publicId));
     return { success: true };
   } catch (error) {
     console.error('[MediaService] Delete failed:', error);

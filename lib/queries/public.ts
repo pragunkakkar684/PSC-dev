@@ -19,6 +19,7 @@ import {
   pageSections,
   pageSeo,
   careersPositions,
+  stats,
 } from '@/lib/db/schema';
 import type { Metadata } from 'next';
 import { eq, and, asc, desc } from 'drizzle-orm';
@@ -446,7 +447,7 @@ export async function getPublicFaqs(pageContext?: string) {
   try {
     const conditions = [eq(faqs.isPublished, true)];
     if (pageContext) {
-      conditions.push(eq(faqs.pageContext, pageContext));
+      conditions.push(eq(faqs.category, pageContext));
     }
 
     const result = await db
@@ -495,6 +496,27 @@ export async function getPublicOfficeLocations() {
   }
 
   return [];
+}
+
+export async function getPublicStats() {
+  try {
+    const statList = await db
+      .select()
+      .from(stats)
+      .where(eq(stats.isPublished, true))
+      .orderBy(asc(stats.sortOrder));
+
+    if (statList.length > 0) return statList;
+  } catch (err) {
+    console.error('Error querying stats:', err);
+  }
+
+  return [
+    { id: 1, label: 'YEARS OF EXPERIENCE', value: 22, suffix: '+', iconName: 'Clock', sortOrder: 0, isPublished: true, updatedAt: new Date() },
+    { id: 2, label: 'CLIENTS WORLDWIDE', value: 1000, suffix: '+', iconName: 'Users', sortOrder: 1, isPublished: true, updatedAt: new Date() },
+    { id: 3, label: 'COUNTRIES PRESENT', value: 15, suffix: '+', iconName: 'Globe2', sortOrder: 2, isPublished: true, updatedAt: new Date() },
+    { id: 4, label: 'EXPERTS & CONSULTANTS', value: 250, suffix: '+', iconName: 'CheckCircle2', sortOrder: 3, isPublished: true, updatedAt: new Date() },
+  ];
 }
 
 // ─── 12. SITE-WIDE CMS QUERIES ───────────────────────────────────────────────
@@ -582,8 +604,8 @@ export async function buildPageMetadata(
       images: seo?.ogImage ? [seo.ogImage] : undefined,
     },
     robots: {
-      index: !seo?.noIndex,
-      follow: !seo?.noFollow,
+      index: !seo?.robots?.includes('noindex'),
+      follow: !seo?.robots?.includes('nofollow'),
     },
   };
 }

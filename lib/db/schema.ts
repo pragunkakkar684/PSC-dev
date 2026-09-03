@@ -8,7 +8,7 @@
  *        event_agenda_items, event_speakers, insights_articles,
  *        testimonials, office_locations, faqs, hero_sections, stats,
  *        contact_submissions, newsletter_subscribers, legacy_timeline,
- *        media_files
+ *        media_files, site_pages, page_sections, page_seo, careers_positions
  */
 
 import {
@@ -22,19 +22,12 @@ import {
   date,
   time,
   jsonb,
-  uniqueIndex,
-  index,
   primaryKey,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
 
 // ─── AUTH TABLES ────────────────────────────────────────────────────────────
 
-/**
- * CMS users — admins and editors only.
- * Public visitors are never stored here.
- * role: 'admin' → full access | 'editor' → content only
- */
 export const users = pgTable('users', {
   id: text('id')
     .primaryKey()
@@ -42,7 +35,6 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 255 }),
   email: varchar('email', { length: 320 }).notNull().unique(),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
-  /** bcrypt hash — NEVER expose to client */
   password: varchar('password', { length: 255 }),
   image: varchar('image', { length: 1000 }),
   role: varchar('role', { length: 20 }).notNull().default('editor'),
@@ -50,7 +42,6 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-/** OAuth accounts (Auth.js adapter requirement) */
 export const accounts = pgTable(
   'accounts',
   {
@@ -71,7 +62,6 @@ export const accounts = pgTable(
   (table) => [primaryKey({ columns: [table.provider, table.providerAccountId] })],
 );
 
-/** Database sessions (Auth.js adapter) */
 export const sessions = pgTable('sessions', {
   sessionToken: text('session_token').primaryKey(),
   userId: text('user_id')
@@ -80,7 +70,6 @@ export const sessions = pgTable('sessions', {
   expires: timestamp('expires', { mode: 'date' }).notNull(),
 });
 
-/** Email verification tokens (Auth.js adapter) */
 export const verificationTokens = pgTable(
   'verification_tokens',
   {
@@ -103,6 +92,21 @@ export const siteSettings = pgTable('site_settings', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+// ─── MEDIA FILES ─────────────────────────────────────────────────────────────
+
+export const mediaFiles = pgTable('media_files', {
+  id: serial('id').primaryKey(),
+  publicId: varchar('public_id', { length: 500 }).notNull().unique(),
+  url: varchar('url', { length: 1000 }).notNull(),
+  resourceType: varchar('resource_type', { length: 20 }).notNull().default('image'),
+  originalName: varchar('original_name', { length: 500 }),
+  mimeType: varchar('mime_type', { length: 100 }),
+  sizeBytes: integer('size_bytes'),
+  folder: varchar('folder', { length: 200 }),
+  uploadedBy: text('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
+  uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
+});
+
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
 
 export const navItems = pgTable('nav_items', {
@@ -122,12 +126,14 @@ export const practiceAreas = pgTable('practice_areas', {
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   number: varchar('number', { length: 5 }),
   name: varchar('name', { length: 200 }).notNull(),
+  heading: varchar('heading', { length: 300 }),
   shortDescription: text('short_description'),
   longDescription: text('long_description'),
+  imageUrl: varchar('image_url', { length: 1000 }),
   iconName: varchar('icon_name', { length: 100 }),
   styleClass: varchar('style_class', { length: 200 }),
   sortOrder: integer('sort_order').notNull().default(0),
-  isPublished: boolean('is_published').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -150,7 +156,7 @@ export const industries = pgTable('industries', {
   shortDescription: text('short_description'),
   imageUrl: varchar('image_url', { length: 1000 }),
   sortOrder: integer('sort_order').notNull().default(0),
-  isPublished: boolean('is_published').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -162,11 +168,9 @@ export const teamMembers = pgTable('team_members', {
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   name: varchar('name', { length: 200 }).notNull(),
   roleTitle: varchar('role_title', { length: 300 }),
-  /** 'leadership' | 'partner' | 'mentor' | 'advisor' */
   category: varchar('category', { length: 50 }).notNull().default('partner'),
   focusArea: varchar('focus_area', { length: 300 }),
   shortBio: text('short_bio'),
-  /** Array of paragraph groups for individual profile pages */
   longBioSections: jsonb('long_bio_sections'),
   imageUrl: varchar('image_url', { length: 1000 }),
   email: varchar('email', { length: 320 }),
@@ -174,7 +178,7 @@ export const teamMembers = pgTable('team_members', {
   yearsExperience: varchar('years_experience', { length: 50 }),
   quote: text('quote'),
   sortOrder: integer('sort_order').notNull().default(0),
-  isPublished: boolean('is_published').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -195,7 +199,6 @@ export const teamMemberExpertise = pgTable('team_member_expertise', {
 export const events = pgTable('events', {
   id: serial('id').primaryKey(),
   slug: varchar('slug', { length: 200 }).notNull().unique(),
-  /** 'WEBINAR' | 'SEMINAR' | 'ROUNDTABLE' | 'CONFERENCE' */
   eventType: varchar('event_type', { length: 50 }),
   title: varchar('title', { length: 500 }).notNull(),
   description: text('description'),
@@ -211,8 +214,7 @@ export const events = pgTable('events', {
   imageUrl: varchar('image_url', { length: 1000 }),
   isFeatured: boolean('is_featured').notNull().default(false),
   isHighlighted: boolean('is_highlighted').notNull().default(false),
-  isPublished: boolean('is_published').notNull().default(false),
-  /** 'upcoming' | 'past' | 'cancelled' */
+  isPublished: boolean('is_published').notNull().default(true),
   status: varchar('status', { length: 20 }).notNull().default('upcoming'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -248,72 +250,85 @@ export const eventSpeakers = pgTable('event_speakers', {
 
 export const insightsArticles = pgTable('insights_articles', {
   id: serial('id').primaryKey(),
-  slug: varchar('slug', { length: 300 }).notNull().unique(),
-  /** 'article' | 'regulatory_update' | 'judgement' | 'research' | 'webinar' */
-  contentType: varchar('content_type', { length: 50 }).notNull().default('article'),
-  tag: varchar('tag', { length: 100 }),
+  slug: varchar('slug', { length: 200 }).notNull().unique(),
   title: varchar('title', { length: 500 }).notNull(),
   summary: text('summary'),
+  bodyContent: text('body_content'),
   body: text('body'),
+  contentType: varchar('content_type', { length: 50 }).notNull().default('article'),
+  tag: varchar('tag', { length: 100 }),
+  category: varchar('category', { length: 100 }),
+  authorName: varchar('author_name', { length: 200 }),
+  authorRole: varchar('author_role', { length: 200 }),
+  authorId: integer('author_id').references(() => teamMembers.id, { onDelete: 'set null' }),
   imageUrl: varchar('image_url', { length: 1000 }),
   fileUrl: varchar('file_url', { length: 1000 }),
-  readTimeMins: integer('read_time_mins'),
+  publishedDate: date('published_date'),
+  publishedAt: timestamp('published_at'),
+  readTime: varchar('read_time', { length: 50 }),
+  readTimeMins: integer('read_time_mins').default(5),
   authorityTag: varchar('authority_tag', { length: 100 }),
   courtName: varchar('court_name', { length: 300 }),
-  publishedAt: timestamp('published_at'),
   isFeatured: boolean('is_featured').notNull().default(false),
-  isPublished: boolean('is_published').notNull().default(false),
-  authorId: integer('author_id').references(() => teamMembers.id, { onDelete: 'set null' }),
+  isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── TESTIMONIALS ───────────────────────────────────────────────────────────
+// ─── TESTIMONIALS ────────────────────────────────────────────────────────────
 
 export const testimonials = pgTable('testimonials', {
   id: serial('id').primaryKey(),
-  quote: text('quote').notNull(),
+  clientName: varchar('client_name', { length: 200 }),
   personName: varchar('person_name', { length: 200 }),
-  personTitle: varchar('person_title', { length: 200 }),
+  personTitle: varchar('person_title', { length: 300 }),
+  clientTitle: varchar('client_title', { length: 300 }),
   companyName: varchar('company_name', { length: 200 }),
+  quote: text('quote').notNull(),
+  rating: integer('rating').notNull().default(5),
+  imageUrl: varchar('image_url', { length: 1000 }),
   sortOrder: integer('sort_order').notNull().default(0),
-  isPublished: boolean('is_published').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── OFFICE LOCATIONS ───────────────────────────────────────────────────────
+// ─── OFFICE LOCATIONS ────────────────────────────────────────────────────────
 
 export const officeLocations = pgTable('office_locations', {
   id: serial('id').primaryKey(),
   city: varchar('city', { length: 100 }).notNull(),
+  country: varchar('country', { length: 100 }),
   fullAddress: text('full_address'),
   phone: varchar('phone', { length: 100 }),
   email: varchar('email', { length: 320 }),
   isHeadquarters: boolean('is_headquarters').notNull().default(false),
   sortOrder: integer('sort_order').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── FAQS ───────────────────────────────────────────────────────────────────
+// ─── FAQS ────────────────────────────────────────────────────────────────────
 
 export const faqs = pgTable('faqs', {
   id: serial('id').primaryKey(),
   question: text('question').notNull(),
   answer: text('answer').notNull(),
-  /** 'contact' | 'gcc' | 'general' */
-  pageContext: varchar('page_context', { length: 100 }).notNull().default('general'),
+  category: varchar('category', { length: 100 }).notNull().default('general'),
   sortOrder: integer('sort_order').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── HERO SECTIONS ──────────────────────────────────────────────────────────
+// ─── HERO SECTIONS ───────────────────────────────────────────────────────────
 
 export const heroSections = pgTable('hero_sections', {
   id: serial('id').primaryKey(),
-  /** 'home' | 'about' | 'contact' | 'team' | 'gcc' | 'events' | 'insights' | 'industries' | 'practice-areas' */
   pageSlug: varchar('page_slug', { length: 100 }).notNull().unique(),
   eyebrow: varchar('eyebrow', { length: 200 }),
-  heading: text('heading'),
+  heading: varchar('heading', { length: 300 }),
   subheading: text('subheading'),
   imageUrl: varchar('image_url', { length: 1000 }),
   cta1Text: varchar('cta1_text', { length: 100 }),
@@ -323,101 +338,60 @@ export const heroSections = pgTable('hero_sections', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── STATS ──────────────────────────────────────────────────────────────────
+// ─── STATS METRICS ───────────────────────────────────────────────────────────
 
 export const stats = pgTable('stats', {
   id: serial('id').primaryKey(),
-  numberDisplay: varchar('number_display', { length: 50 }).notNull(),
   label: varchar('label', { length: 200 }).notNull(),
+  value: integer('value').notNull().default(0),
+  suffix: varchar('suffix', { length: 20 }).notNull().default('+'),
   iconName: varchar('icon_name', { length: 100 }),
-  /** 'global' | 'gcc' */
-  context: varchar('context', { length: 100 }).notNull().default('global'),
   sortOrder: integer('sort_order').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-// ─── CONTACT SUBMISSIONS ────────────────────────────────────────────────────
+// ─── CONTACT SUBMISSIONS ─────────────────────────────────────────────────────
 
 export const contactSubmissions = pgTable('contact_submissions', {
   id: serial('id').primaryKey(),
-  fullName: varchar('full_name', { length: 300 }).notNull(),
-  company: varchar('company', { length: 300 }),
+  name: varchar('name', { length: 200 }).notNull(),
   email: varchar('email', { length: 320 }).notNull(),
-  phone: varchar('phone', { length: 100 }),
-  practiceArea: varchar('practice_area', { length: 200 }),
+  phone: varchar('phone', { length: 50 }),
+  company: varchar('company', { length: 200 }),
+  serviceInterest: varchar('service_interest', { length: 200 }),
   message: text('message').notNull(),
-  submittedAt: timestamp('submitted_at').notNull().defaultNow(),
-  /** 'new' | 'read' | 'responded' | 'archived' */
-  status: varchar('status', { length: 50 }).notNull().default('new'),
-  ipAddress: varchar('ip_address', { length: 50 }),
+  status: varchar('status', { length: 20 }).notNull().default('new'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-// ─── NEWSLETTER SUBSCRIBERS ─────────────────────────────────────────────────
+// ─── NEWSLETTER SUBSCRIBERS ──────────────────────────────────────────────────
 
-export const newsletterSubscribers = pgTable(
-  'newsletter_subscribers',
-  {
-    id: serial('id').primaryKey(),
-    email: varchar('email', { length: 320 }).notNull(),
-    subscribedAt: timestamp('subscribed_at').notNull().defaultNow(),
-    isActive: boolean('is_active').notNull().default(true),
-    unsubscribedAt: timestamp('unsubscribed_at'),
-  },
-  (table) => [uniqueIndex('newsletter_email_idx').on(table.email)],
-);
-
-// ─── LEGACY TIMELINE ────────────────────────────────────────────────────────
-
-export const legacyTimeline = pgTable('legacy_timeline', {
+export const newsletterSubscribers = pgTable('newsletter_subscribers', {
   id: serial('id').primaryKey(),
-  year: varchar('year', { length: 10 }).notNull(),
-  title: varchar('title', { length: 200 }).notNull(),
+  email: varchar('email', { length: 320 }).notNull().unique(),
+  subscribedAt: timestamp('subscribed_at').notNull().defaultNow(),
+  isActive: boolean('is_active').notNull().default(true),
+  unsubscribedAt: timestamp('unsubscribed_at'),
+});
+
+
+// ─── CAREERS POSITIONS ───────────────────────────────────────────────────────
+
+export const careersPositions = pgTable('careers_positions', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 300 }).notNull(),
+  department: varchar('department', { length: 200 }).notNull().default('Tax Advisory'),
+  location: varchar('location', { length: 200 }).notNull().default('London, UK'),
+  type: varchar('type', { length: 50 }).notNull().default('Full-time'),
   description: text('description'),
+  requirements: text('requirements'),
+  applicationUrl: varchar('application_url', { length: 500 }).default('/contact'),
   sortOrder: integer('sort_order').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
-
-// ─── MEDIA FILES ────────────────────────────────────────────────────────────
-
-/**
- * Tracks files uploaded to Cloudinary.
- * The actual binary is in Cloudinary — this table stores metadata + the URL.
- */
-export const mediaFiles = pgTable('media_files', {
-  id: serial('id').primaryKey(),
-  /** Cloudinary public_id — used to reference/delete the file */
-  cloudinaryId: varchar('cloudinary_id', { length: 500 }).notNull().unique(),
-  /** Full Cloudinary delivery URL */
-  url: varchar('url', { length: 1000 }).notNull(),
-  /** 'image' | 'document' */
-  resourceType: varchar('resource_type', { length: 20 }).notNull().default('image'),
-  originalName: varchar('original_name', { length: 500 }),
-  mimeType: varchar('mime_type', { length: 100 }),
-  sizeBytes: integer('size_bytes'),
-  /** Cloudinary folder path e.g. 'psc-global/team' */
-  folder: varchar('folder', { length: 200 }),
-  uploadedBy: text('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
-  uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
-});
-
-// ─── TYPE EXPORTS ───────────────────────────────────────────────────────────
-
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
-export type MediaFile = typeof mediaFiles.$inferSelect;
-export type TeamMember = typeof teamMembers.$inferSelect;
-export type Event = typeof events.$inferSelect;
-export type InsightsArticle = typeof insightsArticles.$inferSelect;
-export type PracticeArea = typeof practiceAreas.$inferSelect;
-export type Industry = typeof industries.$inferSelect;
-export type Faq = typeof faqs.$inferSelect;
-export type Testimonial = typeof testimonials.$inferSelect;
-export type OfficeLocation = typeof officeLocations.$inferSelect;
-export type HeroSection = typeof heroSections.$inferSelect;
-export type NavItem = typeof navItems.$inferSelect;
-export type ContactSubmission = typeof contactSubmissions.$inferSelect;
-export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
-export type SiteSettings = typeof siteSettings.$inferSelect;
 
 // ─── SITE-WIDE CMS TABLES ───────────────────────────────────────────────────
 
@@ -438,15 +412,15 @@ export const pageSections = pgTable('page_sections', {
     .references(() => sitePages.slug, { onDelete: 'cascade' }),
   sectionKey: varchar('section_key', { length: 100 }).notNull(),
   title: varchar('title', { length: 300 }),
-  subtitle: text('subtitle'),
   eyebrow: varchar('eyebrow', { length: 200 }),
+  subtitle: text('subtitle'),
   bodyContent: text('body_content'),
   imageUrl: varchar('image_url', { length: 1000 }),
   primaryCtaText: varchar('primary_cta_text', { length: 100 }),
   primaryCtaUrl: varchar('primary_cta_url', { length: 500 }),
   secondaryCtaText: varchar('secondary_cta_text', { length: 100 }),
   secondaryCtaUrl: varchar('secondary_cta_url', { length: 500 }),
-  customPayload: jsonb('custom_payload'),
+  content: jsonb('content'),
   sortOrder: integer('sort_order').notNull().default(0),
   isVisible: boolean('is_visible').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -455,36 +429,39 @@ export const pageSections = pgTable('page_sections', {
 
 export const pageSeo = pgTable('page_seo', {
   id: serial('id').primaryKey(),
-  targetType: varchar('target_type', { length: 50 }).notNull(), // 'page' | 'event' | 'insight' | 'practice_area' | 'industry'
+  targetType: varchar('target_type', { length: 50 }).notNull(),
   targetIdentifier: varchar('target_identifier', { length: 200 }).notNull(),
   metaTitle: varchar('meta_title', { length: 300 }),
   metaDescription: text('meta_description'),
-  canonicalUrl: varchar('canonical_url', { length: 500 }),
+  canonicalUrl: varchar('canonical_url', { length: 1000 }),
+  robots: varchar('robots', { length: 100 }).default('index, follow'),
   ogTitle: varchar('og_title', { length: 300 }),
   ogDescription: text('og_description'),
   ogImage: varchar('og_image', { length: 1000 }),
   twitterCard: varchar('twitter_card', { length: 50 }).default('summary_large_image'),
-  noIndex: boolean('no_index').notNull().default(false),
-  noFollow: boolean('no_follow').notNull().default(false),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const careersPositions = pgTable('careers_positions', {
-  id: serial('id').primaryKey(),
-  title: varchar('title', { length: 200 }).notNull(),
-  department: varchar('department', { length: 100 }).notNull(),
-  location: varchar('location', { length: 100 }).notNull(),
-  type: varchar('type', { length: 50 }).notNull().default('Full-time'), // 'Full-time' | 'Part-time' | 'Contract'
-  description: text('description'),
-  requirements: text('requirements'),
-  applicationUrl: varchar('application_url', { length: 500 }),
-  isPublished: boolean('is_published').notNull().default(true),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
+// ─── TYPE EXPORTS ───────────────────────────────────────────────────────────
 
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type MediaFile = typeof mediaFiles.$inferSelect;
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type Event = typeof events.$inferSelect;
+export type InsightsArticle = typeof insightsArticles.$inferSelect;
+export type PracticeArea = typeof practiceAreas.$inferSelect;
+export type Industry = typeof industries.$inferSelect;
+export type Faq = typeof faqs.$inferSelect;
+export type Testimonial = typeof testimonials.$inferSelect;
+export type OfficeLocation = typeof officeLocations.$inferSelect;
+export type HeroSection = typeof heroSections.$inferSelect;
+export type NavItem = typeof navItems.$inferSelect;
+export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type CareersPosition = typeof careersPositions.$inferSelect;
 export type SitePage = typeof sitePages.$inferSelect;
 export type PageSection = typeof pageSections.$inferSelect;
 export type PageSeo = typeof pageSeo.$inferSelect;
-export type CareersPosition = typeof careersPositions.$inferSelect;
+export type Stat = typeof stats.$inferSelect;

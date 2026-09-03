@@ -11,6 +11,9 @@ import {
   pageSeo,
   careersPositions,
   heroSections,
+  stats,
+  practiceAreas,
+  practiceAreaServices,
 } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -213,4 +216,39 @@ export async function updatePageHero(pageSlug: string, data: Partial<typeof hero
 
   revalidatePath(`/${pageSlug === 'home' ? '' : pageSlug}`);
   return result;
+}
+
+export async function updateStatMetric(id: number, data: Partial<typeof stats.$inferInsert>) {
+  await requireAuth();
+
+  const [updated] = await db
+    .update(stats)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(stats.id, id))
+    .returning();
+
+  revalidatePath('/practice-areas');
+  revalidatePath('/about');
+  revalidatePath('/');
+  return updated;
+}
+
+export async function updatePracticeAreaInline(id: number, data: Partial<typeof practiceAreas.$inferInsert>) {
+  await requireAuth();
+
+  const [updated] = await db
+    .update(practiceAreas)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(practiceAreas.id, id))
+    .returning();
+
+  revalidatePath('/practice-areas');
+  revalidatePath(`/practice-areas/${updated.slug}`);
+  return updated;
 }

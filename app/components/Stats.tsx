@@ -3,12 +3,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { Clock, Users, Globe2, CheckCircle2 } from 'lucide-react';
 
-const stats = [
-  [Clock, 22, '+', 'YEARS OF EXPERIENCE'],
-  [Users, 1000, '+', 'CLIENTS WORLDWIDE'],
-  [Globe2, 15, '+', 'COUNTRIES PRESENT'],
-  [CheckCircle2, 250, '+', 'EXPERTS & CONSULTANTS'],
-] as const;
+interface StatData {
+  id?: number;
+  label: string;
+  value: number;
+  suffix: string;
+  iconName?: string | null;
+}
+
+const defaultStats: StatData[] = [
+  { id: 1, label: 'YEARS OF EXPERIENCE', value: 22, suffix: '+', iconName: 'Clock' },
+  { id: 2, label: 'CLIENTS WORLDWIDE', value: 1000, suffix: '+', iconName: 'Users' },
+  { id: 3, label: 'COUNTRIES PRESENT', value: 15, suffix: '+', iconName: 'Globe2' },
+  { id: 4, label: 'EXPERTS & CONSULTANTS', value: 250, suffix: '+', iconName: 'CheckCircle2' },
+];
+
+const ICON_MAP: Record<string, any> = {
+  Clock,
+  Users,
+  Globe2,
+  CheckCircle2,
+};
 
 const DURATION = 1600;
 
@@ -39,7 +54,6 @@ function useCountUp(target: number, start: boolean) {
     return () => {
       if (frame.current) cancelAnimationFrame(frame.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [start, target]);
 
   return value;
@@ -53,7 +67,7 @@ function StatItem({
   start,
   delay,
 }: {
-  Icon: (typeof stats)[number][0];
+  Icon: any;
   target: number;
   suffix: string;
   label: string;
@@ -64,22 +78,29 @@ function StatItem({
 
   return (
     <div
-      className="animate-rise flex flex-col items-center border-slate-200 text-center sm:border-r sm:last:border-0"
-      style={{ animationDelay: `${delay}ms` }}
+      className="text-center"
+      style={{
+        transition: 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1), opacity 600ms ease',
+        transform: start ? 'translateY(0)' : 'translateY(24px)',
+        opacity: start ? 1 : 0,
+        transitionDelay: `${delay}ms`,
+      }}
     >
-      <Icon size={20} className="text-slate-400" />
+      <Icon size={20} className="mx-auto text-slate-400" />
       <strong className="mt-4 block font-serif font-medium text-5xl text-slate-900 tabular-nums">
         {value.toLocaleString()}
         {suffix}
       </strong>
-      <small className="mt-3 block text-[10px] tracking-wide text-slate-500">{label}</small>
+      <small className="mt-3 block text-[10px] tracking-wide text-slate-500 uppercase">{label}</small>
     </div>
   );
 }
 
-export default function Stats() {
+export default function Stats({ data }: { data?: StatData[] }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [start, setStart] = useState(false);
+
+  const items = data && data.length > 0 ? data : defaultStats;
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -92,7 +113,7 @@ export default function Stats() {
           observer.disconnect();
         }
       },
-      { threshold: 0.4 },
+      { threshold: 0.4 }
     );
 
     observer.observe(el);
@@ -105,17 +126,20 @@ export default function Stats() {
       className="border-b border-slate-200 bg-[#fdf9f6] px-6 py-20 lg:px-10"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-10 sm:grid-cols-4">
-        {stats.map(([Icon, target, suffix, label], index) => (
-          <StatItem
-            key={label}
-            Icon={Icon}
-            target={target}
-            suffix={suffix}
-            label={label}
-            start={start}
-            delay={index * 80}
-          />
-        ))}
+        {items.map((stat, index) => {
+          const IconComp = (stat.iconName && ICON_MAP[stat.iconName]) || Clock;
+          return (
+            <StatItem
+              key={stat.label || index}
+              Icon={IconComp}
+              target={stat.value}
+              suffix={stat.suffix}
+              label={stat.label}
+              start={start}
+              delay={index * 80}
+            />
+          );
+        })}
       </div>
     </section>
   );

@@ -268,7 +268,7 @@ export default function MediaLibraryPage() {
 
                     <button
                       type="button"
-                      onClick={() => setDeleteTarget({ id: file.id, cloudinaryId: file.cloudinaryId, type: file.resourceType as any })}
+                      onClick={() => setDeleteTarget({ id: file.id, cloudinaryId: file.publicId, type: file.resourceType as any })}
                       style={{
                         padding: '6px 10px',
                         borderRadius: '6px',

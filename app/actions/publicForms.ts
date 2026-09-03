@@ -24,13 +24,12 @@ export async function submitContactFormAction(formData: any) {
   const [created] = await db
     .insert(contactSubmissions)
     .values({
-      fullName: parsed.fullName,
+      name: parsed.fullName,
       company: parsed.company || null,
       email: parsed.email.toLowerCase().trim(),
       phone: parsed.phone || null,
-      practiceArea: parsed.practiceArea || 'General Inquiry',
+      serviceInterest: parsed.practiceArea || 'General Inquiry',
       message: parsed.message,
-      submittedAt: new Date(),
       status: 'new',
     })
     .returning();
@@ -50,20 +49,11 @@ export async function submitNewsletterAction(email: string) {
     .limit(1);
 
   if (existing) {
-    if (!existing.isActive) {
-      // Reactivate
-      await db
-        .update(newsletterSubscribers)
-        .set({ isActive: true, unsubscribedAt: null })
-        .where(eq(newsletterSubscribers.id, existing.id));
-    }
     return { success: true, message: 'You are subscribed to our newsletter updates.' };
   }
 
   await db.insert(newsletterSubscribers).values({
     email: normalizedEmail,
-    subscribedAt: new Date(),
-    isActive: true,
   });
 
   return { success: true, message: 'Successfully subscribed to PSC Global Insights!' };

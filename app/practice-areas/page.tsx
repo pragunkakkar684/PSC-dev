@@ -21,7 +21,18 @@ import { ALLOWED_ICONS } from '@/app/admin/(dashboard)/components/IconPicker';
 import {
   getPublicHeroSection,
   getPublicPracticeAreas,
+  getPageCMS,
+  getPublicStats,
+  buildPageMetadata,
 } from '@/lib/queries/public';
+
+export async function generateMetadata() {
+  return buildPageMetadata('page', 'practice-areas', {
+    title: 'Advisory Practice Areas — PSC Global Solutions',
+    description:
+      'Corporate Tax Advisory, Risk & Assurance, M&A Due Diligence, Transfer Pricing, and Legal Compliance.',
+  });
+}
 
 const connectedCards = [
   ['One Engagement', 'A single point of accountability for multiple service lines, reducing friction and ensuring consistency.'],
@@ -41,7 +52,7 @@ const defaultScenarios = [
     label: 'SCENARIO 01',
     title: 'Entering the Indian Market',
     description:
-      "How our Legal, Tax, and Business Advisory teams work together to ensure a friction-free market entry for a Fortune 500 tech firm.",
+      'How our Legal, Tax, and Business Advisory teams work together to ensure a friction-free market entry for a Fortune 500 tech firm.',
   },
   {
     id: 'scenario-2',
@@ -63,7 +74,7 @@ const challengeSteps = ['Strategy', 'Finance', 'Regulation', 'Legal', 'Operation
 
 const defaultPractices = [
   {
-    id: '1',
+    id: 1,
     number: '01',
     slug: 'risk-assurance',
     name: 'Risk & Assurance',
@@ -80,7 +91,7 @@ const defaultPractices = [
     ],
   },
   {
-    id: '2',
+    id: 2,
     number: '02',
     slug: 'tax-fiscal-advisory',
     name: 'Tax & Fiscal Advisory',
@@ -97,7 +108,7 @@ const defaultPractices = [
     ],
   },
   {
-    id: '3',
+    id: 3,
     number: '03',
     slug: 'corporate-law',
     name: 'Corporate Law',
@@ -114,13 +125,13 @@ const defaultPractices = [
     ],
   },
   {
-    id: '4',
+    id: 4,
     number: '04',
     slug: 'business-advisory',
     name: 'Business Advisory',
     heading: 'Growth Strategy Grounded in Data.',
     shortDescription:
-      'We combine market intelligence with operational rigor to help leadership teams make confident, defensible decisions.',
+      'We combine market intelligence with operational rigor to help leadership teams make confident, defensible strategic decisions.',
     imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85',
     iconName: null,
     services: [
@@ -131,13 +142,13 @@ const defaultPractices = [
     ],
   },
   {
-    id: '5',
+    id: 5,
     number: '05',
     slug: 'business-process-advisory',
     name: 'Business Process Advisory',
     heading: 'Operational Excellence at Every Layer.',
     shortDescription:
-      'We re-engineer core processes — from ERP rollouts to shared services — so operations scale without adding friction.',
+      'We re-engineer core processes — from ERP rollouts to shared services — so operations scale smoothly without operational friction.',
     imageUrl: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=85',
     iconName: null,
     services: [
@@ -150,16 +161,58 @@ const defaultPractices = [
 ];
 
 export default async function PracticeAreasPage() {
-  const [hero, dbPractices] = await Promise.all([
+  const [hero, dbPractices, cms, dbStats] = await Promise.all([
     getPublicHeroSection('practice-areas'),
     getPublicPracticeAreas(),
+    getPageCMS('practice-areas'),
+    getPublicStats(),
   ]);
 
   const practices = dbPractices.length > 0 ? dbPractices : defaultPractices;
-
-  // Scenarios are intentionally NOT sourced from the DB right now — always
-  // use the hardcoded fallback until a CMS-backed source is wired up.
   const scenarios = defaultScenarios;
+
+  // Extract structured CMS section values safely
+  const quoteContent =
+    cms.sectionMap['quote']?.bodyContent ||
+    "Architecture in business is not just about structure; it's about the resilience to withstand global shifts.";
+
+  const introSection = cms.sectionMap['multidisciplinary_intro'];
+  const introEyebrow = introSection?.eyebrow || 'MULTIDISCIPLINARY EXPERTISE';
+  const introHeading =
+    introSection?.title || 'One Firm. Multiple Disciplines. One Integrated Perspective.';
+  const introParagraphs = introSection?.bodyContent
+    ? introSection.bodyContent.split('\n\n')
+    : [
+        'In an increasingly interconnected global economy, business challenges rarely exist in isolation. A tax implication in one region often triggers a regulatory requirement in another, which in turn impacts operational efficiency.',
+        'At Advisory Global, we have structured our practice areas to operate as a single, fluid ecosystem. Our partners collaborate across borders and disciplines to ensure our clients receive not just a service, but a holistic architectural solution for their most complex challenges.',
+      ];
+
+  const capabilitiesSection = cms.sectionMap['capabilities_header'];
+  const capabilitiesEyebrow = capabilitiesSection?.eyebrow || 'CORE CAPABILITIES';
+  const capabilitiesHeading = capabilitiesSection?.title || 'Our Practice Areas';
+  const capabilitiesSubtitle = capabilitiesSection?.subtitle || 'EST. 2002 | Global Standards';
+
+  const finalCtaSection = cms.sectionMap['final_cta'];
+  const finalCtaHeading =
+    finalCtaSection?.title || 'Complex Business Challenges Require Connected Thinking.';
+  const finalCtaSubtitle =
+    finalCtaSection?.subtitle ||
+    'Let us discuss how our multidisciplinary team can provide the architectural clarity your organization needs to thrive on a global scale.';
+  const primaryCtaText = finalCtaSection?.primaryCtaText || 'BOOK A CONSULTATION';
+  const primaryCtaUrl =
+    finalCtaSection?.primaryCtaUrl && finalCtaSection.primaryCtaUrl !== '#'
+      ? finalCtaSection.primaryCtaUrl
+      : '/book-consultation';
+  const secondaryCtaText = finalCtaSection?.secondaryCtaText || 'CONTACT US';
+  const secondaryCtaUrl =
+    finalCtaSection?.secondaryCtaUrl && finalCtaSection.secondaryCtaUrl !== '#'
+      ? finalCtaSection.secondaryCtaUrl
+      : '/contact';
+
+  // Hero CTA validation to prevent '#' hash fallback
+  const heroCta1Href =
+    hero.cta1Href && hero.cta1Href !== '#' ? hero.cta1Href : '/practice-areas#capabilities';
+  const heroCta2Href = hero.cta2Href && hero.cta2Href !== '#' ? hero.cta2Href : '/contact';
 
   return (
     <main id="top">
@@ -168,30 +221,43 @@ export default async function PracticeAreasPage() {
       {/* HERO */}
       <AnimatedSection className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_.9fr] lg:px-10">
         <div>
-          <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{hero.eyebrow || 'OUR EXPERTISE'}</p>
+          <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
+            {hero.eyebrow || 'OUR EXPERTISE'}
+          </p>
           <h1 className="mt-4 max-w-xl font-serif text-6xl leading-[1.02] tracking-[-.045em] text-ink sm:text-7xl">
             {hero.heading || 'Expertise Across Every Dimension of Business.'}
           </h1>
           <p className="mt-6 max-w-md text-base leading-7 text-slate-600 lg:text-lg">
-            {hero.subheading || 'We provide a multidimensional approach to global advisory, merging deep local knowledge with international standards to navigate complex regulatory and fiscal landscapes.'}
+            {hero.subheading ||
+              'We provide a multidimensional approach to global advisory, merging deep local knowledge with international standards to navigate complex regulatory and fiscal landscapes.'}
           </p>
-          <div className="mt-8 flex gap-3">
-            <a href="#capabilities" className="flex items-center gap-2 bg-ink px-5 py-3 text-sm font-medium text-white transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-slate-800">
-              Explore Our Expertise <ArrowRight size={16} />
-            </a>
-            <Link href="/contact" className="flex items-center gap-2 border border-ink px-5 py-3 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-slate-100">
-              Speak With an Advisor <MessageSquare size={16} />
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href={heroCta1Href}
+              className="flex items-center gap-2 bg-ink px-5 py-3 text-sm font-medium text-white transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-slate-800"
+            >
+              {hero.cta1Text || 'Explore Our Expertise'} <ArrowRight size={16} />
+            </Link>
+            <Link
+              href={heroCta2Href}
+              className="flex items-center gap-2 border border-ink px-5 py-3 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-slate-100"
+            >
+              {hero.cta2Text || 'Speak With an Advisor'} <MessageSquare size={16} />
             </Link>
           </div>
         </div>
+
         <div className="relative">
           <img
             className="h-[360px] w-full object-cover lg:h-[460px]"
-            src={hero.imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'}
-            alt="Business meeting"
+            src={
+              hero.imageUrl ||
+              'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'
+            }
+            alt="PSC Global Practice Areas"
           />
           <div className="absolute -bottom-10 left-0 w-64 bg-navy p-5 text-sm leading-6 text-white sm:-left-10">
-            &quot;Architecture in business is not just about structure; it&apos;s about the resilience to withstand global shifts.&quot;
+            &quot;{quoteContent}&quot;
           </div>
         </div>
       </AnimatedSection>
@@ -199,23 +265,17 @@ export default async function PracticeAreasPage() {
       {/* MULTIDISCIPLINARY EXPERTISE */}
       <AnimatedSection className="border-y border-slate-100 px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[220px_1fr]">
-          <p className="font-mono text-xs tracking-[.18em] text-slate-500">MULTIDISCIPLINARY EXPERTISE</p>
+          <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{introEyebrow}</p>
           <div>
             <h2 className="font-serif text-5xl leading-tight text-ink lg:text-6xl">
-              One Firm. Multiple Disciplines. One Integrated Perspective.
+              {introHeading}
             </h2>
             <div className="mt-8 grid gap-8 md:grid-cols-2">
-              <p className="text-base leading-7 text-slate-600 lg:text-lg">
-                In an increasingly interconnected global economy, business challenges rarely
-                exist in isolation. A tax implication in one region often triggers a regulatory
-                requirement in another, which in turn impacts operational efficiency.
-              </p>
-              <p className="text-base leading-7 text-slate-600 lg:text-lg">
-                At Advisory Global, we have structured our practice areas to operate as a
-                single, fluid ecosystem. Our partners collaborate across borders and
-                disciplines to ensure our clients receive not just a service, but a holistic
-                architectural solution for their most complex challenges.
-              </p>
+              {introParagraphs.map((p, idx) => (
+                <p key={idx} className="text-base leading-7 text-slate-600 lg:text-lg">
+                  {p}
+                </p>
+              ))}
             </div>
           </div>
         </div>
@@ -223,12 +283,11 @@ export default async function PracticeAreasPage() {
 
       {/* PRACTICE AREAS GRID */}
       <AnimatedSection id="capabilities" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-20 lg:px-10">
-        <p className="font-mono text-xs tracking-[.18em] text-slate-500">CORE CAPABILITIES</p>
+        <p className="font-mono text-xs tracking-[.18em] text-slate-500 uppercase">{capabilitiesEyebrow}</p>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-serif text-5xl text-ink lg:text-6xl">Our Practice Areas</h2>
+          <h2 className="font-serif text-5xl text-ink lg:text-6xl">{capabilitiesHeading}</h2>
           <div className="text-right">
-            <p className="font-mono text-xs tracking-[.14em] text-slate-400">EST. 2002</p>
-            <i className="font-serif text-xl text-slate-500 lg:text-2xl">Global Standards</i>
+            <p className="font-mono text-xs tracking-[.14em] text-slate-400">{capabilitiesSubtitle}</p>
           </div>
         </div>
 
@@ -254,7 +313,6 @@ export default async function PracticeAreasPage() {
       {practices.map((pa, idx) => {
         const reversed = idx % 2 === 1;
         const bg = idx % 2 === 0 ? 'bg-[#fdf8f3]' : 'bg-slate-100';
-        const IconComp = (pa.iconName && ALLOWED_ICONS[pa.iconName]) || Shield;
         return (
           <AnimatedSection key={pa.id} className={`${bg} px-6 py-24 lg:px-10`}>
             <div
@@ -262,65 +320,68 @@ export default async function PracticeAreasPage() {
                 reversed ? 'lg:[&>*:first-child]:order-2' : ''
               }`}
             >
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    src={(pa as any).imageUrl || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'}
-                    alt={pa.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={
+                    (pa as any).imageUrl ||
+                    'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85'
+                  }
+                  alt={pa.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
-                <div>
-                  <p className="font-mono text-xs tracking-[.18em] text-sky-700">
-                    {pa.number || `0${idx + 1}`} {pa.name.toUpperCase()}
-                  </p>
-                  <h2 className="mt-4 max-w-lg font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
-                    {(pa as any).heading || pa.name}
-                  </h2>
-                  <p className="mt-6 max-w-md text-base leading-7 text-slate-600">
-                    {pa.shortDescription}
-                  </p>
-                  <div className="mt-8 border-t border-slate-300" />
-                  {pa.services?.length > 0 && (
-                    <ul className="mt-8 space-y-5">
-                      {pa.services.map((s) => (
-                        <li key={s.name} className="font-serif text-2xl text-ink lg:text-3xl">
-                          {s.name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <Link
-                    href={`/practice-areas/${pa.slug ?? pa.id}`}
-                    className="mt-8 inline-flex items-center gap-2 font-mono text-xs tracking-[.1em] text-ink transition duration-200 ease-out hover:text-sky-700"
-                  >
-                    LEARN MORE <ArrowRight size={14} />
-                  </Link>
-                </div>
+              <div>
+                <p className="font-mono text-xs tracking-[.18em] text-sky-700">
+                  {pa.number || `0${idx + 1}`} {pa.name.toUpperCase()}
+                </p>
+                <h2 className="mt-4 max-w-lg font-serif text-4xl leading-[1.05] text-ink lg:text-5xl">
+                  {(pa as any).heading || pa.name}
+                </h2>
+                <p className="mt-6 max-w-md text-base leading-7 text-slate-600">
+                  {pa.shortDescription}
+                </p>
+                <div className="mt-8 border-t border-slate-300" />
+                {pa.services?.length > 0 && (
+                  <ul className="mt-8 space-y-5">
+                    {pa.services.map((s) => (
+                      <li key={s.name} className="font-serif text-2xl text-ink lg:text-3xl">
+                        {s.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Link
+                  href={`/practice-areas/${pa.slug ?? pa.id}`}
+                  className="mt-8 inline-flex items-center gap-2 font-mono text-xs tracking-[.1em] text-ink transition duration-200 ease-out hover:text-sky-700"
+                >
+                  LEARN MORE <ArrowRight size={14} />
+                </Link>
+              </div>
             </div>
           </AnimatedSection>
         );
       })}
 
-      {/* COMPLEX CHALLENGES / CONNECTED MODEL */}
+      {/* COMPLEX CHALLENGES */}
       <AnimatedSection className="border-t border-slate-700/60 bg-navy px-6 py-24 text-white lg:px-10">
         <div className="mx-auto max-w-7xl">
-            <h2 className="max-w-2xl font-serif text-5xl leading-[1.05] lg:text-6xl">
-              Complex Challenges Rarely Exist in Isolation.
-            </h2>
-            <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 lg:text-lg">
-              Our interconnected framework ensures that every strategic move is validated
-              against financial, regulatory, and legal perspectives simultaneously.
-            </p>
+          <h2 className="max-w-2xl font-serif text-5xl leading-[1.05] lg:text-6xl">
+            Complex Challenges Rarely Exist in Isolation.
+          </h2>
+          <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 lg:text-lg">
+            Our interconnected framework ensures that every strategic move is validated against
+            financial, regulatory, and legal perspectives simultaneously.
+          </p>
 
           <div className="mt-16 flex flex-wrap items-center gap-3">
             {challengeSteps.map((step, i) => (
               <div key={step} className="flex items-center gap-3">
-                  <div className="flex h-20 w-40 items-center justify-center border border-slate-600 text-center">
-                    <span className="font-mono text-xs tracking-[.14em] text-slate-200">
-                      {step.toUpperCase()}
-                    </span>
-                  </div>
+                <div className="flex h-20 w-40 items-center justify-center border border-slate-600 text-center">
+                  <span className="font-mono text-xs tracking-[.14em] text-slate-200">
+                    {step.toUpperCase()}
+                  </span>
+                </div>
                 {i < challengeSteps.length - 1 && (
                   <ArrowRight className="hidden text-slate-500 md:block" size={18} />
                 )}
@@ -330,7 +391,11 @@ export default async function PracticeAreasPage() {
 
           <div className="mt-16 grid gap-10 md:grid-cols-3">
             {connectedCards.map(([title, copy], i) => (
-              <div key={title} className="transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01]" style={{ transitionDelay: `${i * 60}ms` }}>
+              <div
+                key={title}
+                className="transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01]"
+                style={{ transitionDelay: `${i * 60}ms` }}
+              >
                 <div className="h-px w-6 bg-slate-500" />
                 <h3 className="mt-6 font-serif text-2xl lg:text-3xl">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-300 lg:text-base">{copy}</p>
@@ -340,71 +405,77 @@ export default async function PracticeAreasPage() {
         </div>
       </AnimatedSection>
 
-      {/* GLOBAL CAPABILITY CENTERS */}
+      {/* GCC BANNER */}
       <AnimatedSection className="bg-[#dbeafe] px-6 py-24 lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
-              <h2 className="max-w-xl font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
-                Building Global Capability From India to the World.
-              </h2>
-              <p className="mt-6 max-w-md text-base leading-7 text-slate-700 lg:text-lg">
-                Our India-based Global Capability Center (GCC) advisory helps multinational
-                corporations tap into the world&apos;s most vibrant talent pool while ensuring
-                global operational standards.
-              </p>
-              <div className="mt-10 flex gap-12">
-                <div>
-                  <p className="font-serif text-4xl text-ink">50+</p>
-                  <p className="mt-1 font-mono text-xs tracking-[.14em] text-slate-600">
-                    GCCS ESTABLISHED
-                  </p>
-                </div>
-                <div>
-                  <p className="font-serif text-4xl text-ink">24/7</p>
-                  <p className="mt-1 font-mono text-xs tracking-[.14em] text-slate-600">
-                    SUPPORT ECOSYSTEM
-                  </p>
-                </div>
+          <div>
+            <h2 className="max-w-xl font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
+              Building Global Capability From India to the World.
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-7 text-slate-700 lg:text-lg">
+              Our India-based Global Capability Center (GCC) advisory helps multinational
+              corporations tap into the world&apos;s most vibrant talent pool while ensuring global
+              operational standards.
+            </p>
+            <div className="mt-10 flex gap-12">
+              <div>
+                <p className="font-serif text-4xl text-ink">50+</p>
+                <p className="mt-1 font-mono text-xs tracking-[.14em] text-slate-600">
+                  GCCS ESTABLISHED
+                </p>
+              </div>
+              <div>
+                <p className="font-serif text-4xl text-ink">24/7</p>
+                <p className="mt-1 font-mono text-xs tracking-[.14em] text-slate-600">
+                  SUPPORT ECOSYSTEM
+                </p>
               </div>
             </div>
+          </div>
 
-            <div className="bg-[#eef4fc] p-8 lg:p-10">
-              <div className="space-y-8">
-                {gccFeatures.map(([Icon, title, copy]) => (
-                  <div key={title} className="flex gap-4">
-                    <Icon className="mt-1 shrink-0 text-ink" size={20} strokeWidth={1.5} />
-                    <div>
-                      <h3 className="font-serif text-xl text-ink lg:text-2xl">{title}</h3>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">{copy}</p>
-                    </div>
+          <div className="bg-[#eef4fc] p-8 lg:p-10">
+            <div className="space-y-8">
+              {gccFeatures.map(([Icon, title, copy]) => (
+                <div key={title} className="flex gap-4">
+                  <Icon className="mt-1 shrink-0 text-ink" size={20} strokeWidth={1.5} />
+                  <div>
+                    <h3 className="font-serif text-xl text-ink lg:text-2xl">{title}</h3>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">{copy}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
         </div>
       </AnimatedSection>
 
       {/* SCENARIOS */}
       <AnimatedSection className="px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
-            <p className="text-center font-mono text-xs tracking-[.18em] text-slate-500">
-              SCENARIO-BASED COLLABORATION
-            </p>
+          <p className="text-center font-mono text-xs tracking-[.18em] text-slate-500">
+            SCENARIO-BASED COLLABORATION
+          </p>
 
           <div className="mt-12 grid border-t border-slate-200 md:grid-cols-3">
             {scenarios.map((scenario, i) => (
-              <div key={scenario.id} className="border-l border-slate-200 p-6 first:border-l-0 transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] lg:p-8" style={{ transitionDelay: `${i * 60}ms` }}>
-                <p className="font-mono text-xs tracking-[.14em] text-slate-400">{scenario.label}</p>
+              <div
+                key={scenario.id}
+                className="border-l border-slate-200 p-6 first:border-l-0 transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] lg:p-8"
+                style={{ transitionDelay: `${i * 60}ms` }}
+              >
+                <p className="font-mono text-xs tracking-[.14em] text-slate-400">
+                  {scenario.label}
+                </p>
                 <h3 className="mt-4 font-serif text-2xl italic leading-tight text-ink lg:text-3xl">
                   {scenario.title}
                 </h3>
                 <p className="mt-4 text-sm leading-6 text-slate-600">{scenario.description}</p>
-                <a
-                  href="#"
+                <Link
+                  href="/contact"
                   className="mt-6 inline-flex items-center gap-2 font-mono text-xs tracking-[.1em] text-ink transition duration-200 ease-out hover:text-sky-700"
                 >
                   READ CASE STUDY <ArrowUpRight size={14} />
-                </a>
+                </Link>
               </div>
             ))}
           </div>
@@ -412,33 +483,32 @@ export default async function PracticeAreasPage() {
       </AnimatedSection>
 
       {/* STATS */}
-      <Stats />
+      <Stats data={dbStats} />
 
       {/* FINAL CTA */}
       <AnimatedSection className="bg-[#eaf2fb] px-6 py-24 text-center lg:px-10">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
-              Complex Business Challenges Require Connected Thinking.
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 lg:text-lg">
-              Let&apos;s discuss how our multidisciplinary team can provide the architectural
-              clarity your organization needs to thrive on a global scale.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/contact"
-                className="bg-ink px-6 py-4 font-mono text-xs tracking-[.14em] text-white transition hover:bg-slate-800"
-              >
-                BOOK A CONSULTATION
-              </Link>
-              <Link
-                href="/contact"
-                className="border border-ink px-6 py-4 font-mono text-xs tracking-[.14em] text-ink transition hover:bg-slate-100"
-              >
-                CONTACT US
-              </Link>
-            </div>
+        <div className="mx-auto max-w-3xl">
+          <h2 className="font-serif text-5xl leading-[1.05] text-ink lg:text-6xl">
+            {finalCtaHeading}
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 lg:text-lg">
+            {finalCtaSubtitle}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href={primaryCtaUrl}
+              className="bg-ink px-6 py-4 font-mono text-xs tracking-[.14em] text-white transition hover:bg-slate-800"
+            >
+              {primaryCtaText}
+            </Link>
+            <Link
+              href={secondaryCtaUrl}
+              className="border border-ink px-6 py-4 font-mono text-xs tracking-[.14em] text-ink transition hover:bg-slate-100"
+            >
+              {secondaryCtaText}
+            </Link>
           </div>
+        </div>
       </AnimatedSection>
 
       <Footer />

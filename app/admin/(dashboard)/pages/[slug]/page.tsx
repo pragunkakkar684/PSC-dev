@@ -8,6 +8,9 @@ import {
   heroSections,
   pageSeo,
   careersPositions,
+  practiceAreas,
+  practiceAreaServices,
+  stats,
 } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
@@ -48,15 +51,16 @@ export default async function PageEditorPage({
 
   const pageTitle = PAGE_TITLE_MAP[slug] || slug.replace(/-/g, ' ').toUpperCase();
 
-  // Fetch page entity, sections, hero, seo, and careers positions safely
   let pageRes: (typeof sitePages.$inferSelect)[] = [];
   let sections: (typeof pageSections.$inferSelect)[] = [];
   let heroList: (typeof heroSections.$inferSelect)[] = [];
   let seoList: (typeof pageSeo.$inferSelect)[] = [];
   let careers: (typeof careersPositions.$inferSelect)[] = [];
+  let practiceAreasList: any[] = [];
+  let statList: (typeof stats.$inferSelect)[] = [];
 
   try {
-    [pageRes, sections, heroList, seoList, careers] = await Promise.all([
+    const [pRes, secRes, hList, sList, cList, paList, stList] = await Promise.all([
       db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1),
       db.select().from(pageSections).where(eq(pageSections.pageSlug, slug)).orderBy(asc(pageSections.sortOrder)),
       db.select().from(heroSections).where(eq(heroSections.pageSlug, slug)).limit(1),
@@ -64,7 +68,33 @@ export default async function PageEditorPage({
       slug === 'career'
         ? db.select().from(careersPositions).orderBy(asc(careersPositions.sortOrder))
         : Promise.resolve([]),
+      slug === 'practice-areas'
+        ? db.select().from(practiceAreas).orderBy(asc(practiceAreas.sortOrder))
+        : Promise.resolve([]),
+      slug === 'practice-areas'
+        ? db.select().from(stats).orderBy(asc(stats.sortOrder))
+        : Promise.resolve([]),
     ]);
+
+    pageRes = pRes;
+    sections = secRes;
+    heroList = hList;
+    seoList = sList;
+    careers = cList;
+    statList = stList;
+
+    if (paList.length > 0) {
+      practiceAreasList = await Promise.all(
+        paList.map(async (pa) => {
+          const services = await db
+            .select()
+            .from(practiceAreaServices)
+            .where(eq(practiceAreaServices.practiceAreaId, pa.id))
+            .orderBy(asc(practiceAreaServices.sortOrder));
+          return { ...pa, services };
+        })
+      );
+    }
   } catch (err) {
     console.error(`Error fetching page data for ${slug}:`, err);
   }
@@ -87,6 +117,8 @@ export default async function PageEditorPage({
           sections={sections}
           seo={seo || null}
           careers={careers}
+          practiceAreasList={practiceAreasList}
+          statList={statList}
         />
       </div>
     </>

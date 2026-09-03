@@ -19,7 +19,7 @@ export async function getFaqs(options?: {
     conditions.push(ilike(faqs.question, `%${options.search}%`));
   }
   if (options?.pageContext && options.pageContext !== 'all') {
-    conditions.push(eq(faqs.pageContext, options.pageContext));
+    conditions.push(eq(faqs.category, options.pageContext));
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;

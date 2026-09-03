@@ -15,7 +15,7 @@ export async function getContactSubmissions(options?: {
   const conditions = [];
 
   if (options?.search) {
-    conditions.push(ilike(contactSubmissions.fullName, `%${options.search}%`));
+    conditions.push(ilike(contactSubmissions.name, `%${options.search}%`));
   }
   if (options?.status && options.status !== 'all') {
     conditions.push(eq(contactSubmissions.status, options.status));
@@ -27,7 +27,7 @@ export async function getContactSubmissions(options?: {
     .select()
     .from(contactSubmissions)
     .where(whereClause)
-    .orderBy(desc(contactSubmissions.submittedAt));
+    .orderBy(desc(contactSubmissions.createdAt));
 }
 
 export async function getContactSubmissionById(id: number) {

@@ -5,6 +5,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { FormField } from '../../components/FormField';
 import { SEOEditor } from '../../components/SEOEditor';
 import { MediaPickerModal } from '../../components/MediaPickerModal';
+import { CTASelector } from '../../components/CTASelector';
 import {
   updatePageHero,
   updateSitePageStatus,
@@ -14,8 +15,10 @@ import {
   deletePageSection,
   saveCareersPosition,
   deleteCareersPosition,
+  updateStatMetric,
+  updatePracticeAreaInline,
 } from '@/app/actions/cmsActions';
-import type { HeroSection, PageSection, PageSeo, CareersPosition } from '@/lib/db/schema';
+import type { HeroSection, PageSection, PageSeo, CareersPosition, Stat } from '@/lib/db/schema';
 import Link from 'next/link';
 import {
   Layout,
@@ -43,7 +46,23 @@ import {
   HelpCircle,
   MapPin,
   ArrowRight,
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  Edit3,
 } from 'lucide-react';
+
+interface PracticeAreaItem {
+  id: number;
+  slug: string;
+  number: string | null;
+  name: string;
+  heading: string | null;
+  shortDescription: string | null;
+  imageUrl: string | null;
+  isPublished: boolean;
+  services?: Array<{ id: number; name: string }>;
+}
 
 interface PageEditorClientProps {
   slug: string;
@@ -53,6 +72,8 @@ interface PageEditorClientProps {
   sections: PageSection[];
   seo: Partial<PageSeo> | null;
   careers: CareersPosition[];
+  practiceAreasList?: PracticeAreaItem[];
+  statList?: Stat[];
 }
 
 export function PageEditorClient({
@@ -63,6 +84,8 @@ export function PageEditorClient({
   sections: initialSections,
   seo: initialSEO,
   careers: initialCareers,
+  practiceAreasList: initialPracticeAreas = [],
+  statList: initialStats = [],
 }: PageEditorClientProps) {
   const [activeTab, setActiveTab] = useState<'content' | 'sections' | 'seo' | 'settings'>('content');
   const [isPublished, setIsPublished] = useState(initialIsPublished);
@@ -81,32 +104,32 @@ export function PageEditorClient({
 
   const [sections, setSections] = useState<PageSection[]>(initialSections);
   const [careersList, setCareersList] = useState<CareersPosition[]>(initialCareers);
+  const [practiceAreas, setPracticeAreas] = useState<PracticeAreaItem[]>(initialPracticeAreas);
+  const [statsList, setStatsList] = useState<Stat[]>(initialStats);
+
   const [savingHero, setSavingHero] = useState(false);
   const [heroSuccess, setHeroSuccess] = useState(false);
 
   // Media picker modal state
-  const [mediaPickerTarget, setMediaPickerTarget] = useState<'hero' | number | null>(null);
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<'hero' | 'pa_edit' | number | null>(null);
 
-  // New section modal state
-  const [showAddSection, setShowAddSection] = useState(false);
-  const [newSectionType, setNewSectionType] = useState('Rich Text');
-  const [newSectionTitle, setNewSectionTitle] = useState('');
+  // Practice area inline edit modal state
+  const [editingPA, setEditingPA] = useState<PracticeAreaItem | null>(null);
+  const [savingPA, setSavingPA] = useState(false);
 
-  // Careers job form state
-  const [showJobModal, setShowJobModal] = useState(false);
-  const [jobForm, setJobForm] = useState<Partial<CareersPosition>>({
-    title: '',
-    department: 'Tax Advisory',
-    location: 'London, UK',
-    type: 'Full-time',
-    description: '',
-    requirements: '',
-    applicationUrl: '/contact',
-  });
+  // Stat metric inline editing state
+  const [savingStatId, setSavingStatId] = useState<number | null>(null);
 
   // Save Hero Banner
   const handleSaveHero = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate CTAs to reject '#' hash fallback
+    if (heroForm.cta1Href === '#' || heroForm.cta2Href === '#') {
+      alert('Validation Error: "#" is not a valid CTA target. Please select a valid route.');
+      return;
+    }
+
     setSavingHero(true);
     setHeroSuccess(false);
 
@@ -134,68 +157,37 @@ export function PageEditorClient({
     await updatePageSection(id, data);
   };
 
-  // Reorder Sections
-  const handleMoveSection = async (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= sections.length) return;
-
-    const newSections = [...sections];
-    const [moved] = newSections.splice(index, 1);
-    newSections.splice(targetIndex, 0, moved);
-
-    setSections(newSections);
-    await reorderPageSections(slug, newSections.map((s) => s.id));
+  // Update Stat Metric
+  const handleSaveStat = async (id: number, value: number, label: string, suffix: string) => {
+    setSavingStatId(id);
+    await updateStatMetric(id, { value, label, suffix });
+    setStatsList(statsList.map((st) => (st.id === id ? { ...st, value, label, suffix } : st)));
+    setSavingStatId(null);
   };
 
-  // Create Section
-  const handleCreateSection = async (e: React.FormEvent) => {
+  // Save Inline Practice Area Edit
+  const handleSavePAEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const created = await createPageSection({
-      pageSlug: slug,
-      sectionKey: `${newSectionType.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`,
-      title: newSectionTitle || newSectionType,
-      eyebrow: newSectionType.toUpperCase(),
-      subtitle: '',
-      bodyContent: '',
-      imageUrl: '',
-      primaryCtaText: 'Learn More',
-      primaryCtaUrl: '/contact',
-      secondaryCtaText: '',
-      secondaryCtaUrl: '',
-      sortOrder: sections.length,
-      isVisible: true,
-    });
+    if (!editingPA) return;
+    setSavingPA(true);
 
-    setSections([...sections, created]);
-    setShowAddSection(false);
-    setNewSectionTitle('');
-  };
+    try {
+      const updated = await updatePracticeAreaInline(editingPA.id, {
+        name: editingPA.name,
+        heading: editingPA.heading,
+        shortDescription: editingPA.shortDescription,
+        imageUrl: editingPA.imageUrl,
+        isPublished: editingPA.isPublished,
+      });
 
-  // Delete Section
-  const handleDeleteSection = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this section?')) return;
-    setSections(sections.filter((s) => s.id !== id));
-    await deletePageSection(id);
-  };
-
-  // Save Job Opening
-  const handleSaveJob = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const saved = await saveCareersPosition(jobForm);
-    if (jobForm.id) {
-      setCareersList(careersList.map((j) => (j.id === jobForm.id ? saved : j)));
-    } else {
-      setCareersList([saved, ...careersList]);
+      setPracticeAreas(practiceAreas.map((pa) => (pa.id === editingPA.id ? { ...pa, ...updated } : pa)));
+      setEditingPA(null);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update practice area entity');
+    } finally {
+      setSavingPA(false);
     }
-    setShowJobModal(false);
-    setJobForm({ title: '', department: 'Tax Advisory', location: 'London, UK', type: 'Full-time', description: '', requirements: '', applicationUrl: '/contact' });
-  };
-
-  // Delete Job Opening
-  const handleDeleteJob = async (id: number) => {
-    if (!confirm('Delete this job listing?')) return;
-    setCareersList(careersList.filter((j) => j.id !== id));
-    await deleteCareersPosition(id);
   };
 
   const liveRoute = `/${slug === 'home' ? '' : slug}`;
@@ -218,10 +210,10 @@ export function PageEditorClient({
       >
         <div>
           <div style={{ fontSize: '12px', fontWeight: 700, color: '#38bdf8', fontFamily: 'monospace', marginBottom: '4px' }}>
-            ROUTE: {liveRoute}
+            PUBLIC ROUTE: {liveRoute}
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            {pageTitle} CMS Editor
+            {pageTitle} Page CMS Editor
           </h1>
         </div>
 
@@ -249,7 +241,7 @@ export function PageEditorClient({
             }}
           >
             <Check size={16} />
-            {isPublished ? 'Published' : 'Draft Mode'}
+            {isPublished ? 'Published Live' : 'Draft Mode'}
           </button>
         </div>
       </div>
@@ -272,7 +264,7 @@ export function PageEditorClient({
             gap: '8px',
           }}
         >
-          <Layout size={16} /> Content & Hero
+          <Layout size={16} /> Page Content & Sections
         </button>
 
         <button
@@ -310,7 +302,7 @@ export function PageEditorClient({
             gap: '8px',
           }}
         >
-          <Search size={16} /> SEO & Social Cards
+          <Search size={16} /> SEO & Metadata
         </button>
 
         <button
@@ -339,7 +331,7 @@ export function PageEditorClient({
         <div>
           {activeTab === 'content' && (
             <div style={{ display: 'grid', gap: '24px' }}>
-              {/* HERO BANNER EDITOR FORM */}
+              {/* SECTION 1: HERO BANNER EDITOR FORM */}
               <form onSubmit={handleSaveHero} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '16px' }}>
                 <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', marginBottom: '4px' }}>
                   Hero Section Banner Content
@@ -347,7 +339,7 @@ export function PageEditorClient({
 
                 {heroSuccess && (
                   <div style={{ padding: '12px 16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10b981', borderRadius: '8px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Check size={16} /> Hero section updated and published!
+                    <Check size={16} /> Hero section updated and published live!
                   </div>
                 )}
 
@@ -358,7 +350,7 @@ export function PageEditorClient({
                       value={heroForm.eyebrow || ''}
                       onChange={(e) => setHeroForm({ ...heroForm, eyebrow: e.target.value })}
                       className="admin-input"
-                      placeholder="e.g. GLOBAL ADVISORY & TAX FIRM"
+                      placeholder="e.g. OUR EXPERTISE"
                     />
                   </FormField>
 
@@ -373,17 +365,17 @@ export function PageEditorClient({
                   </FormField>
                 </div>
 
-                <FormField label="Hero Subheading / Description">
+                <FormField label="Hero Subheading / Intro Paragraph">
                   <textarea
                     rows={3}
                     value={heroForm.subheading || ''}
                     onChange={(e) => setHeroForm({ ...heroForm, subheading: e.target.value })}
                     className="admin-input"
-                    placeholder="Enter hero introduction paragraph..."
+                    placeholder="Enter hero description..."
                   />
                 </FormField>
 
-                <FormField label="Hero Cloudinary Image URL">
+                <FormField label="Hero Image URL">
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <input
                       type="text"
@@ -404,27 +396,20 @@ export function PageEditorClient({
                   </div>
                 </FormField>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                  <FormField label="Primary CTA Button Text">
-                    <input
-                      type="text"
-                      value={heroForm.cta1Text || ''}
-                      onChange={(e) => setHeroForm({ ...heroForm, cta1Text: e.target.value })}
-                      className="admin-input"
-                      placeholder="e.g. Talk to Experts"
-                    />
-                  </FormField>
+                {/* RE-USABLE CTA SELECTORS */}
+                <CTASelector
+                  label="Primary CTA Button"
+                  textValue={heroForm.cta1Text || ''}
+                  urlValue={heroForm.cta1Href || ''}
+                  onChange={(text, url) => setHeroForm({ ...heroForm, cta1Text: text, cta1Href: url })}
+                />
 
-                  <FormField label="Primary CTA Target Link">
-                    <input
-                      type="text"
-                      value={heroForm.cta1Href || ''}
-                      onChange={(e) => setHeroForm({ ...heroForm, cta1Href: e.target.value })}
-                      className="admin-input"
-                      placeholder="e.g. /contact"
-                    />
-                  </FormField>
-                </div>
+                <CTASelector
+                  label="Secondary CTA Button"
+                  textValue={heroForm.cta2Text || ''}
+                  urlValue={heroForm.cta2Href || ''}
+                  onChange={(text, url) => setHeroForm({ ...heroForm, cta2Text: text, cta2Href: url })}
+                />
 
                 <button
                   type="submit"
@@ -437,150 +422,160 @@ export function PageEditorClient({
                 </button>
               </form>
 
-              {/* PAGE-SPECIFIC LINKED CONTENT PANELS */}
-              {slug === 'team' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Users size={20} className="text-sky-400" /> Team Profiles Integration
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '8px 0 16px 0' }}>
-                    Individual partner and leadership profiles rendered on <code>/team</code> are managed in the Team Members entity CRUD.
-                  </p>
-                  <Link href="/admin/team" className="admin-button primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    Open Team Members CRUD Manager <ArrowRight size={14} />
-                  </Link>
-                </div>
-              )}
-
+              {/* SPECIALIZED PAGE EDITOR: PRACTICE AREAS PAGE */}
               {slug === 'practice-areas' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Layers size={20} className="text-sky-400" /> Practice Areas Integration
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '8px 0 16px 0' }}>
-                    Core practice cards and service offerings rendered on <code>/practice-areas</code> are managed in the Practice Areas entity CRUD.
-                  </p>
-                  <Link href="/admin/practice-areas" className="admin-button primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    Open Practice Areas CRUD Manager <ArrowRight size={14} />
-                  </Link>
-                </div>
-              )}
+                <>
+                  {/* PRACTICE AREAS ENTITIES AUDIT & REAL-TIME MANAGED CARDS */}
+                  <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div>
+                        <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Layers size={20} className="text-sky-400" /> Practice Area Entities Audit & Real-Time Management
+                        </h3>
+                        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                          Verify completeness and edit headings, descriptions, images, and services for all 5 core practice area cards rendered on <code>/practice-areas</code>.
+                        </p>
+                      </div>
 
-              {slug === 'industries' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Building2 size={20} className="text-sky-400" /> Industry Verticals Integration
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '8px 0 16px 0' }}>
-                    Sector cards and industry domain expertise rendered on <code>/industries</code> are managed in the Industries entity CRUD.
-                  </p>
-                  <Link href="/admin/industries" className="admin-button primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    Open Industries CRUD Manager <ArrowRight size={14} />
-                  </Link>
-                </div>
-              )}
+                      <Link href="/admin/practice-areas" className="admin-button secondary" style={{ fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        Full Entity Manager <ArrowRight size={12} />
+                      </Link>
+                    </div>
 
-              {slug === 'insights' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <BookOpen size={20} className="text-sky-400" /> Research & Publications Integration
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '8px 0 16px 0' }}>
-                    Tax articles, policy papers, and regulatory briefings rendered on <code>/insights</code> are managed in the Insights entity CRUD.
-                  </p>
-                  <Link href="/admin/insights" className="admin-button primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    Open Insights CRUD Manager <ArrowRight size={14} />
-                  </Link>
-                </div>
-              )}
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {practiceAreas.map((pa) => {
+                        const isComplete = Boolean(pa.heading && pa.shortDescription && pa.services && pa.services.length > 0);
 
-              {slug === 'events' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Calendar size={20} className="text-sky-400" /> Events & Webinars Integration
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '8px 0 16px 0' }}>
-                    Executive roundtables, webinars, agendas, and speakers rendered on <code>/events</code> are managed in the Events entity CRUD.
-                  </p>
-                  <Link href="/admin/events" className="admin-button primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    Open Events CRUD Manager <ArrowRight size={14} />
-                  </Link>
-                </div>
-              )}
+                        return (
+                          <div
+                            key={pa.id}
+                            style={{
+                              background: '#020617',
+                              border: `1px solid ${isComplete ? '#1e293b' : 'rgba(239, 68, 68, 0.4)'}`,
+                              borderRadius: '10px',
+                              padding: '16px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              flexWrap: 'wrap',
+                              gap: '12px',
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: 700, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                  {pa.number || 'PA'}
+                                </span>
+                                <strong style={{ fontSize: '15px', color: '#f8fafc' }}>{pa.name}</strong>
 
-              {slug === 'career' && (
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                {isComplete ? (
+                                  <span style={{ fontSize: '11px', color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '12px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <CheckCircle2 size={12} /> Complete
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: '11px', color: '#ef4444', background: 'rgba(239, 68, 68, 0.15)', padding: '2px 8px', borderRadius: '12px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <AlertTriangle size={12} /> Incomplete Content
+                                  </span>
+                                )}
+                              </div>
+
+                              <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '4px', fontStyle: pa.heading ? 'normal' : 'italic' }}>
+                                {pa.heading || 'No card heading set'}
+                              </div>
+
+                              <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                                {pa.services?.length || 0} services listed · Route: <code>/practice-areas/{pa.slug}</code>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={() => setEditingPA(pa)}
+                                className="admin-button primary"
+                                style={{ padding: '6px 14px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <Edit3 size={14} /> Quick Edit Card
+                              </button>
+                              <Link
+                                href={`/admin/practice-areas/${pa.id}`}
+                                className="admin-button secondary"
+                                style={{ padding: '6px 12px', fontSize: '12px' }}
+                              >
+                                Full Entity
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* STATISTICS METRICS EDITOR */}
+                  <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '16px' }}>
                     <div>
                       <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Briefcase size={20} className="text-sky-400" /> Career Job Listings ({careersList.length})
+                        <BarChart3 size={20} className="text-sky-400" /> Key Statistics & Impact Metrics
                       </h3>
                       <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-                        Manage open job positions displayed on <code>/career</code>.
+                        Manage the 4 key stat numbers rendered in the website Statistics section.
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setJobForm({ title: '', department: 'Tax Advisory', location: 'London, UK', type: 'Full-time', description: '', requirements: '', applicationUrl: '/contact' });
-                        setShowJobModal(true);
-                      }}
-                      className="admin-button primary"
-                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                    >
-                      <Plus size={16} /> Add Job Position
-                    </button>
-                  </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                      {statsList.map((st) => (
+                        <div key={st.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '16px', display: 'grid', gap: '10px' }}>
+                          <FormField label="Stat Label">
+                            <input
+                              type="text"
+                              defaultValue={st.label}
+                              id={`stat-label-${st.id}`}
+                              className="admin-input"
+                              placeholder="e.g. YEARS OF EXPERIENCE"
+                            />
+                          </FormField>
 
-                  <div style={{ display: 'grid', gap: '12px' }}>
-                    {careersList.map((job) => (
-                      <div
-                        key={job.id}
-                        style={{
-                          background: '#020617',
-                          border: '1px solid #1e293b',
-                          borderRadius: '10px',
-                          padding: '16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: '15px', color: '#f8fafc' }}>
-                            {job.title}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <FormField label="Number Value">
+                              <input
+                                type="number"
+                                defaultValue={st.value}
+                                id={`stat-val-${st.id}`}
+                                className="admin-input"
+                              />
+                            </FormField>
+                            <FormField label="Suffix Symbol">
+                              <input
+                                type="text"
+                                defaultValue={st.suffix}
+                                id={`stat-suf-${st.id}`}
+                                className="admin-input"
+                                placeholder="+"
+                              />
+                            </FormField>
                           </div>
-                          <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
-                            {job.department} · {job.location} · {job.type}
-                          </div>
-                        </div>
 
-                        <div style={{ display: 'flex', gap: '8px' }}>
                           <button
                             type="button"
+                            disabled={savingStatId === st.id}
                             onClick={() => {
-                              setJobForm(job);
-                              setShowJobModal(true);
+                              const lEl = document.getElementById(`stat-label-${st.id}`) as HTMLInputElement;
+                              const vEl = document.getElementById(`stat-val-${st.id}`) as HTMLInputElement;
+                              const sEl = document.getElementById(`stat-suf-${st.id}`) as HTMLInputElement;
+                              if (lEl && vEl && sEl) {
+                                handleSaveStat(st.id, parseInt(vEl.value, 10) || 0, lEl.value, sEl.value);
+                              }
                             }}
-                            className="admin-button secondary"
-                            style={{ padding: '6px 12px', fontSize: '12px' }}
+                            className="admin-button primary"
+                            style={{ padding: '6px 12px', fontSize: '12px', width: 'fit-content', justifySelf: 'end' }}
                           >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteJob(job.id)}
-                            className="admin-button secondary"
-                            style={{ padding: '6px 12px', fontSize: '12px', color: '#ef4444' }}
-                          >
-                            Delete
+                            {savingStatId === st.id ? 'Saving...' : 'Save Stat'}
                           </button>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           )}
@@ -596,7 +591,24 @@ export function PageEditorClient({
 
                 <button
                   type="button"
-                  onClick={() => setShowAddSection(true)}
+                  onClick={() => {
+                    const title = prompt('Enter new section title:');
+                    if (title) {
+                      createPageSection({
+                        pageSlug: slug,
+                        sectionKey: `custom_${Date.now()}`,
+                        title,
+                        eyebrow: 'SECTION',
+                        subtitle: '',
+                        bodyContent: '',
+                        imageUrl: '',
+                        primaryCtaText: 'Learn More',
+                        primaryCtaUrl: '/contact',
+                        sortOrder: sections.length,
+                        isVisible: true,
+                      }).then((created) => setSections([...sections, created]));
+                    }
+                  }}
                   className="admin-button primary"
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                 >
@@ -604,130 +616,129 @@ export function PageEditorClient({
                 </button>
               </div>
 
-              {sections.length === 0 ? (
-                <div style={{ padding: '40px', background: 'var(--bg-surface)', border: '1px dashed var(--border)', borderRadius: '14px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  No custom sections added for this page yet. Click <strong>Add Custom Section</strong> above to create one.
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gap: '16px' }}>
-                  {sections.map((sec, idx) => (
-                    <div
-                      key={sec.id}
-                      style={{
-                        background: 'var(--bg-surface)',
-                        border: '1px solid var(--border)',
-                        borderRadius: '14px',
-                        padding: '20px',
-                        opacity: sec.isVisible ? 1 : 0.6,
-                        display: 'grid',
-                        gap: '16px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'monospace', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px' }}>
-                            #{idx + 1} {sec.sectionKey}
-                          </span>
-                          <strong style={{ fontSize: '16px', color: 'var(--text-primary)' }}>{sec.title || 'Untitled Section'}</strong>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveSection(idx, 'up')}
-                            disabled={idx === 0}
-                            className="admin-button secondary"
-                            style={{ padding: '4px 8px' }}
-                            title="Move Up"
-                          >
-                            <ArrowUp size={14} />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleMoveSection(idx, 'down')}
-                            disabled={idx === sections.length - 1}
-                            className="admin-button secondary"
-                            style={{ padding: '4px 8px' }}
-                            title="Move Down"
-                          >
-                            <ArrowDown size={14} />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleSectionChange(sec.id, { isVisible: !sec.isVisible })}
-                            className={`admin-button ${sec.isVisible ? 'secondary' : 'warning'}`}
-                            style={{ padding: '4px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                          >
-                            {sec.isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
-                            {sec.isVisible ? 'Visible' : 'Hidden'}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteSection(sec.id)}
-                            className="admin-button secondary"
-                            style={{ padding: '4px 8px', color: '#ef4444' }}
-                            title="Delete Section"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                {sections.map((sec, idx) => (
+                  <div
+                    key={sec.id}
+                    style={{
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '14px',
+                      padding: '20px',
+                      opacity: sec.isVisible ? 1 : 0.6,
+                      display: 'grid',
+                      gap: '16px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'monospace', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px' }}>
+                          #{idx + 1} {sec.sectionKey}
+                        </span>
+                        <strong style={{ fontSize: '16px', color: 'var(--text-primary)' }}>{sec.title || 'Untitled Section'}</strong>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-                        <FormField label="Section Eyebrow">
-                          <input
-                            type="text"
-                            value={sec.eyebrow || ''}
-                            onChange={(e) => handleSectionChange(sec.id, { eyebrow: e.target.value })}
-                            className="admin-input"
-                          />
-                        </FormField>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (idx > 0) {
+                              const nList = [...sections];
+                              const [moved] = nList.splice(idx, 1);
+                              nList.splice(idx - 1, 0, moved);
+                              setSections(nList);
+                              reorderPageSections(slug, nList.map((s) => s.id));
+                            }
+                          }}
+                          disabled={idx === 0}
+                          className="admin-button secondary"
+                          style={{ padding: '4px 8px' }}
+                        >
+                          <ArrowUp size={14} />
+                        </button>
 
-                        <FormField label="Section Title">
-                          <input
-                            type="text"
-                            value={sec.title || ''}
-                            onChange={(e) => handleSectionChange(sec.id, { title: e.target.value })}
-                            className="admin-input"
-                          />
-                        </FormField>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (idx < sections.length - 1) {
+                              const nList = [...sections];
+                              const [moved] = nList.splice(idx, 1);
+                              nList.splice(idx + 1, 0, moved);
+                              setSections(nList);
+                              reorderPageSections(slug, nList.map((s) => s.id));
+                            }
+                          }}
+                          disabled={idx === sections.length - 1}
+                          className="admin-button secondary"
+                          style={{ padding: '4px 8px' }}
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSectionChange(sec.id, { isVisible: !sec.isVisible })}
+                          className={`admin-button ${sec.isVisible ? 'secondary' : 'warning'}`}
+                          style={{ padding: '4px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          {sec.isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
+                          {sec.isVisible ? 'Visible' : 'Hidden'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (confirm('Delete section?')) {
+                              setSections(sections.filter((s) => s.id !== sec.id));
+                              await deletePageSection(sec.id);
+                            }
+                          }}
+                          className="admin-button secondary"
+                          style={{ padding: '4px 8px', color: '#ef4444' }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
+                    </div>
 
-                      <FormField label="Section Subtitle / Description">
-                        <textarea
-                          rows={2}
-                          value={sec.subtitle || ''}
-                          onChange={(e) => handleSectionChange(sec.id, { subtitle: e.target.value })}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                      <FormField label="Section Eyebrow">
+                        <input
+                          type="text"
+                          value={sec.eyebrow || ''}
+                          onChange={(e) => handleSectionChange(sec.id, { eyebrow: e.target.value })}
                           className="admin-input"
                         />
                       </FormField>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                        <FormField label="CTA Button Text">
-                          <input
-                            type="text"
-                            value={sec.primaryCtaText || ''}
-                            onChange={(e) => handleSectionChange(sec.id, { primaryCtaText: e.target.value })}
-                            className="admin-input"
-                          />
-                        </FormField>
-
-                        <FormField label="CTA Button Target Link">
-                          <input
-                            type="text"
-                            value={sec.primaryCtaUrl || ''}
-                            onChange={(e) => handleSectionChange(sec.id, { primaryCtaUrl: e.target.value })}
-                            className="admin-input"
-                          />
-                        </FormField>
-                      </div>
+                      <FormField label="Section Title / Heading">
+                        <input
+                          type="text"
+                          value={sec.title || ''}
+                          onChange={(e) => handleSectionChange(sec.id, { title: e.target.value })}
+                          className="admin-input"
+                        />
+                      </FormField>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    <FormField label="Section Subtitle / Body Content">
+                      <textarea
+                        rows={3}
+                        value={sec.bodyContent || sec.subtitle || ''}
+                        onChange={(e) => handleSectionChange(sec.id, { bodyContent: e.target.value, subtitle: e.target.value })}
+                        className="admin-input"
+                      />
+                    </FormField>
+
+                    <CTASelector
+                      label="Section Primary CTA"
+                      textValue={sec.primaryCtaText || ''}
+                      urlValue={sec.primaryCtaUrl || ''}
+                      onChange={(t, u) => handleSectionChange(sec.id, { primaryCtaText: t, primaryCtaUrl: u })}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -841,74 +852,49 @@ export function PageEditorClient({
         onSelectImage={(url) => {
           if (mediaPickerTarget === 'hero') {
             setHeroForm({ ...heroForm, imageUrl: url });
+          } else if (mediaPickerTarget === 'pa_edit' && editingPA) {
+            setEditingPA({ ...editingPA, imageUrl: url });
           } else if (typeof mediaPickerTarget === 'number') {
             handleSectionChange(mediaPickerTarget, { imageUrl: url });
           }
         }}
       />
 
-      {/* ADD SECTION MODAL */}
-      {showAddSection && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <form onSubmit={handleCreateSection} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '500px', display: 'grid', gap: '16px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Add New Custom Section</h3>
+      {/* PRACTICE AREA INLINE QUICK EDIT MODAL */}
+      {editingPA && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <form onSubmit={handleSavePAEdit} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '650px', display: 'grid', gap: '16px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                Quick Edit Practice Area: {editingPA.name}
+              </h3>
+              <button type="button" onClick={() => setEditingPA(null)} className="admin-button secondary">✕</button>
+            </div>
 
-            <FormField label="Section Type">
-              <select value={newSectionType} onChange={(e) => setNewSectionType(e.target.value)} className="admin-input">
-                <option value="Rich Text">Rich Text / Paragraph</option>
-                <option value="Image and Text">Image + Text Split</option>
-                <option value="Two Column">Two Column Grid</option>
-                <option value="Cards Grid">Cards Grid</option>
-                <option value="Stats">Key Stats & Metrics</option>
-                <option value="CTA Banner">CTA Callout Banner</option>
-                <option value="FAQ Accordion">FAQ Accordion</option>
-              </select>
+            <FormField label="Practice Area Name">
+              <input type="text" value={editingPA.name} onChange={(e) => setEditingPA({ ...editingPA, name: e.target.value })} className="admin-input" required />
             </FormField>
 
-            <FormField label="Section Title">
-              <input type="text" value={newSectionTitle} onChange={(e) => setNewSectionTitle(e.target.value)} className="admin-input" placeholder="e.g. Our Global Methodology" required />
+            <FormField label="Card Heading">
+              <input type="text" value={editingPA.heading || ''} onChange={(e) => setEditingPA({ ...editingPA, heading: e.target.value })} className="admin-input" placeholder="e.g. Rigorous Oversight for Uncompromising Integrity." required />
+            </FormField>
+
+            <FormField label="Short Description">
+              <textarea rows={3} value={editingPA.shortDescription || ''} onChange={(e) => setEditingPA({ ...editingPA, shortDescription: e.target.value })} className="admin-input" required />
+            </FormField>
+
+            <FormField label="Card Image URL">
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input type="text" value={editingPA.imageUrl || ''} onChange={(e) => setEditingPA({ ...editingPA, imageUrl: e.target.value })} className="admin-input" style={{ flex: 1 }} />
+                <button type="button" onClick={() => setMediaPickerTarget('pa_edit')} className="admin-button secondary"><ImageIcon size={16} /> Select</button>
+              </div>
             </FormField>
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '12px' }}>
-              <button type="button" onClick={() => setShowAddSection(false)} className="admin-button secondary">Cancel</button>
-              <button type="submit" className="admin-button primary">Add Section</button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* JOB POSITION MODAL */}
-      {showJobModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <form onSubmit={handleSaveJob} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '600px', display: 'grid', gap: '16px', maxHeight: '85vh', overflowY: 'auto' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              {jobForm.id ? 'Edit Job Position' : 'Add New Job Position'}
-            </h3>
-
-            <FormField label="Job Title">
-              <input type="text" value={jobForm.title || ''} onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })} className="admin-input" required />
-            </FormField>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <FormField label="Department">
-                <input type="text" value={jobForm.department || ''} onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })} className="admin-input" required />
-              </FormField>
-              <FormField label="Location">
-                <input type="text" value={jobForm.location || ''} onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })} className="admin-input" required />
-              </FormField>
-            </div>
-
-            <FormField label="Job Description">
-              <textarea rows={3} value={jobForm.description || ''} onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })} className="admin-input" />
-            </FormField>
-
-            <FormField label="Requirements (1 per line)">
-              <textarea rows={4} value={jobForm.requirements || ''} onChange={(e) => setJobForm({ ...jobForm, requirements: e.target.value })} className="admin-input" />
-            </FormField>
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '12px' }}>
-              <button type="button" onClick={() => setShowJobModal(false)} className="admin-button secondary">Cancel</button>
-              <button type="submit" className="admin-button primary">Save Job Position</button>
+              <button type="button" onClick={() => setEditingPA(null)} className="admin-button secondary">Cancel</button>
+              <button type="submit" disabled={savingPA} className="admin-button primary">
+                {savingPA ? 'Saving...' : 'Save Practice Area Card'}
+              </button>
             </div>
           </form>
         </div>

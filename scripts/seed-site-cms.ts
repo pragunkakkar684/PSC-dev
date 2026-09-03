@@ -1,136 +1,174 @@
-/**
- * PSC Global — Site-Wide CMS Seeding Script
- * Run with: npx tsx scripts/seed-site-cms.ts
- */
-
-import { config } from 'dotenv';
-config({ path: '.env.local' });
-
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { sitePages, pageSections, pageSeo, careersPositions } from '@/lib/db/schema';
+import { db } from '../lib/db/client';
+import {
+  sitePages,
+  pageSections,
+  pageSeo,
+  careersPositions,
+  practiceAreas,
+  practiceAreaServices,
+  stats,
+} from '../lib/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
 
 async function seedSiteCMS() {
   console.log('🌱 Starting Site-Wide CMS Database Seeding...');
 
-  // 1. Ensure tables exist & migrate missing columns (using raw SQL IF NOT EXISTS)
-  await sql`
-    CREATE TABLE IF NOT EXISTS site_pages (
-      id SERIAL PRIMARY KEY,
-      slug VARCHAR(200) NOT NULL UNIQUE,
-      title VARCHAR(200) NOT NULL,
-      description TEXT,
-      is_published BOOLEAN DEFAULT true NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-      updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-    );
-  `;
-  await sql`ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS description TEXT;`;
-  await sql`ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW() NOT NULL;`;
+  // 1. DDL Schema Verification & Alterations
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS site_pages (
+        id SERIAL PRIMARY KEY,
+        slug VARCHAR(200) NOT NULL UNIQUE,
+        title VARCHAR(200) NOT NULL,
+        description TEXT,
+        is_published BOOLEAN DEFAULT true NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS page_sections (
-      id SERIAL PRIMARY KEY,
-      page_slug VARCHAR(200) NOT NULL,
-      section_key VARCHAR(100) NOT NULL,
-      title VARCHAR(300),
-      subtitle TEXT,
-      eyebrow VARCHAR(200),
-      body_content TEXT,
-      image_url VARCHAR(1000),
-      primary_cta_text VARCHAR(100),
-      primary_cta_url VARCHAR(500),
-      secondary_cta_text VARCHAR(100),
-      secondary_cta_url VARCHAR(500),
-      custom_payload JSONB,
-      sort_order INTEGER DEFAULT 0 NOT NULL,
-      is_visible BOOLEAN DEFAULT true NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-      updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-    );
-  `;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS eyebrow VARCHAR(200);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS body_content TEXT;`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_text VARCHAR(100);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_url VARCHAR(500);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_text VARCHAR(100);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_url VARCHAR(500);`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS custom_payload JSONB;`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS is_visible BOOLEAN DEFAULT true NOT NULL;`;
-  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW() NOT NULL;`;
+    await sql`ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS description TEXT;`;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS page_seo (
-      id SERIAL PRIMARY KEY,
-      target_type VARCHAR(50) NOT NULL DEFAULT 'page',
-      target_identifier VARCHAR(200) NOT NULL DEFAULT 'home',
-      meta_title VARCHAR(300),
-      meta_description TEXT,
-      canonical_url VARCHAR(500),
-      og_title VARCHAR(300),
-      og_description TEXT,
-      og_image VARCHAR(1000),
-      twitter_card VARCHAR(50) DEFAULT 'summary_large_image',
-      no_index BOOLEAN DEFAULT false NOT NULL,
-      no_follow BOOLEAN DEFAULT false NOT NULL,
-      updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-    );
-  `;
-  await sql`ALTER TABLE page_seo ALTER COLUMN target_key DROP NOT NULL;`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS target_type VARCHAR(50) DEFAULT 'page';`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS target_identifier VARCHAR(200) DEFAULT 'home';`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(500);`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_title VARCHAR(300);`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_description TEXT;`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_image VARCHAR(1000);`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS twitter_card VARCHAR(50) DEFAULT 'summary_large_image';`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS no_index BOOLEAN DEFAULT false NOT NULL;`;
-  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS no_follow BOOLEAN DEFAULT false NOT NULL;`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS page_sections (
+        id SERIAL PRIMARY KEY,
+        page_slug VARCHAR(200) NOT NULL REFERENCES site_pages(slug) ON DELETE CASCADE,
+        section_key VARCHAR(100) NOT NULL,
+        title VARCHAR(300),
+        eyebrow VARCHAR(200),
+        subtitle TEXT,
+        body_content TEXT,
+        image_url VARCHAR(1000),
+        primary_cta_text VARCHAR(100),
+        primary_cta_url VARCHAR(500),
+        secondary_cta_text VARCHAR(100),
+        secondary_cta_url VARCHAR(500),
+        content JSONB,
+        sort_order INTEGER DEFAULT 0 NOT NULL,
+        is_visible BOOLEAN DEFAULT true NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS careers_positions (
-      id SERIAL PRIMARY KEY,
-      title VARCHAR(200) NOT NULL,
-      department VARCHAR(100) NOT NULL,
-      location VARCHAR(100) NOT NULL,
-      type VARCHAR(50) DEFAULT 'Full-time' NOT NULL,
-      description TEXT,
-      requirements TEXT,
-      application_url VARCHAR(500),
-      sort_order INTEGER DEFAULT 0 NOT NULL,
-      is_published BOOLEAN DEFAULT true NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-      updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-    );
-  `;
-  await sql`ALTER TABLE careers_positions ADD COLUMN IF NOT EXISTS application_url VARCHAR(500);`;
-  await sql`ALTER TABLE careers_positions ALTER COLUMN requirements TYPE TEXT USING requirements::text;`;
-  console.log('✅ Verified & migrated CMS table schemas in PostgreSQL.');
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS eyebrow VARCHAR(200);`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS body_content TEXT;`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_text VARCHAR(100);`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_url VARCHAR(500);`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_text VARCHAR(100);`;
+    await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_url VARCHAR(500);`;
 
-  // 2. Seed site_pages
+    await sql`
+      CREATE TABLE IF NOT EXISTS page_seo (
+        id SERIAL PRIMARY KEY,
+        target_type VARCHAR(50) NOT NULL,
+        target_identifier VARCHAR(200) NOT NULL,
+        meta_title VARCHAR(300),
+        meta_description TEXT,
+        canonical_url VARCHAR(1000),
+        robots VARCHAR(100) DEFAULT 'index, follow',
+        og_title VARCHAR(300),
+        og_description TEXT,
+        og_image VARCHAR(1000),
+        twitter_card VARCHAR(50) DEFAULT 'summary_large_image',
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `;
+
+    await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS robots VARCHAR(100) DEFAULT 'index, follow';`;
+    await sql`ALTER TABLE hero_sections ALTER COLUMN heading DROP NOT NULL;`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS body_content TEXT;`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS body TEXT;`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS content_type VARCHAR(50) DEFAULT 'article';`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS tag VARCHAR(100);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS file_url VARCHAR(1000);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS read_time_mins INTEGER DEFAULT 5;`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS authority_tag VARCHAR(100);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS court_name VARCHAR(300);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS published_at TIMESTAMP;`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS person_name VARCHAR(200);`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS person_title VARCHAR(300);`;
+    await sql`ALTER TABLE faqs ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'general';`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS category VARCHAR(100);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS author_name VARCHAR(200);`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS author_role VARCHAR(200);`;
+    await sql`ALTER TABLE faqs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0 NOT NULL;`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true NOT NULL;`;
+    await sql`ALTER TABLE office_locations ADD COLUMN IF NOT EXISTS country VARCHAR(100);`;
+    await sql`ALTER TABLE office_locations ADD COLUMN IF NOT EXISTS is_headquarters BOOLEAN DEFAULT false NOT NULL;`;
+    await sql`ALTER TABLE office_locations ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0 NOT NULL;`;
+    await sql`ALTER TABLE office_locations ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();`;
+    await sql`ALTER TABLE office_locations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();`;
+    await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS read_time VARCHAR(50);`;
+    await sql`ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true NOT NULL;`;
+    await sql`ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS unsubscribed_at TIMESTAMP;`;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS careers_positions (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(300) NOT NULL,
+        department VARCHAR(200) DEFAULT 'Tax Advisory' NOT NULL,
+        location VARCHAR(200) DEFAULT 'London, UK' NOT NULL,
+        type VARCHAR(50) DEFAULT 'Full-time' NOT NULL,
+        description TEXT,
+        requirements TEXT,
+        application_url VARCHAR(500) DEFAULT '/contact',
+        sort_order INTEGER DEFAULT 0 NOT NULL,
+        is_published BOOLEAN DEFAULT true NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `;
+
+    await sql`ALTER TABLE practice_areas ADD COLUMN IF NOT EXISTS heading VARCHAR(300);`;
+    await sql`ALTER TABLE practice_areas ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS stats (
+        id SERIAL PRIMARY KEY,
+        label VARCHAR(200) NOT NULL,
+        value INTEGER DEFAULT 0 NOT NULL,
+        suffix VARCHAR(20) DEFAULT '+' NOT NULL,
+        icon_name VARCHAR(100),
+        sort_order INTEGER DEFAULT 0 NOT NULL,
+        is_published BOOLEAN DEFAULT true NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `;
+
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS value INTEGER DEFAULT 0;`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS label VARCHAR(200);`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS suffix VARCHAR(20) DEFAULT '+';`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS icon_name VARCHAR(100);`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;`;
+    await sql`ALTER TABLE stats ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();`;
+    await sql`ALTER TABLE stats ALTER COLUMN number_display DROP NOT NULL;`;
+
+    console.log('✅ Verified & migrated CMS table schemas in PostgreSQL.');
+  } catch (err) {
+    console.error('Error verifying/migrating tables:', err);
+  }
+
+  // 2. Seed site_pages (12 main routes)
   const pagesData = [
-    { slug: 'home', title: 'Home Page', path: '/', category: 'main' },
-    { slug: 'about', title: 'About Us', path: '/about', category: 'main' },
-    { slug: 'book-consultation', title: 'Book Consultation', path: '/book-consultation', category: 'main' },
-    { slug: 'career', title: 'Careers', path: '/career', category: 'main' },
-    { slug: 'contact', title: 'Contact Us', path: '/contact', category: 'main' },
-    { slug: 'events', title: 'Events Catalog', path: '/events', category: 'main' },
-    { slug: 'events-detail', title: 'Event Detail Template', path: '/events/[slug]', category: 'dynamic' },
-    { slug: 'gcc', title: 'GCC Advisory', path: '/gcc', category: 'main' },
-    { slug: 'industries', title: 'Industries Catalog', path: '/industries', category: 'main' },
-    { slug: 'industries-detail', title: 'Industry Detail Template', path: '/industries/[slug]', category: 'dynamic' },
-    { slug: 'insights', title: 'Insights Catalog', path: '/insights', category: 'main' },
-    { slug: 'insights-detail', title: 'Insight Detail Template', path: '/insights/[slug]', category: 'dynamic' },
-    { slug: 'partner', title: 'Partner Directory', path: '/partner', category: 'main' },
-    { slug: 'partner-detail', title: 'Partner Detail Template', path: '/partner/[slug]', category: 'dynamic' },
-    { slug: 'practice-areas', title: 'Practice Areas Catalog', path: '/practice-areas', category: 'main' },
-    { slug: 'practice-areas-detail', title: 'Practice Area Detail Template', path: '/practice-areas/[slug]', category: 'dynamic' },
-    { slug: 'team', title: 'Team Directory', path: '/team', category: 'main' },
+    { slug: 'home', title: 'Home Page', description: 'Hero banner, practice highlights, sector cards, key stats, insights, and CTAs.' },
+    { slug: 'about', title: 'About Us', description: 'Firm history, executive mission, core operating principles, timeline, and global footprint.' },
+    { slug: 'team', title: 'Leadership & Team', description: 'Executive managing partners, senior advisors, and practice leaders presentation.' },
+    { slug: 'practice-areas', title: 'Practice Areas Index', description: 'Core practice areas index (Tax Advisory, Risk & Assurance, M&A Due Diligence).' },
+    { slug: 'industries', title: 'Industries Index', description: 'Industry verticals directory (Financial Services, Tech, Energy, Healthcare).' },
+    { slug: 'insights', title: 'Insights Index', description: 'Tax policy insights, landmark judgements, regulatory updates, and research publications.' },
+    { slug: 'events', title: 'Events Overview', description: 'Upcoming webinars, tax briefings, agenda highlights, and registration links.' },
+    { slug: 'gcc', title: 'GCC Advisory', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
+    { slug: 'partner', title: 'Partner Network', description: 'Global strategic partners, affiliate firms, and institutional relationships.' },
+    { slug: 'career', title: 'Careers', description: 'Working at PSC Global, workplace culture, benefits, and open job positions.' },
+    { slug: 'contact', title: 'Contact Us', description: 'Office addresses, contact inquiry form configuration, and map embeds.' },
+    { slug: 'book-consultation', title: 'Book Consultation', description: 'Consultation scheduling form, booking parameters, and confirmation CTAs.' },
   ];
 
   for (const page of pagesData) {
@@ -141,66 +179,13 @@ async function seedSiteCMS() {
   }
   console.log(`✅ Seeded ${pagesData.length} site pages.`);
 
-  // 3. Seed page_sections
+  // 3. Seed structured page_sections for /practice-areas and other routes
   const sectionsData = [
-    // Home
-    { pageSlug: 'home', sectionKey: 'hero', title: 'Global Perspective. Local Mastery.', subtitle: 'Navigating cross-border legal, fiscal, and regulatory frameworks with precision.', content: { eyebrow: 'STRATEGIC ADVISORY & GLOBAL EXECUTION', cta1Text: 'Explore Practices', cta1Href: '/practice-areas', cta2Text: 'Book Consultation', cta2Href: '/book-consultation' }, sortOrder: 0 },
-    { pageSlug: 'home', sectionKey: 'stats', title: 'Firm Track Record', subtitle: 'Global scale and proven advisory impact', sortOrder: 1 },
-    { pageSlug: 'home', sectionKey: 'practice_areas', title: 'Core Advisory Practices', subtitle: 'Comprehensive strategic legal and tax solutions', sortOrder: 2 },
-    { pageSlug: 'home', sectionKey: 'industries', title: 'Sectors & Industry Verticals', subtitle: 'Tailored domain expertise across key global sectors', sortOrder: 3 },
-    { pageSlug: 'home', sectionKey: 'insights', title: 'Insights & Perspectives', subtitle: 'Analysis on regulatory shifts, tax policy, and research', sortOrder: 4 },
-    { pageSlug: 'home', sectionKey: 'team', title: 'Leadership Showcase', subtitle: 'Senior partners and international practice leaders', sortOrder: 5 },
-    { pageSlug: 'home', sectionKey: 'testimonials', title: 'Client Feedback', subtitle: 'What corporate leaders say about PSC Global', sortOrder: 6 },
-    { pageSlug: 'home', sectionKey: 'contact_cta', title: 'Ready to Elevate Your Business Operations?', subtitle: 'Connect with our senior advisory partners today.', content: { ctaText: 'Schedule Consultation', ctaHref: '/contact' }, sortOrder: 7 },
-
-    // About
-    { pageSlug: 'about', sectionKey: 'hero', title: 'Two Decades of Advisory Excellence', subtitle: 'Building enduring trust through strategic rigor and global capability.', content: { eyebrow: 'ABOUT PSC GLOBAL', cta1Text: 'View Leadership', cta1Href: '/team' }, sortOrder: 0 },
-    { pageSlug: 'about', sectionKey: 'who_we_are', title: 'Global Vision, Localized Execution', subtitle: 'Empowering multinational corporations to expand seamlessly.', sortOrder: 1 },
-    { pageSlug: 'about', sectionKey: 'timeline', title: 'Our Growth Milestones', subtitle: 'Two decades of advisory evolution across financial hubs', sortOrder: 2 },
-    { pageSlug: 'about', sectionKey: 'values', title: 'Our Core Operating Principles', subtitle: 'Precision, integrity, confidentiality, and partnership', sortOrder: 3 },
-    { pageSlug: 'about', sectionKey: 'offices', title: 'Global Financial Hubs', subtitle: 'London, Dubai, Singapore, New York', sortOrder: 4 },
-
-    // Careers
-    { pageSlug: 'career', sectionKey: 'hero', title: 'Shape the Future of Global Advisory', subtitle: 'Join an elite team of cross-border strategists, attorneys, and tax specialists.', content: { eyebrow: 'CAREERS AT PSC GLOBAL', cta1Text: 'View Openings', cta1Href: '#positions' }, sortOrder: 0 },
-    { pageSlug: 'career', sectionKey: 'culture', title: 'Our Work Culture & Philosophy', subtitle: 'Fostering intellectual rigor, diversity, and strategic impact.', sortOrder: 1 },
-    { pageSlug: 'career', sectionKey: 'positions', title: 'Current Open Opportunities', subtitle: 'Explore positions across our global offices', sortOrder: 2 },
-
-    // Contact
-    { pageSlug: 'contact', sectionKey: 'hero', title: 'Connect With Our Advisory Partners', subtitle: 'Direct access to senior partner counsel across our international offices.', content: { eyebrow: 'CONTACT PSC GLOBAL' }, sortOrder: 0 },
-    { pageSlug: 'contact', sectionKey: 'offices', title: 'Our International Offices', subtitle: 'Full contact details for London, Dubai, Singapore, and New York', sortOrder: 1 },
-    { pageSlug: 'contact', sectionKey: 'faqs', title: 'Frequently Asked Questions', subtitle: 'Common queries regarding advisory engagements', sortOrder: 2 },
-
-    // GCC
-    { pageSlug: 'gcc', sectionKey: 'hero', title: 'Architecting High-Yield GCC Operations', subtitle: 'End-to-end establishment, tax structuring, and compliance for Global Capability Centers in India.', content: { eyebrow: 'GLOBAL CAPABILITY CENTERS' }, sortOrder: 0 },
-    { pageSlug: 'gcc', sectionKey: 'stats', title: 'India GCC Market Landscape', subtitle: 'Statistical backdrop of India as a global innovation powerhouse', sortOrder: 1 },
-    { pageSlug: 'gcc', sectionKey: 'services', title: 'GCC Advisory Capabilities', subtitle: 'Tax structuring, legal compliance, entity setup & talent advisory', sortOrder: 2 },
-    { pageSlug: 'gcc', sectionKey: 'faqs', title: 'GCC Setup FAQs', subtitle: 'Key regulatory, FEMA, and transfer pricing considerations', sortOrder: 3 },
-
-    // Events
-    { pageSlug: 'events', sectionKey: 'hero', title: 'Executive Knowledge Exchange', subtitle: 'Industry briefings, international tax summits, and regulatory roundtables.', content: { eyebrow: 'EVENTS & WEBINARS' }, sortOrder: 0 },
-    { pageSlug: 'events', sectionKey: 'listings', title: 'Upcoming & Archived Events', subtitle: 'Browse webinars and conferences', sortOrder: 1 },
-
-    // Industries
-    { pageSlug: 'industries', sectionKey: 'hero', title: 'Deep Sector Specialization', subtitle: 'Tailored strategic advisory across complex global industries.', content: { eyebrow: 'INDUSTRY VERTICALS' }, sortOrder: 0 },
-    { pageSlug: 'industries', sectionKey: 'listings', title: 'Industry Verticals Catalog', subtitle: 'Browse our domain expertise', sortOrder: 1 },
-
-    // Insights
-    { pageSlug: 'insights', sectionKey: 'hero', title: 'Perspectives, Updates & Research', subtitle: 'Authoritative analysis on corporate tax policy, regulatory shifts, and landmark judgements.', content: { eyebrow: 'THOUGHT LEADERSHIP' }, sortOrder: 0 },
-    { pageSlug: 'insights', sectionKey: 'listings', title: 'Articles & Regulatory Updates', subtitle: 'Search publications and research papers', sortOrder: 1 },
-
-    // Practice Areas
-    { pageSlug: 'practice-areas', sectionKey: 'hero', title: 'Comprehensive Legal & Tax Solutions', subtitle: 'Strategic corporate counsel engineered for global enterprise risk management.', content: { eyebrow: 'PRACTICE AREAS' }, sortOrder: 0 },
-    { pageSlug: 'practice-areas', sectionKey: 'listings', title: 'Core Practice Areas Catalog', subtitle: 'Explore our corporate solutions', sortOrder: 1 },
-
-    // Team
-    { pageSlug: 'team', sectionKey: 'hero', title: 'Leadership & Senior Partners', subtitle: 'Decades of combined international practice across tax, risk, legal, and compliance.', content: { eyebrow: 'OUR PEOPLE' }, sortOrder: 0 },
-    { pageSlug: 'team', sectionKey: 'directory', title: 'Team Directory', subtitle: 'Explore partner and leader profiles', sortOrder: 1 },
-
-    // Book Consultation
-    { pageSlug: 'book-consultation', sectionKey: 'hero', title: 'Schedule an Advisory Consultation', subtitle: 'Book a direct meeting with a senior partner to discuss your strategic needs.', content: { eyebrow: 'CLIENT ENGAGEMENT' }, sortOrder: 0 },
-
-    // Partner
-    { pageSlug: 'partner', sectionKey: 'hero', title: 'Partner Directory', subtitle: 'Meet our global managing partners and senior advisors.', content: { eyebrow: 'EXECUTIVE ADVISORS' }, sortOrder: 0 },
+    // Practice Areas structured sections
+    { pageSlug: 'practice-areas', sectionKey: 'quote', title: 'Operating Resilience', bodyContent: 'Architecture in business is not just about structure; it is about the resilience to withstand global shifts.', isVisible: true, sortOrder: 0 },
+    { pageSlug: 'practice-areas', sectionKey: 'multidisciplinary_intro', title: 'One Firm. Multiple Disciplines. One Integrated Perspective.', eyebrow: 'MULTIDISCIPLINARY EXPERTISE', bodyContent: 'In an increasingly interconnected global economy, business challenges rarely exist in isolation. A tax implication in one region often triggers a regulatory requirement in another, which in turn impacts operational efficiency.\n\nAt Advisory Global, we have structured our practice areas to operate as a single, fluid ecosystem. Our partners collaborate across borders and disciplines to ensure our clients receive not just a service, but a holistic architectural solution for their most complex challenges.', isVisible: true, sortOrder: 1 },
+    { pageSlug: 'practice-areas', sectionKey: 'capabilities_header', title: 'Our Practice Areas', eyebrow: 'CORE CAPABILITIES', subtitle: 'EST. 2002 | Global Standards', isVisible: true, sortOrder: 2 },
+    { pageSlug: 'practice-areas', sectionKey: 'final_cta', title: 'Complex Business Challenges Require Connected Thinking.', subtitle: 'Let us discuss how our multidisciplinary team can provide the architectural clarity your organization needs to thrive on a global scale.', primaryCtaText: 'BOOK A CONSULTATION', primaryCtaUrl: '/book-consultation', secondaryCtaText: 'CONTACT US', secondaryCtaUrl: '/contact', isVisible: true, sortOrder: 3 },
   ];
 
   for (const sec of sectionsData) {
@@ -213,50 +198,117 @@ async function seedSiteCMS() {
       await db.insert(pageSections).values(sec);
     }
   }
-  console.log(`✅ Seeded default page sections.`);
 
-  // 4. Seed page_seo
-  const seoData = [
-    { targetType: 'page', targetIdentifier: 'home', metaTitle: 'PSC Global — Strategic Business & Tax Advisory Firm', metaDescription: 'PSC Global provides cross-border corporate tax advisory, risk & assurance, M&A due diligence, and GCC setup services.', canonicalUrl: 'https://pscglobal.com/' },
-    { targetType: 'page', targetIdentifier: 'about', metaTitle: 'About Us — PSC Global Advisory', metaDescription: 'Learn about PSC Global history, core leadership, operating principles, and global office footprint in London, Dubai, Singapore, and New York.', canonicalUrl: 'https://pscglobal.com/about' },
-    { targetType: 'page', targetIdentifier: 'book-consultation', metaTitle: 'Book Consultation — PSC Global', metaDescription: 'Schedule a confidential advisory consultation with senior partners at PSC Global.', canonicalUrl: 'https://pscglobal.com/book-consultation' },
-    { targetType: 'page', targetIdentifier: 'career', metaTitle: 'Careers at PSC Global — Opportunities in Global Advisory', metaDescription: 'Join our team of strategists, international tax experts, and corporate attorneys across global offices.', canonicalUrl: 'https://pscglobal.com/career' },
-    { targetType: 'page', targetIdentifier: 'contact', metaTitle: 'Contact Us — PSC Global Office Locations', metaDescription: 'Get in touch with PSC Global advisory partners in London, Dubai, Singapore, and New York.', canonicalUrl: 'https://pscglobal.com/contact' },
-    { targetType: 'page', targetIdentifier: 'events', metaTitle: 'Events & Webinars — PSC Global Executive Briefings', metaDescription: 'Attend international tax policy briefings, regulatory roundtables, and executive webinars.', canonicalUrl: 'https://pscglobal.com/events' },
-    { targetType: 'page', targetIdentifier: 'gcc', metaTitle: 'Global Capability Center (GCC) Advisory — PSC Global', metaDescription: 'Architecting high-yield GCC operations, tax structuring, and compliance in India.', canonicalUrl: 'https://pscglobal.com/gcc' },
-    { targetType: 'page', targetIdentifier: 'industries', metaTitle: 'Industry Verticals — PSC Global Domain Specialization', metaDescription: 'Deep domain expertise in Financial Services, Technology, Energy, Healthcare, Manufacturing, and Real Estate.', canonicalUrl: 'https://pscglobal.com/industries' },
-    { targetType: 'page', targetIdentifier: 'insights', metaTitle: 'Insights & Perspectives — Regulatory Updates & Tax Policy', metaDescription: 'Authoritative analysis on international tax policy, SEBI updates, GST landmark judgements, and research.', canonicalUrl: 'https://pscglobal.com/insights' },
-    { targetType: 'page', targetIdentifier: 'partner', metaTitle: 'Partner Profiles — PSC Global Executive Advisors', metaDescription: 'Meet our global managing partners, legal leads, and international tax advisors.', canonicalUrl: 'https://pscglobal.com/partner' },
-    { targetType: 'page', targetIdentifier: 'practice-areas', metaTitle: 'Advisory Practice Areas — PSC Global Solutions', metaDescription: 'Corporate Tax Advisory, Risk & Assurance, M&A Due Diligence, Transfer Pricing, and Legal Compliance.', canonicalUrl: 'https://pscglobal.com/practice-areas' },
-    { targetType: 'page', targetIdentifier: 'team', metaTitle: 'Our Team — Leadership & Advisors | PSC Global', metaDescription: 'Explore our full team of international practice leaders, partners, and strategic advisors.', canonicalUrl: 'https://pscglobal.com/team' },
+  // 4. Seed practice_areas & practice_area_services (All 5 complete practice areas)
+  const defaultPracticeAreas = [
+    {
+      number: '01',
+      slug: 'risk-assurance',
+      name: 'Risk & Assurance',
+      heading: 'Rigorous Oversight for Uncompromising Integrity.',
+      shortDescription: 'Our assurance practice goes beyond standard compliance. We provide deep-dive forensic insights that reveal operational vulnerabilities and strengthen governance frameworks.',
+      imageUrl: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1000&q=85',
+      services: ['Statutory Audit', 'Internal Audit & Controls', 'Forensic Audit', 'Risk Assessment'],
+      sortOrder: 0,
+    },
+    {
+      number: '02',
+      slug: 'tax-fiscal-advisory',
+      name: 'Tax & Fiscal Advisory',
+      heading: 'Strategic Tax Architecture for Global Growth.',
+      shortDescription: 'We navigate the complexities of direct and indirect taxation, ensuring efficiency while maintaining absolute regulatory compliance across multiple jurisdictions.',
+      imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=85',
+      services: ['Direct Taxation', 'Indirect Tax (GST/VAT)', 'International Taxation', 'Transfer Pricing'],
+      sortOrder: 1,
+    },
+    {
+      number: '03',
+      slug: 'corporate-law',
+      name: 'Corporate Law',
+      heading: 'Legal Frameworks Built for Certainty.',
+      shortDescription: 'From incorporation to cross-border contracts, our legal practice provides the structural clarity businesses need to operate with confidence.',
+      imageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1000&q=85',
+      services: ['Corporate Structuring', 'Contract Advisory', 'Dispute Resolution', 'Regulatory Filings'],
+      sortOrder: 2,
+    },
+    {
+      number: '04',
+      slug: 'business-advisory',
+      name: 'Business Advisory',
+      heading: 'Growth Strategy Grounded in Data.',
+      shortDescription: 'We combine market intelligence with operational rigor to help leadership teams make confident, defensible strategic decisions.',
+      imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85',
+      services: ['Market Entry Strategy', 'Feasibility Studies', 'Valuation Advisory', 'Performance Improvement'],
+      sortOrder: 3,
+    },
+    {
+      number: '05',
+      slug: 'business-process-advisory',
+      name: 'Business Process Advisory',
+      heading: 'Operational Excellence at Every Layer.',
+      shortDescription: 'We re-engineer core processes — from ERP rollouts to shared services — so operations scale smoothly without operational friction.',
+      imageUrl: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=85',
+      services: ['ERP Implementation', 'Process Outsourcing', 'Shared Services Design', 'Automation & RPA'],
+      sortOrder: 4,
+    },
   ];
 
-  for (const seo of seoData) {
-    const existing = await db
-      .select()
-      .from(pageSeo)
-      .where(and(eq(pageSeo.targetType, seo.targetType), eq(pageSeo.targetIdentifier, seo.targetIdentifier)));
-    if (existing.length === 0) {
-      await db.insert(pageSeo).values(seo);
+  for (const paData of defaultPracticeAreas) {
+    const [existing] = await db.select().from(practiceAreas).where(eq(practiceAreas.slug, paData.slug)).limit(1);
+    let paId: number;
+
+    if (!existing) {
+      const [inserted] = await db.insert(practiceAreas).values({
+        number: paData.number,
+        slug: paData.slug,
+        name: paData.name,
+        heading: paData.heading,
+        shortDescription: paData.shortDescription,
+        imageUrl: paData.imageUrl,
+        sortOrder: paData.sortOrder,
+        isPublished: true,
+      }).returning();
+      paId = inserted.id;
+    } else {
+      paId = existing.id;
+      await db.update(practiceAreas).set({
+        number: paData.number,
+        heading: existing.heading || paData.heading,
+        shortDescription: existing.shortDescription || paData.shortDescription,
+        imageUrl: existing.imageUrl || paData.imageUrl,
+        isPublished: true,
+      }).where(eq(practiceAreas.id, paId));
+    }
+
+    // Seed services for this practice area
+    const existingServices = await db.select().from(practiceAreaServices).where(eq(practiceAreaServices.practiceAreaId, paId));
+    if (existingServices.length === 0) {
+      for (let sIdx = 0; sIdx < paData.services.length; sIdx++) {
+        await db.insert(practiceAreaServices).values({
+          practiceAreaId: paId,
+          name: paData.services[sIdx],
+          sortOrder: sIdx,
+        });
+      }
     }
   }
-  console.log(`✅ Seeded default page SEO entries.`);
+  console.log(`✅ Seeded complete Practice Areas & Services records.`);
 
-  // 5. Seed careers_positions
-  const jobsData = [
-    { title: 'Senior Corporate Tax Manager', department: 'Tax Advisory', location: 'London, UK', type: 'Full-time', description: 'Lead cross-border corporate tax advisory and transfer pricing strategies for multinational enterprise clients.', requirements: '10+ years corporate tax experience\nCTA or ACA certification\nExpertise in OECD pillar 2 and international tax treaties', sortOrder: 0 },
-    { title: 'M&A Legal Associate', department: 'Legal & Corporate', location: 'Dubai, UAE', type: 'Full-time', description: 'Advise multinational clients on cross-border joint ventures, transaction structuring, and regulatory due diligence.', requirements: 'LL.B or LL.M in Corporate Law\n5+ years M&A advisory experience in GCC region\nFluent in English; Arabic is a plus', sortOrder: 1 },
-    { title: 'GCC Establishment Director', department: 'GCC Advisory', location: 'Bangalore, India', type: 'Full-time', description: 'Architect end-to-end Global Capability Center setup, regulatory approvals, tax incentives, and transfer pricing models.', requirements: '12+ years experience in GCC advisory\nStrong network with Indian regulatory authorities (SEBI, RBI, IT Dept)\nProven track record of setting up 5+ tech/finance GCCs', sortOrder: 2 },
-    { title: 'Transfer Pricing Specialist', department: 'International Tax', location: 'Singapore', type: 'Full-time', description: 'Design APA strategies, BEPS compliance documentation, and intercompany pricing frameworks.', requirements: 'Chartered Accountant / CPA\n6+ years transfer pricing advisory in APAC region', sortOrder: 3 },
+  // 5. Seed stats metrics table
+  const defaultStats = [
+    { label: 'YEARS OF EXPERIENCE', value: 22, suffix: '+', sortOrder: 0 },
+    { label: 'CLIENTS WORLDWIDE', value: 1000, suffix: '+', sortOrder: 1 },
+    { label: 'COUNTRIES PRESENT', value: 15, suffix: '+', sortOrder: 2 },
+    { label: 'EXPERTS & CONSULTANTS', value: 250, suffix: '+', sortOrder: 3 },
   ];
 
-  for (const job of jobsData) {
-    const existing = await db.select().from(careersPositions).where(eq(careersPositions.title, job.title));
+  for (const statItem of defaultStats) {
+    const existing = await db.select().from(stats).where(eq(stats.label, statItem.label));
     if (existing.length === 0) {
-      await db.insert(careersPositions).values(job);
+      await db.insert(stats).values(statItem);
     }
   }
-  console.log(`✅ Seeded careers job openings.`);
+  console.log(`✅ Seeded stats metrics rows.`);
 
   console.log('🎉 Site-Wide CMS Seeding Completed Successfully!');
 }
@@ -264,8 +316,6 @@ async function seedSiteCMS() {
 seedSiteCMS()
   .then(() => process.exit(0))
   .catch((err) => {
-    console.error('❌ Seeding error:', err);
+    console.error('Fatal error during seeding:', err);
     process.exit(1);
   });
-
-//test

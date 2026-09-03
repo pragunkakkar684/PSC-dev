@@ -53,7 +53,7 @@ export default function FaqsPage() {
       setEditFaq({
         question: '',
         answer: '',
-        pageContext: 'general',
+        category: 'general',
         sortOrder: 0,
         isPublished: true,
       });
@@ -113,7 +113,7 @@ export default function FaqsPage() {
       header: 'Page Context',
       render: (f) => (
         <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 7px', borderRadius: '4px', background: 'rgba(59,130,246,0.1)', color: '#60a5fa', textTransform: 'uppercase' }}>
-          {f.pageContext}
+          {f.category}
         </span>
       ),
     },
@@ -226,8 +226,8 @@ export default function FaqsPage() {
               <FormField label="Page Context" required>
                 <select
                   className="form-input"
-                  value={editFaq?.pageContext || 'general'}
-                  onChange={(e) => setEditFaq({ ...editFaq, pageContext: e.target.value })}
+                  value={editFaq?.category || 'general'}
+                  onChange={(e) => setEditFaq({ ...editFaq, category: e.target.value })}
                 >
                   <option value="general">General / Shared</option>
                   <option value="contact">Contact Page</option>

@@ -29,9 +29,7 @@ export function SEOEditor({
     ogTitle: initialSEO?.ogTitle || initialSEO?.metaTitle || defaultTitle,
     ogDescription: initialSEO?.ogDescription || initialSEO?.metaDescription || defaultDescription,
     ogImage: initialSEO?.ogImage || '',
-    twitterCard: initialSEO?.twitterCard || 'summary_large_image',
-    noIndex: initialSEO?.noIndex ?? false,
-    noFollow: initialSEO?.noFollow ?? false,
+    robots: initialSEO?.robots || 'index, follow',
   });
 
   const [saving, setSaving] = useState(false);
@@ -205,8 +203,12 @@ export function SEOEditor({
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: 'var(--text-primary)' }}>
               <input
                 type="checkbox"
-                checked={formData.noIndex || false}
-                onChange={(e) => setFormData({ ...formData, noIndex: e.target.checked })}
+                checked={formData.robots?.includes('noindex') || false}
+                onChange={(e) => {
+                  const noFollow = formData.robots?.includes('nofollow');
+                  const newRobots = `${e.target.checked ? 'noindex' : 'index'}, ${noFollow ? 'nofollow' : 'follow'}`;
+                  setFormData({ ...formData, robots: newRobots });
+                }}
                 style={{ width: '16px', height: '16px', accentColor: '#38bdf8' }}
               />
               <strong>noindex</strong> (Hide this page from Google search results)
@@ -215,8 +217,12 @@ export function SEOEditor({
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: 'var(--text-primary)' }}>
               <input
                 type="checkbox"
-                checked={formData.noFollow || false}
-                onChange={(e) => setFormData({ ...formData, noFollow: e.target.checked })}
+                checked={formData.robots?.includes('nofollow') || false}
+                onChange={(e) => {
+                  const noIndex = formData.robots?.includes('noindex');
+                  const newRobots = `${noIndex ? 'noindex' : 'index'}, ${e.target.checked ? 'nofollow' : 'follow'}`;
+                  setFormData({ ...formData, robots: newRobots });
+                }}
                 style={{ width: '16px', height: '16px', accentColor: '#38bdf8' }}
               />
               <strong>nofollow</strong> (Instruct robots not to follow links on this page)

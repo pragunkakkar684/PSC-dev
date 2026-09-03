@@ -49,14 +49,14 @@ export default function ContactSubmissionsPage() {
   const exportCSV = () => {
     if (submissions.length === 0) return;
 
-    const headers = ['FullName', 'Company', 'Email', 'Phone', 'PracticeArea', 'SubmittedAt', 'Status'];
+    const headers = ['Name', 'Company', 'Email', 'Phone', 'ServiceInterest', 'CreatedAt', 'Status'];
     const rows = submissions.map((s) => [
-      `"${(s.fullName || '').replace(/"/g, '""')}"`,
+      `"${(s.name || '').replace(/"/g, '""')}"`,
       `"${(s.company || '').replace(/"/g, '""')}"`,
       `"${(s.email || '').replace(/"/g, '""')}"`,
       `"${(s.phone || '').replace(/"/g, '""')}"`,
-      `"${(s.practiceArea || '').replace(/"/g, '""')}"`,
-      `"${new Date(s.submittedAt).toISOString()}"`,
+      `"${(s.serviceInterest || '').replace(/"/g, '""')}"`,
+      `"${new Date(s.createdAt).toISOString()}"`,
       `"${s.status}"`,
     ]);
 
@@ -90,7 +90,7 @@ export default function ContactSubmissionsPage() {
       header: 'Full Name & Company',
       render: (s) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.fullName}</div>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.name}</div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.company || '—'}</div>
         </div>
       ),
@@ -100,16 +100,16 @@ export default function ContactSubmissionsPage() {
       render: (s) => s.email,
     },
     {
-      header: 'Practice Area',
+      header: 'Service Interest',
       render: (s) => (
         <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 7px', borderRadius: '4px', background: 'rgba(99,102,241,0.1)', color: '#a5b4fc' }}>
-          {s.practiceArea || 'General Inquiry'}
+          {s.serviceInterest || 'General Inquiry'}
         </span>
       ),
     },
     {
       header: 'Submitted Date',
-      render: (s) => new Date(s.submittedAt).toLocaleDateString(),
+      render: (s) => new Date(s.createdAt).toLocaleDateString(),
     },
     {
       header: 'Status',
@@ -190,7 +190,7 @@ export default function ContactSubmissionsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Submission Details</h3>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Received {new Date(selectedSub.submittedAt).toLocaleString()}</p>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Received {new Date(selectedSub.createdAt).toLocaleString()}</p>
               </div>
               <button type="button" onClick={() => setSelectedSub(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                 <X size={18} />
@@ -202,7 +202,7 @@ export default function ContactSubmissionsPage() {
                 <Building size={16} style={{ color: '#60a5fa' }} />
                 <div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Full Name & Company</div>
-                  <div style={{ fontWeight: 600 }}>{selectedSub.fullName} ({selectedSub.company || 'N/A'})</div>
+                  <div style={{ fontWeight: 600 }}>{selectedSub.name} ({selectedSub.company || 'N/A'})</div>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ export default function ContactSubmissionsPage() {
                 <Tag size={16} style={{ color: '#60a5fa' }} />
                 <div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Practice Interest</div>
-                  <div style={{ fontWeight: 600 }}>{selectedSub.practiceArea || 'General'}</div>
+                  <div style={{ fontWeight: 600 }}>{selectedSub.serviceInterest || 'General'}</div>
                 </div>
               </div>
             </div>
