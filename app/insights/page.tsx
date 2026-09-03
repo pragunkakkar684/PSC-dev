@@ -3,8 +3,17 @@ import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
-import { getPublicHeroSection, getPublicInsights } from '@/lib/queries/public';
+import type { Metadata } from 'next';
+import { getPublicHeroSection, getPublicInsights, buildPageMetadata } from '@/lib/queries/public';
 import InsightsGrid from './InsightsGrid';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'insights', {
+    title: 'Insights & Thought Leadership | PSC Global',
+    description:
+      'Explore our curated perspectives on tax policy, regulatory shifts, landmark judgements, and strategic market dynamics.',
+  });
+}
 
 const defaultInsights = [
   {
@@ -156,7 +165,7 @@ export default async function InsightsPage() {
             )}
             <div>
               <span className="font-mono text-xs tracking-[.18em] text-sky-300 uppercase">
-                {featured.tag || featured.contentType.toUpperCase()} · {featured.readTimeMins || 5} MIN READ
+                {featured.tag || featured.contentType?.toUpperCase()} · {featured.readTimeMins || 5} MIN READ
               </span>
               <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
                 {featured.title}
@@ -185,8 +194,8 @@ export default async function InsightsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex items-end justify-between">
             <h2 className="font-serif text-5xl lg:text-6xl">Regulatory Updates.</h2>
-            <Link href="/insights/regulatory-archive" className="hidden items-center gap-1 font-mono text-xs font-bold tracking-wide sm:flex">
-              VIEW ARCHIVE <ArrowRight size={16} />
+            <Link href="/insights" className="hidden items-center gap-1 font-mono text-xs font-bold tracking-wide sm:flex">
+              VIEW ALL <ArrowRight size={16} />
             </Link>
           </div>
           <div className="mt-12 grid gap-x-12 gap-y-10 md:grid-cols-2">
@@ -233,8 +242,8 @@ export default async function InsightsPage() {
                 <p className="font-mono text-xs tracking-widest text-slate-500 uppercase">{doc.tag}</p>
                 <h3 className="mt-3 font-serif text-xl leading-snug text-ink">{doc.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{doc.description}</p>
-                <a href="#" className="mt-5 flex items-center gap-1.5 text-sm font-bold text-ink">
-                  DOWNLOAD PDF <Download size={14} />
+                <a href="/contact" className="mt-5 flex items-center gap-1.5 text-sm font-bold text-ink">
+                  REQUEST PDF <Download size={14} />
                 </a>
               </div>
             ))}

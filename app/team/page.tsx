@@ -3,7 +3,16 @@ import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
-import { getPublicHeroSection, getPublicTeamMembers } from '@/lib/queries/public';
+import type { Metadata } from 'next';
+import { getPublicHeroSection, getPublicTeamMembers, buildPageMetadata } from '@/lib/queries/public';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'team', {
+    title: 'Leadership & Team | PSC Global',
+    description:
+      'Meet our multidisciplinary team of Chartered Accountants, legal professionals, tax strategists, and business consultants.',
+  });
+}
 
 const philosophyPoints = [
   ['INSTITUTIONAL INTEGRITY', 'Our advisory model is built on the premise that complex challenges cannot be solved in isolation.'],
@@ -24,12 +33,8 @@ const closingPoints = [
   ['Trusted Relationships', 'Built on discretion, rigor, and long-term partnership, we are the quiet force behind sustained corporate excellence.'],
 ];
 
-// Fallback data shaped to match the three team tiers shown on the page:
-// 'leadership' -> Leadership grid, 'partner' -> Partners grid, 'mentor'/'advisor' -> Mentors list.
-// `specialty` is an optional extra field for the Partners tier (e.g. "Corporate Law") — if your
-// dbTeam records don't carry this field yet, it will simply be omitted from the card.
 const defaultTeam = [
-  { id: '1', slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Founder & CEO', category: 'leadership', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world\u2019s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
+  { id: '1', slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Founder & CEO', category: 'leadership', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world’s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
   { id: '2', slug: 'helena-thorne', name: 'Helena Thorne', roleTitle: 'Partner, Digital Transformation', category: 'leadership', shortBio: 'Helena leads our transformation labs, bridging the gap between legacy infrastructure and emergent AI-driven business models.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
   { id: '3', slug: 'marcus-oh', name: 'Marcus Oh', roleTitle: 'Principal, Global Logistics', category: 'leadership', shortBio: 'Marcus specializes in complex logistics and supply chain optimization, having managed projects exceeding $4B in annual spend.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85' },
   { id: '4', slug: 'sarah-jenkins', name: 'Sarah Jenkins', roleTitle: 'Partner, Tax Strategy', category: 'leadership', shortBio: 'Sarah advises multinational clients on cross-border tax structuring and long-term fiscal planning.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85' },
@@ -113,8 +118,8 @@ export default async function OurTeamPage() {
       <AnimatedSection id="leadership" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-5xl text-ink lg:text-6xl">Leadership</h2>
-          <Link href="/team/structure" className="hidden items-center gap-2 text-xs font-bold tracking-wide hover:underline md:flex">
-            VIEW FULL STRUCTURE <ArrowRight size={14} />
+          <Link href="/team" className="hidden items-center gap-2 text-xs font-bold tracking-wide hover:underline md:flex">
+            VIEW ALL MEMBERS <ArrowRight size={14} />
           </Link>
         </div>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -202,7 +207,7 @@ export default async function OurTeamPage() {
               <div className="md:w-1/2">
                 <h3 className="font-serif text-3xl text-ink lg:text-4xl">{title}</h3>
                 <p className="mt-4 text-sm leading-7 text-slate-600 lg:text-base">{copy}</p>
-                <Link href="/services" className="mt-5 inline-flex items-center gap-2 text-xs font-bold tracking-wide text-ink hover:underline">
+                <Link href="/practice-areas" className="mt-5 inline-flex items-center gap-2 text-xs font-bold tracking-wide text-ink hover:underline">
                   EXPLORE <ArrowRight size={12} />
                 </Link>
               </div>

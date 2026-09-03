@@ -5,7 +5,16 @@ import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import { OfficeMap } from '../components/OfficeMap';
 import Link from 'next/link';
-import { getPublicHeroSection, getPublicFaqs } from '@/lib/queries/public';
+import type { Metadata } from 'next';
+import { getPublicHeroSection, getPublicFaqs, buildPageMetadata } from '@/lib/queries/public';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'gcc', {
+    title: 'GCC Advisory | PSC Global',
+    description:
+      'Empowering global enterprises to scale in India. End-to-end Global Capability Center setup, legal, tax, and operational advisory.',
+  });
+}
 
 const complexities: Array<[React.ElementType, string, string]> = [
   [Landmark, 'Regulatory Complexity', 'Navigating multi-layered compliance frameworks, FDI regulations, and evolving tax structures across central and state jurisdictions.'],
@@ -374,8 +383,8 @@ export default async function GCCPage() {
           <Link href="/contact" className="bg-ink px-5 py-3 text-center text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
             SCHEDULE CONSULTATION
           </Link>
-          <Link href="/case-studies" className="border border-ink px-5 py-3 text-center text-xs font-bold tracking-wide transition hover:bg-white">
-            VIEW CASE STUDIES
+          <Link href="/contact" className="border border-ink px-5 py-3 text-center text-xs font-bold tracking-wide transition hover:bg-white">
+            CONTACT US
           </Link>
         </div>
       </AnimatedSection>

@@ -14,12 +14,22 @@ import Footer from '../components/Footer';
 import PublicContactForm from '../components/PublicContactForm';
 import { OfficeMap } from '../components/OfficeMap';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import {
   getPublicHeroSection,
   getPublicOfficeLocations,
   getPublicFaqs,
   getPublicTeamMembers,
+  buildPageMetadata,
 } from '@/lib/queries/public';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'contact', {
+    title: 'Contact Us | PSC Global',
+    description:
+      'Every great business conversation starts here. Engage directly with our strategic advisory team across London, New York, Singapore, and Dubai.',
+  });
+}
 
 const routes: Array<[React.ElementType, string, string]> = [
   [Mail, 'General Enquiries', 'For media, partnerships, and general firm information.'],
@@ -48,8 +58,6 @@ const defaultOffices = [
   { id: 'dubai', city: 'Dubai', isHeadquarters: false, fullAddress: 'DIFC, Gate Building, Dubai, UAE', phone: '+971 4 401 9600', email: 'dubai@pscglobal.com' },
 ];
 
-// Approximate [longitude, latitude] for each office city shown on the map.
-// If your office records already carry lat/long fields, swap this lookup for those values instead.
 const officeCoordinates: Record<string, [number, number]> = {
   London: [-0.1276, 51.5072],
   'New York': [-74.006, 40.7128],
@@ -66,7 +74,7 @@ const defaultFaqs = [
 ];
 
 const defaultTeam = [
-  { id: '1', slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Managing Partner', category: 'partner', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world\u2019s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', focusArea: 'Structural Economics & Governance' },
+  { id: '1', slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Managing Partner', category: 'partner', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world’s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', focusArea: 'Structural Economics & Governance' },
   { id: '2', slug: 'helena-thorne', name: 'Helena Thorne', roleTitle: 'Chief Strategy Officer', category: 'partner', shortBio: 'Helena leads our transformation labs, bridging the gap between legacy infrastructure and emergent AI-driven business models.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', focusArea: 'Digital Transformation' },
   { id: '3', slug: 'marcus-oh', name: 'Marcus Oh', roleTitle: 'Head of Operations', category: 'leadership', shortBio: 'Marcus specializes in complex logistics and supply chain optimization, having managed projects exceeding $4B in annual spend.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', focusArea: 'Global Operations' },
   { id: '4', slug: 'sarah-whitaker', name: 'Sarah Whitaker', roleTitle: 'Global Head of Partners', category: 'leadership', shortBio: 'Expert in multi-stakeholder engagement and international partnership development across emerging markets.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', focusArea: 'Partner Relations' },
@@ -287,7 +295,7 @@ export default async function ContactPage() {
             BOOK A CONSULTATION
           </a>
           <a href="#leadership" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide transition hover:bg-slate-100">
-            CALL OUR TEAM
+            CONTACT OUR TEAM
           </a>
         </div>
       </AnimatedSection>

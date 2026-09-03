@@ -3,7 +3,16 @@ import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
-import { getPublicHeroSection, getPublicIndustries, getPublicTeamMembers } from '@/lib/queries/public';
+import type { Metadata } from 'next';
+import { getPublicHeroSection, getPublicIndustries, getPublicTeamMembers, buildPageMetadata } from '@/lib/queries/public';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'industries', {
+    title: 'Industries Overview | PSC Global',
+    description:
+      'Industry expertise built around real business challenges across manufacturing, energy, technology, real estate, and financial services.',
+  });
+}
 
 const challenges = [
   'Regulatory Compliance',

@@ -14,7 +14,16 @@ import Footer from '../components/Footer';
 import CountdownTimer from '../components/CountdownTimer';
 import UpcomingEventsGrid from '../components/UpcomingEventsGrid';
 import Link from 'next/link';
-import { getPublicHeroSection, getPublicEvents } from '@/lib/queries/public';
+import type { Metadata } from 'next';
+import { getPublicHeroSection, getPublicEvents, buildPageMetadata } from '@/lib/queries/public';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata('page', 'events', {
+    title: 'Events Overview | PSC Global',
+    description:
+      'Join industry leaders and regulatory experts for in-depth webinars, executive briefings, and strategic roundtables.',
+  });
+}
 
 const defaultEvents = [
   {
@@ -30,8 +39,8 @@ const defaultEvents = [
     timeEnd: '12:00 PM',
     timezone: 'EST',
     location: 'Microsoft Teams',
-    registrationUrl: '#',
-    agendaUrl: '#',
+    registrationUrl: '/contact',
+    agendaUrl: null,
     agenda: [
       { id: 'a1', timeLabel: '10:00 AM', title: 'Opening Remarks', description: 'Macroeconomic context setting and introduction.' },
       { id: 'a2', timeLabel: '10:15 AM', title: 'Regulatory Update', description: 'Analysis of upcoming compliance shifts in major markets.' },
@@ -54,7 +63,7 @@ const defaultEvents = [
     duration: '2 HOURS',
     timezone: 'SGT',
     location: 'Singapore',
-    registrationUrl: '#',
+    registrationUrl: '/contact',
     agenda: [],
   },
   {
@@ -71,7 +80,7 @@ const defaultEvents = [
     duration: '90 MINS',
     timezone: 'GMT',
     location: 'Virtual',
-    registrationUrl: '#',
+    registrationUrl: '/contact',
     agenda: [],
   },
   {
@@ -88,7 +97,7 @@ const defaultEvents = [
     duration: '3 HOURS',
     timezone: 'GMT',
     location: 'London',
-    registrationUrl: '#',
+    registrationUrl: '/contact',
     agenda: [],
   },
 ];
@@ -107,7 +116,7 @@ const defaultArchive = [
     title: 'Global M&A Trends in Technology',
     description: 'Analyzing recent consolidation waves in the global tech sector and implications for deal structuring.',
     image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=600&q=85',
-    recordingUrl: '#',
+    recordingUrl: '/contact',
   },
   {
     id: 'pa2',
@@ -115,7 +124,7 @@ const defaultArchive = [
     title: 'Navigating ESG Compliance Mandates',
     description: 'Practical strategies for aligning corporate reporting with evolving European and US ESG frameworks.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=85',
-    recordingUrl: '#',
+    recordingUrl: '/contact',
   },
 ];
 
@@ -126,10 +135,10 @@ const continueReading = [
 ];
 
 const relatedPracticeAreas = [
-  ['Corporate Strategy', '/practice-areas/corporate-strategy'],
-  ['Regulatory Compliance', '/practice-areas/regulatory-compliance'],
-  ['International Tax', '/practice-areas/international-tax'],
-  ['M&A Advisory', '/practice-areas/ma-advisory'],
+  ['Tax Advisory', '/practice-areas'],
+  ['Risk & Assurance', '/practice-areas'],
+  ['Corporate Law', '/practice-areas'],
+  ['Business Advisory', '/practice-areas'],
 ] as const;
 
 export default async function EventsPage() {
@@ -222,7 +231,6 @@ export default async function EventsPage() {
                   {featured.description}
                 </p>
 
-                {/* countdown shown here on small screens, hidden on desktop where it sits in the header row */}
                 {featured.date && (
                   <div className="mt-6 sm:hidden">
                     <CountdownTimer targetDate={featured.date} targetTime={featured.timeStart ?? undefined} timezone={featured.timezone ?? undefined} />
@@ -238,15 +246,13 @@ export default async function EventsPage() {
                     <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                   {featured.registrationUrl && (
-                    <a
-                      href={featured.registrationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href={featured.registrationUrl.startsWith('/') ? featured.registrationUrl : '/contact'}
                       className="group flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink"
                     >
-                      REGISTER VIA {featured.location?.toUpperCase() || 'EVENT LINK'}
+                      REGISTER FOR EVENT
                       <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </a>
+                    </Link>
                   )}
                   {(featured as any).agendaUrl && (
                     <a href={(featured as any).agendaUrl} className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink">
@@ -305,10 +311,10 @@ export default async function EventsPage() {
                 </div>
                 <h3 className="mt-4 font-serif text-xl text-ink">{speaker.name}</h3>
                 <p className="mt-1 text-xs tracking-wide text-slate-500 uppercase">{speaker.role}</p>
-                <button className="mt-2 flex items-center gap-1 text-xs font-bold text-ink">
+                <Link href="/team" className="mt-2 flex items-center gap-1 text-xs font-bold text-ink">
                   VIEW PROFILE
                   <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -332,8 +338,8 @@ export default async function EventsPage() {
             <p className="flex items-center gap-3 font-mono text-xs tracking-[.18em] text-slate-500 uppercase">
               <span className="h-px w-6 bg-slate-400" /> Event Archive
             </p>
-            <Link href="/events/archive" className="flex items-center gap-1 text-xs font-bold text-ink hover:text-sky-700">
-              VIEW ALL PAST EVENTS <ArrowRight size={12} />
+            <Link href="/events" className="flex items-center gap-1 text-xs font-bold text-ink hover:text-sky-700">
+              VIEW ALL EVENTS <ArrowRight size={12} />
             </Link>
           </div>
           <div className="mt-10 grid gap-8 sm:grid-cols-2">
@@ -342,7 +348,7 @@ export default async function EventsPage() {
                 <div className="relative h-28 w-40 shrink-0 overflow-hidden">
                   <img
                     className="h-full w-full object-cover grayscale transition-all duration-500 group-hover:scale-110 group-hover:grayscale-0"
-                    src={ev.image}
+                    src={ev.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=85'}
                     alt={ev.title}
                   />
                   {ev.recordingUrl && (
@@ -359,9 +365,9 @@ export default async function EventsPage() {
                   <h3 className="mt-1 font-serif text-lg leading-snug text-ink">{ev.title}</h3>
                   <p className="mt-1 text-xs leading-5 text-slate-600">{ev.description}</p>
                   {ev.recordingUrl && (
-                    <a href={ev.recordingUrl} className="mt-2 flex items-center gap-1.5 text-xs font-bold text-ink hover:text-sky-700">
-                      <PlayCircle size={14} /> WATCH RECORDING
-                    </a>
+                    <Link href="/contact" className="mt-2 flex items-center gap-1.5 text-xs font-bold text-ink hover:text-sky-700">
+                      <PlayCircle size={14} /> REQUEST RECORDING
+                    </Link>
                   )}
                 </div>
               </div>
