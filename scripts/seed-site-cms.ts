@@ -17,64 +17,100 @@ const db = drizzle(sql);
 async function seedSiteCMS() {
   console.log('🌱 Starting Site-Wide CMS Database Seeding...');
 
-  // 1. Ensure tables exist (using raw SQL IF NOT EXISTS)
+  // 1. Ensure tables exist & migrate missing columns (using raw SQL IF NOT EXISTS)
   await sql`
     CREATE TABLE IF NOT EXISTS site_pages (
       id SERIAL PRIMARY KEY,
-      slug VARCHAR(100) NOT NULL UNIQUE,
+      slug VARCHAR(200) NOT NULL UNIQUE,
       title VARCHAR(200) NOT NULL,
-      path VARCHAR(300) NOT NULL,
-      category VARCHAR(50) DEFAULT 'main' NOT NULL,
+      description TEXT,
       is_published BOOLEAN DEFAULT true NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW() NOT NULL
     );
   `;
+  await sql`ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS description TEXT;`;
+  await sql`ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW() NOT NULL;`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS page_sections (
       id SERIAL PRIMARY KEY,
-      page_slug VARCHAR(100) NOT NULL,
+      page_slug VARCHAR(200) NOT NULL,
       section_key VARCHAR(100) NOT NULL,
       title VARCHAR(300),
       subtitle TEXT,
-      content JSONB,
+      eyebrow VARCHAR(200),
+      body_content TEXT,
+      image_url VARCHAR(1000),
+      primary_cta_text VARCHAR(100),
+      primary_cta_url VARCHAR(500),
+      secondary_cta_text VARCHAR(100),
+      secondary_cta_url VARCHAR(500),
+      custom_payload JSONB,
       sort_order INTEGER DEFAULT 0 NOT NULL,
-      is_published BOOLEAN DEFAULT true NOT NULL,
+      is_visible BOOLEAN DEFAULT true NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW() NOT NULL
     );
   `;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS eyebrow VARCHAR(200);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS body_content TEXT;`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_text VARCHAR(100);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS primary_cta_url VARCHAR(500);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_text VARCHAR(100);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS secondary_cta_url VARCHAR(500);`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS custom_payload JSONB;`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS is_visible BOOLEAN DEFAULT true NOT NULL;`;
+  await sql`ALTER TABLE page_sections ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW() NOT NULL;`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS page_seo (
       id SERIAL PRIMARY KEY,
-      target_key VARCHAR(200) NOT NULL UNIQUE,
+      target_type VARCHAR(50) NOT NULL DEFAULT 'page',
+      target_identifier VARCHAR(200) NOT NULL DEFAULT 'home',
       meta_title VARCHAR(300),
       meta_description TEXT,
-      keywords TEXT,
-      canonical_url VARCHAR(1000),
-      robots_no_index BOOLEAN DEFAULT false NOT NULL,
-      robots_no_follow BOOLEAN DEFAULT false NOT NULL,
+      canonical_url VARCHAR(500),
       og_title VARCHAR(300),
       og_description TEXT,
       og_image VARCHAR(1000),
-      twitter_card VARCHAR(50) DEFAULT 'summary_large_image' NOT NULL,
+      twitter_card VARCHAR(50) DEFAULT 'summary_large_image',
+      no_index BOOLEAN DEFAULT false NOT NULL,
+      no_follow BOOLEAN DEFAULT false NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW() NOT NULL
     );
   `;
+  await sql`ALTER TABLE page_seo ALTER COLUMN target_key DROP NOT NULL;`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS target_type VARCHAR(50) DEFAULT 'page';`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS target_identifier VARCHAR(200) DEFAULT 'home';`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(500);`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_title VARCHAR(300);`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_description TEXT;`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS og_image VARCHAR(1000);`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS twitter_card VARCHAR(50) DEFAULT 'summary_large_image';`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS no_index BOOLEAN DEFAULT false NOT NULL;`;
+  await sql`ALTER TABLE page_seo ADD COLUMN IF NOT EXISTS no_follow BOOLEAN DEFAULT false NOT NULL;`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS careers_positions (
       id SERIAL PRIMARY KEY,
-      title VARCHAR(300) NOT NULL,
-      department VARCHAR(200) NOT NULL,
-      location VARCHAR(200) NOT NULL,
-      type VARCHAR(100) DEFAULT 'Full-time' NOT NULL,
+      title VARCHAR(200) NOT NULL,
+      department VARCHAR(100) NOT NULL,
+      location VARCHAR(100) NOT NULL,
+      type VARCHAR(50) DEFAULT 'Full-time' NOT NULL,
       description TEXT,
-      requirements JSONB,
+      requirements TEXT,
+      application_url VARCHAR(500),
       sort_order INTEGER DEFAULT 0 NOT NULL,
       is_published BOOLEAN DEFAULT true NOT NULL,
       created_at TIMESTAMP DEFAULT NOW() NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW() NOT NULL
     );
   `;
-  console.log('✅ Verified CMS table schemas in PostgreSQL.');
+  await sql`ALTER TABLE careers_positions ADD COLUMN IF NOT EXISTS application_url VARCHAR(500);`;
+  await sql`ALTER TABLE careers_positions ALTER COLUMN requirements TYPE TEXT USING requirements::text;`;
+  console.log('✅ Verified & migrated CMS table schemas in PostgreSQL.');
 
   // 2. Seed site_pages
   const pagesData = [

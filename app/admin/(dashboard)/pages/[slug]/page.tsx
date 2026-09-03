@@ -48,18 +48,30 @@ export default async function PageEditorPage({
 
   const pageTitle = PAGE_TITLE_MAP[slug] || slug.replace(/-/g, ' ').toUpperCase();
 
-  // Fetch page entity, sections, hero, seo, and careers positions concurrently
-  const [pageRes, sections, [hero], [seo], careers] = await Promise.all([
-    db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1),
-    db.select().from(pageSections).where(eq(pageSections.pageSlug, slug)).orderBy(asc(pageSections.sortOrder)),
-    db.select().from(heroSections).where(eq(heroSections.pageSlug, slug)).limit(1),
-    db.select().from(pageSeo).where(and(eq(pageSeo.targetType, 'page'), eq(pageSeo.targetIdentifier, slug))).limit(1),
-    slug === 'career'
-      ? db.select().from(careersPositions).orderBy(asc(careersPositions.sortOrder))
-      : Promise.resolve([]),
-  ]);
+  // Fetch page entity, sections, hero, seo, and careers positions safely
+  let pageRes: (typeof sitePages.$inferSelect)[] = [];
+  let sections: (typeof pageSections.$inferSelect)[] = [];
+  let heroList: (typeof heroSections.$inferSelect)[] = [];
+  let seoList: (typeof pageSeo.$inferSelect)[] = [];
+  let careers: (typeof careersPositions.$inferSelect)[] = [];
+
+  try {
+    [pageRes, sections, heroList, seoList, careers] = await Promise.all([
+      db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1),
+      db.select().from(pageSections).where(eq(pageSections.pageSlug, slug)).orderBy(asc(pageSections.sortOrder)),
+      db.select().from(heroSections).where(eq(heroSections.pageSlug, slug)).limit(1),
+      db.select().from(pageSeo).where(and(eq(pageSeo.targetType, 'page'), eq(pageSeo.targetIdentifier, slug))).limit(1),
+      slug === 'career'
+        ? db.select().from(careersPositions).orderBy(asc(careersPositions.sortOrder))
+        : Promise.resolve([]),
+    ]);
+  } catch (err) {
+    console.error(`Error fetching page data for ${slug}:`, err);
+  }
 
   const page = pageRes[0] || null;
+  const hero = heroList[0] || null;
+  const seo = seoList[0] || null;
   const isPublished = page ? page.isPublished : true;
 
   return (

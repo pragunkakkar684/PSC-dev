@@ -53,11 +53,18 @@ const PUBLIC_PAGES_REGISTRY: PageDef[] = [
 export default async function PagesCMSPage() {
   const user = await requireAuth();
 
-  // Query site_pages and page_sections counts
-  const [dbPages, dbSections] = await Promise.all([
-    db.select().from(sitePages),
-    db.select().from(pageSections),
-  ]);
+  // Query site_pages and page_sections counts safely
+  let dbPages: (typeof sitePages.$inferSelect)[] = [];
+  let dbSections: (typeof pageSections.$inferSelect)[] = [];
+
+  try {
+    [dbPages, dbSections] = await Promise.all([
+      db.select().from(sitePages),
+      db.select().from(pageSections),
+    ]);
+  } catch (err) {
+    console.error('Error querying sitePages or pageSections in /admin/pages:', err);
+  }
 
   const pageStatusMap = new Map<string, boolean>();
   for (const p of dbPages) {
