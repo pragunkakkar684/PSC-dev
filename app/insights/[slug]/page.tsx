@@ -240,7 +240,7 @@ export default async function InsightArticlePage({ params }: { params: Promise<{
   const dbArticle = await getPublicInsightBySlug(slug);
 
   // Fall back to placeholder content only when the DB has no matching row.
-  const article: Article | undefined = dbArticle || defaultArticlesBySlug[slug];
+  const article: any = dbArticle || defaultArticlesBySlug[slug];
 
   if (!article) {
     notFound();

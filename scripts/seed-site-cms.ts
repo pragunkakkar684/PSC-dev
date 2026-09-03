@@ -8,7 +8,7 @@ config({ path: '.env.local' });
 
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { sitePages, pageSections, pageSeo, careersPositions } from '../lib/db/schema';
+import { sitePages, pageSections, pageSeo, careersPositions } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 const sql = neon(process.env.DATABASE_URL!);
@@ -181,22 +181,25 @@ async function seedSiteCMS() {
 
   // 4. Seed page_seo
   const seoData = [
-    { targetKey: 'page:home', metaTitle: 'PSC Global — Strategic Business & Tax Advisory Firm', metaDescription: 'PSC Global provides cross-border corporate tax advisory, risk & assurance, M&A due diligence, and GCC setup services.', keywords: 'tax advisory, legal advisory, M&A, GCC setup, corporate risk, PSC Global', canonicalUrl: 'https://pscglobal.com/' },
-    { targetKey: 'page:about', metaTitle: 'About Us — PSC Global Advisory', metaDescription: 'Learn about PSC Global history, core leadership, operating principles, and global office footprint in London, Dubai, Singapore, and New York.', keywords: 'about PSC Global, advisory firm history, corporate leadership', canonicalUrl: 'https://pscglobal.com/about' },
-    { targetKey: 'page:book-consultation', metaTitle: 'Book Consultation — PSC Global', metaDescription: 'Schedule a confidential advisory consultation with senior partners at PSC Global.', keywords: 'book consultation, advisory appointment, tax consultation', canonicalUrl: 'https://pscglobal.com/book-consultation' },
-    { targetKey: 'page:career', metaTitle: 'Careers at PSC Global — Opportunities in Global Advisory', metaDescription: 'Join our team of strategists, international tax experts, and corporate attorneys across global offices.', keywords: 'PSC Global careers, advisory jobs, tax consultant roles', canonicalUrl: 'https://pscglobal.com/career' },
-    { targetKey: 'page:contact', metaTitle: 'Contact Us — PSC Global Office Locations', metaDescription: 'Get in touch with PSC Global advisory partners in London, Dubai, Singapore, and New York.', keywords: 'contact PSC Global, global offices, advisory enquiry', canonicalUrl: 'https://pscglobal.com/contact' },
-    { targetKey: 'page:events', metaTitle: 'Events & Webinars — PSC Global Executive Briefings', metaDescription: 'Attend international tax policy briefings, regulatory roundtables, and executive webinars.', keywords: 'PSC Global events, tax webinars, corporate roundtables', canonicalUrl: 'https://pscglobal.com/events' },
-    { targetKey: 'page:gcc', metaTitle: 'Global Capability Center (GCC) Advisory — PSC Global', metaDescription: 'Architecting high-yield GCC operations, tax structuring, and compliance in India.', keywords: 'GCC setup India, Global Capability Center, transfer pricing GCC', canonicalUrl: 'https://pscglobal.com/gcc' },
-    { targetKey: 'page:industries', metaTitle: 'Industry Verticals — PSC Global Domain Specialization', metaDescription: 'Deep domain expertise in Financial Services, Technology, Energy, Healthcare, Manufacturing, and Real Estate.', keywords: 'industry advisory, sector expertise, corporate tax verticals', canonicalUrl: 'https://pscglobal.com/industries' },
-    { targetKey: 'page:insights', metaTitle: 'Insights & Perspectives — Regulatory Updates & Tax Policy', metaDescription: 'Authoritative analysis on international tax policy, SEBI updates, GST landmark judgements, and research.', keywords: 'tax policy insights, regulatory updates, landmark judgements', canonicalUrl: 'https://pscglobal.com/insights' },
-    { targetKey: 'page:partner', metaTitle: 'Partner Profiles — PSC Global Executive Advisors', metaDescription: 'Meet our global managing partners, legal leads, and international tax advisors.', keywords: 'PSC Global partners, partner directory, executive team', canonicalUrl: 'https://pscglobal.com/partner' },
-    { targetKey: 'page:practice-areas', metaTitle: 'Advisory Practice Areas — PSC Global Solutions', metaDescription: 'Corporate Tax Advisory, Risk & Assurance, M&A Due Diligence, Transfer Pricing, and Legal Compliance.', keywords: 'practice areas, corporate tax, legal advisory, risk assurance', canonicalUrl: 'https://pscglobal.com/practice-areas' },
-    { targetKey: 'page:team', metaTitle: 'Our Team — Leadership & Advisors | PSC Global', metaDescription: 'Explore our full team of international practice leaders, partners, and strategic advisors.', keywords: 'PSC Global team, advisors, partners', canonicalUrl: 'https://pscglobal.com/team' },
+    { targetType: 'page', targetIdentifier: 'home', metaTitle: 'PSC Global — Strategic Business & Tax Advisory Firm', metaDescription: 'PSC Global provides cross-border corporate tax advisory, risk & assurance, M&A due diligence, and GCC setup services.', canonicalUrl: 'https://pscglobal.com/' },
+    { targetType: 'page', targetIdentifier: 'about', metaTitle: 'About Us — PSC Global Advisory', metaDescription: 'Learn about PSC Global history, core leadership, operating principles, and global office footprint in London, Dubai, Singapore, and New York.', canonicalUrl: 'https://pscglobal.com/about' },
+    { targetType: 'page', targetIdentifier: 'book-consultation', metaTitle: 'Book Consultation — PSC Global', metaDescription: 'Schedule a confidential advisory consultation with senior partners at PSC Global.', canonicalUrl: 'https://pscglobal.com/book-consultation' },
+    { targetType: 'page', targetIdentifier: 'career', metaTitle: 'Careers at PSC Global — Opportunities in Global Advisory', metaDescription: 'Join our team of strategists, international tax experts, and corporate attorneys across global offices.', canonicalUrl: 'https://pscglobal.com/career' },
+    { targetType: 'page', targetIdentifier: 'contact', metaTitle: 'Contact Us — PSC Global Office Locations', metaDescription: 'Get in touch with PSC Global advisory partners in London, Dubai, Singapore, and New York.', canonicalUrl: 'https://pscglobal.com/contact' },
+    { targetType: 'page', targetIdentifier: 'events', metaTitle: 'Events & Webinars — PSC Global Executive Briefings', metaDescription: 'Attend international tax policy briefings, regulatory roundtables, and executive webinars.', canonicalUrl: 'https://pscglobal.com/events' },
+    { targetType: 'page', targetIdentifier: 'gcc', metaTitle: 'Global Capability Center (GCC) Advisory — PSC Global', metaDescription: 'Architecting high-yield GCC operations, tax structuring, and compliance in India.', canonicalUrl: 'https://pscglobal.com/gcc' },
+    { targetType: 'page', targetIdentifier: 'industries', metaTitle: 'Industry Verticals — PSC Global Domain Specialization', metaDescription: 'Deep domain expertise in Financial Services, Technology, Energy, Healthcare, Manufacturing, and Real Estate.', canonicalUrl: 'https://pscglobal.com/industries' },
+    { targetType: 'page', targetIdentifier: 'insights', metaTitle: 'Insights & Perspectives — Regulatory Updates & Tax Policy', metaDescription: 'Authoritative analysis on international tax policy, SEBI updates, GST landmark judgements, and research.', canonicalUrl: 'https://pscglobal.com/insights' },
+    { targetType: 'page', targetIdentifier: 'partner', metaTitle: 'Partner Profiles — PSC Global Executive Advisors', metaDescription: 'Meet our global managing partners, legal leads, and international tax advisors.', canonicalUrl: 'https://pscglobal.com/partner' },
+    { targetType: 'page', targetIdentifier: 'practice-areas', metaTitle: 'Advisory Practice Areas — PSC Global Solutions', metaDescription: 'Corporate Tax Advisory, Risk & Assurance, M&A Due Diligence, Transfer Pricing, and Legal Compliance.', canonicalUrl: 'https://pscglobal.com/practice-areas' },
+    { targetType: 'page', targetIdentifier: 'team', metaTitle: 'Our Team — Leadership & Advisors | PSC Global', metaDescription: 'Explore our full team of international practice leaders, partners, and strategic advisors.', canonicalUrl: 'https://pscglobal.com/team' },
   ];
 
   for (const seo of seoData) {
-    const existing = await db.select().from(pageSeo).where(eq(pageSeo.targetKey, seo.targetKey));
+    const existing = await db
+      .select()
+      .from(pageSeo)
+      .where(and(eq(pageSeo.targetType, seo.targetType), eq(pageSeo.targetIdentifier, seo.targetIdentifier)));
     if (existing.length === 0) {
       await db.insert(pageSeo).values(seo);
     }
@@ -205,10 +208,10 @@ async function seedSiteCMS() {
 
   // 5. Seed careers_positions
   const jobsData = [
-    { title: 'Senior Corporate Tax Manager', department: 'Tax Advisory', location: 'London, UK', type: 'Full-time', description: 'Lead cross-border corporate tax advisory and transfer pricing strategies for multinational enterprise clients.', requirements: ['10+ years corporate tax experience', 'CTA or ACA certification', 'Expertise in OECD pillar 2 and international tax treaties'], sortOrder: 0 },
-    { title: 'M&A Legal Associate', department: 'Legal & Corporate', location: 'Dubai, UAE', type: 'Full-time', description: 'Advise multinational clients on cross-border joint ventures, transaction structuring, and regulatory due diligence.', requirements: ['LL.B or LL.M in Corporate Law', '5+ years M&A advisory experience in GCC region', 'Fluent in English; Arabic is a plus'], sortOrder: 1 },
-    { title: 'GCC Establishment Director', department: 'GCC Advisory', location: 'Bangalore, India', type: 'Full-time', description: 'Architect end-to-end Global Capability Center setup, regulatory approvals, tax incentives, and transfer pricing models.', requirements: ['12+ years experience in GCC advisory', 'Strong network with Indian regulatory authorities (SEBI, RBI, IT Dept)', 'Proven track record of setting up 5+ tech/finance GCCs'], sortOrder: 2 },
-    { title: 'Transfer Pricing Specialist', department: 'International Tax', location: 'Singapore', type: 'Full-time', description: 'Design APA strategies, BEPS compliance documentation, and intercompany pricing frameworks.', requirements: ['Chartered Accountant / CPA', '6+ years transfer pricing advisory in APAC region'], sortOrder: 3 },
+    { title: 'Senior Corporate Tax Manager', department: 'Tax Advisory', location: 'London, UK', type: 'Full-time', description: 'Lead cross-border corporate tax advisory and transfer pricing strategies for multinational enterprise clients.', requirements: '10+ years corporate tax experience\nCTA or ACA certification\nExpertise in OECD pillar 2 and international tax treaties', sortOrder: 0 },
+    { title: 'M&A Legal Associate', department: 'Legal & Corporate', location: 'Dubai, UAE', type: 'Full-time', description: 'Advise multinational clients on cross-border joint ventures, transaction structuring, and regulatory due diligence.', requirements: 'LL.B or LL.M in Corporate Law\n5+ years M&A advisory experience in GCC region\nFluent in English; Arabic is a plus', sortOrder: 1 },
+    { title: 'GCC Establishment Director', department: 'GCC Advisory', location: 'Bangalore, India', type: 'Full-time', description: 'Architect end-to-end Global Capability Center setup, regulatory approvals, tax incentives, and transfer pricing models.', requirements: '12+ years experience in GCC advisory\nStrong network with Indian regulatory authorities (SEBI, RBI, IT Dept)\nProven track record of setting up 5+ tech/finance GCCs', sortOrder: 2 },
+    { title: 'Transfer Pricing Specialist', department: 'International Tax', location: 'Singapore', type: 'Full-time', description: 'Design APA strategies, BEPS compliance documentation, and intercompany pricing frameworks.', requirements: 'Chartered Accountant / CPA\n6+ years transfer pricing advisory in APAC region', sortOrder: 3 },
   ];
 
   for (const job of jobsData) {

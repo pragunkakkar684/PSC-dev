@@ -321,7 +321,7 @@ export default async function EventDetailPage({
   ]);
 
   const fallback = defaultEventDetails[params.slug] ?? defaultEventDetails[fallbackSlug];
-  const detail = dbDetail || fallback;
+  const detail: any = dbDetail || fallback;
 
   const formattedDate = detail.date
     ? new Date(detail.date).toLocaleDateString('en-US', {
@@ -406,7 +406,7 @@ export default async function EventDetailPage({
               <p className="mt-6 max-w-md text-base leading-7 font-medium text-ink">{detail.aboutIntro}</p>
             </div>
             <div className="space-y-6">
-              {detail.aboutParagraphs.map((p, i) => (
+              {(detail.aboutParagraphs || []).map((p: any, i: number) => (
                 <p key={i} className="text-base leading-7 text-slate-600">
                   {p}
                 </p>
@@ -416,7 +416,7 @@ export default async function EventDetailPage({
 
           <p className="mt-16 font-mono text-xs tracking-[.14em] text-sky-700 uppercase">Why Attend</p>
           <div className="mt-6 grid gap-8 border-t border-slate-300 pt-8 sm:grid-cols-2 lg:grid-cols-4">
-            {detail.whyAttend.map((item) => (
+            {(detail.whyAttend || []).map((item: any) => (
               <div key={item.title}>
                 <h3 className="font-serif text-2xl text-ink">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
@@ -432,7 +432,7 @@ export default async function EventDetailPage({
           <h2 className="font-serif text-5xl text-ink lg:text-6xl">Agenda</h2>
 
           <div>
-            {detail.agenda.map((item) => (
+            {(detail.agenda || []).map((item: any) => (
               <div
                 key={item.id}
                 className="grid gap-2 border-t border-slate-300 py-8 first:border-t-0 first:pt-0 sm:grid-cols-[110px_1fr] sm:gap-6"

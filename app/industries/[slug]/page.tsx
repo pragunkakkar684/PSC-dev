@@ -498,7 +498,7 @@ export default async function IndustryDetailPage({
   ]);
 
   const fallback = defaultIndustryDetails[params.slug] ?? defaultIndustryDetails[fallbackSlug];
-  const detail = dbDetail || fallback;
+  const detail: any = dbDetail || fallback;
 
   return (
     <main id="top">
@@ -555,7 +555,7 @@ export default async function IndustryDetailPage({
             </blockquote>
           </div>
           <div className="space-y-6">
-            {detail.understandingParagraphs.map((p, i) => (
+            {(detail.understandingParagraphs || []).map((p: any, i: number) => (
               <p key={i} className="text-base leading-7 text-slate-600 lg:text-lg">
                 {p}
               </p>
@@ -574,7 +574,7 @@ export default async function IndustryDetailPage({
 
           <div className="mt-12 border-t border-slate-700">
             <div className="grid gap-x-16 gap-y-10 pt-12 sm:grid-cols-2">
-              {detail.challenges.map((c) => (
+              {(detail.challenges || []).map((c: any) => (
                 <div key={c.number}>
                   <p className="font-mono text-xs tracking-[.14em] text-slate-400">{c.number}</p>
                   <h3 className="mt-3 font-serif text-2xl text-white lg:text-3xl">{c.title}</h3>
@@ -603,7 +603,7 @@ export default async function IndustryDetailPage({
             <p className="mt-6 max-w-md text-base leading-7 text-slate-600">{detail.howWeHelpIntro}</p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              {detail.howWeHelp.map((item) => (
+              {(detail.howWeHelp || []).map((item: any) => (
                 <div key={item.label} className="border border-slate-200 p-5">
                   <p className="font-mono text-xs font-bold tracking-[.1em] text-slate-500 uppercase">
                     {item.label}
@@ -617,7 +617,7 @@ export default async function IndustryDetailPage({
           <div className="h-fit border border-slate-200 p-8">
             <h3 className="font-serif text-2xl text-ink lg:text-3xl">Relevant Practice Areas</h3>
             <div className="mt-6 border-t border-slate-200">
-              {detail.relatedPracticeAreas.map((pa) => (
+              {(detail.relatedPracticeAreas || []).map((pa: any) => (
                 <Link
                   key={pa.slug}
                   href={`/practice-areas/${pa.slug}`}

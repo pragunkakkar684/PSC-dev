@@ -339,7 +339,7 @@ export default async function PracticeAreaDetailPage({
   ]);
 
   const fallback = defaultPracticeAreaDetails[params.slug] ?? defaultPracticeAreaDetails[fallbackSlug];
-  const detail = dbDetail || fallback;
+  const detail: any = dbDetail || fallback;
 
   return (
     <main id="top">
@@ -384,7 +384,7 @@ export default async function PracticeAreaDetailPage({
           </p>
 
           <div className="mt-12 grid border-t border-slate-300 md:grid-cols-2 lg:grid-cols-4">
-            {detail.challenges.map((c) => (
+            {(detail.challenges || []).map((c: any) => (
               <div key={c.number} className="border-l border-slate-300 p-6 first:border-l-0 lg:p-8">
                 <p className="font-serif text-2xl text-slate-400">{c.number}</p>
                 <h3 className="mt-4 font-serif text-xl text-ink lg:text-2xl">{c.title}</h3>
@@ -406,7 +406,7 @@ export default async function PracticeAreaDetailPage({
           </div>
 
           <div className="border-t border-slate-200">
-            {detail.phases.map((p) => (
+            {(detail.phases || []).map((p: any) => (
               <div
                 key={p.phase}
                 className="grid gap-2 border-b border-slate-200 py-8 sm:grid-cols-[140px_1fr] sm:gap-8"
@@ -431,7 +431,7 @@ export default async function PracticeAreaDetailPage({
           </div>
 
           <div>
-            {detail.deliverables.map((d) => (
+            {(detail.deliverables || []).map((d: any) => (
               <div
                 key={d.number}
                 className="grid gap-2 border-t border-slate-200 py-8 first:border-t-0 sm:grid-cols-[70px_1fr] sm:gap-8"
@@ -459,7 +459,7 @@ export default async function PracticeAreaDetailPage({
           </p>
 
           <div className="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            {detail.industries.map((industry) => (
+            {(detail.industries || []).map((industry: any) => (
               <a
                 key={industry}
                 href="#"
@@ -477,52 +477,54 @@ export default async function PracticeAreaDetailPage({
       </AnimatedSection>
 
       {/* MEET YOUR ADVISOR */}
-      <AnimatedSection className="px-6 py-24 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="aspect-[4/3] w-full overflow-hidden">
-            <img
-              src={detail.advisor.imageUrl}
-              alt={detail.advisor.name}
-              className="h-full w-full object-cover grayscale"
-            />
-          </div>
-
-          <div>
-            <p className="font-mono text-xs tracking-[.18em] text-sky-700">MEET YOUR ADVISOR</p>
-            <h2 className="mt-4 font-serif text-5xl leading-tight text-ink lg:text-6xl">
-              {detail.advisor.name}
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">{detail.advisor.title}</p>
-            <p className="mt-6 max-w-md text-base leading-7 text-slate-600">{detail.advisor.bio}</p>
-
-            <div className="mt-8 grid max-w-md grid-cols-2 gap-8 border-t border-slate-300 pt-8">
-              <div>
-                <p className="font-mono text-xs tracking-[.14em] text-slate-500">CORE EXPERTISE</p>
-                <ul className="mt-3 space-y-1 text-sm text-slate-700">
-                  {detail.advisor.coreExpertise.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="font-mono text-xs tracking-[.14em] text-slate-500">INDUSTRY EXPERIENCE</p>
-                <ul className="mt-3 space-y-1 text-sm text-slate-700">
-                  {detail.advisor.industryExperience.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+      {detail.advisor && (
+        <AnimatedSection className="px-6 py-24 lg:px-10">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+            <div className="aspect-[4/3] w-full overflow-hidden">
+              <img
+                src={detail.advisor.imageUrl}
+                alt={detail.advisor.name}
+                className="h-full w-full object-cover grayscale"
+              />
             </div>
 
-            <Link
-              href="#"
-              className="mt-8 inline-flex items-center gap-2 font-mono text-xs tracking-[.1em] text-ink transition duration-200 ease-out hover:text-sky-700"
-            >
-              VIEW FULL PROFILE <ArrowRight size={14} />
-            </Link>
+            <div>
+              <p className="font-mono text-xs tracking-[.18em] text-sky-700">MEET YOUR ADVISOR</p>
+              <h2 className="mt-4 font-serif text-5xl leading-tight text-ink lg:text-6xl">
+                {detail.advisor.name}
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">{detail.advisor.title}</p>
+              <p className="mt-6 max-w-md text-base leading-7 text-slate-600">{detail.advisor.bio}</p>
+
+              <div className="mt-8 grid max-w-md grid-cols-2 gap-8 border-t border-slate-300 pt-8">
+                <div>
+                  <p className="font-mono text-xs tracking-[.14em] text-slate-500">CORE EXPERTISE</p>
+                  <ul className="mt-3 space-y-1 text-sm text-slate-700">
+                    {(detail.advisor.coreExpertise || []).map((item: any) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-mono text-xs tracking-[.14em] text-slate-500">INDUSTRY EXPERIENCE</p>
+                  <ul className="mt-3 space-y-1 text-sm text-slate-700">
+                    {(detail.advisor.industryExperience || []).map((item: any) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <Link
+                href="#"
+                className="mt-8 inline-flex items-center gap-2 font-mono text-xs tracking-[.1em] text-ink transition duration-200 ease-out hover:text-sky-700"
+              >
+                VIEW FULL PROFILE <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
-        </div>
-      </AnimatedSection>
+        </AnimatedSection>
+      )}
 
       {/* INSIGHTS & PERSPECTIVES */}
       <AnimatedSection className="border-t border-slate-200 px-6 py-24 lg:px-10">
@@ -543,7 +545,7 @@ export default async function PracticeAreaDetailPage({
           </div>
 
           <div className="mt-12 grid gap-10 md:grid-cols-3">
-            {detail.insights.map((post, i) => (
+            {(detail.insights || []).map((post: any, i: number) => (
               <article key={i}>
                 <div className="aspect-[4/3] w-full overflow-hidden">
                   <img
@@ -584,7 +586,7 @@ export default async function PracticeAreaDetailPage({
           </div>
 
           <div className="border-t border-slate-300">
-            {detail.faqs.map((faq, i) => (
+            {(detail.faqs || []).map((faq: any, i: number) => (
               <details key={i} className="group border-b border-slate-300 py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
                   <span className="font-serif text-lg text-ink lg:text-xl">{faq.question}</span>

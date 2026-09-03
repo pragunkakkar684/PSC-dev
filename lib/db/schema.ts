@@ -418,3 +418,73 @@ export type NavItem = typeof navItems.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type SiteSettings = typeof siteSettings.$inferSelect;
+
+// ─── SITE-WIDE CMS TABLES ───────────────────────────────────────────────────
+
+export const sitePages = pgTable('site_pages', {
+  id: serial('id').primaryKey(),
+  slug: varchar('slug', { length: 200 }).notNull().unique(),
+  title: varchar('title', { length: 200 }).notNull(),
+  description: text('description'),
+  isPublished: boolean('is_published').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const pageSections = pgTable('page_sections', {
+  id: serial('id').primaryKey(),
+  pageSlug: varchar('page_slug', { length: 200 })
+    .notNull()
+    .references(() => sitePages.slug, { onDelete: 'cascade' }),
+  sectionKey: varchar('section_key', { length: 100 }).notNull(),
+  title: varchar('title', { length: 300 }),
+  subtitle: text('subtitle'),
+  eyebrow: varchar('eyebrow', { length: 200 }),
+  bodyContent: text('body_content'),
+  imageUrl: varchar('image_url', { length: 1000 }),
+  primaryCtaText: varchar('primary_cta_text', { length: 100 }),
+  primaryCtaUrl: varchar('primary_cta_url', { length: 500 }),
+  secondaryCtaText: varchar('secondary_cta_text', { length: 100 }),
+  secondaryCtaUrl: varchar('secondary_cta_url', { length: 500 }),
+  customPayload: jsonb('custom_payload'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const pageSeo = pgTable('page_seo', {
+  id: serial('id').primaryKey(),
+  targetType: varchar('target_type', { length: 50 }).notNull(), // 'page' | 'event' | 'insight' | 'practice_area' | 'industry'
+  targetIdentifier: varchar('target_identifier', { length: 200 }).notNull(),
+  metaTitle: varchar('meta_title', { length: 300 }),
+  metaDescription: text('meta_description'),
+  canonicalUrl: varchar('canonical_url', { length: 500 }),
+  ogTitle: varchar('og_title', { length: 300 }),
+  ogDescription: text('og_description'),
+  ogImage: varchar('og_image', { length: 1000 }),
+  twitterCard: varchar('twitter_card', { length: 50 }).default('summary_large_image'),
+  noIndex: boolean('no_index').notNull().default(false),
+  noFollow: boolean('no_follow').notNull().default(false),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const careersPositions = pgTable('careers_positions', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 200 }).notNull(),
+  department: varchar('department', { length: 100 }).notNull(),
+  location: varchar('location', { length: 100 }).notNull(),
+  type: varchar('type', { length: 50 }).notNull().default('Full-time'), // 'Full-time' | 'Part-time' | 'Contract'
+  description: text('description'),
+  requirements: text('requirements'),
+  applicationUrl: varchar('application_url', { length: 500 }),
+  isPublished: boolean('is_published').notNull().default(true),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type SitePage = typeof sitePages.$inferSelect;
+export type PageSection = typeof pageSections.$inferSelect;
+export type PageSeo = typeof pageSeo.$inferSelect;
+export type CareersPosition = typeof careersPositions.$inferSelect;
