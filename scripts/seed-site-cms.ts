@@ -7,6 +7,7 @@ import {
   practiceAreas,
   practiceAreaServices,
   stats,
+  teamMembers,
 } from '../lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { neon } from '@neondatabase/serverless';
@@ -127,6 +128,7 @@ async function seedSiteCMS() {
 
     await sql`ALTER TABLE practice_areas ADD COLUMN IF NOT EXISTS heading VARCHAR(300);`;
     await sql`ALTER TABLE practice_areas ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
+    await sql`ALTER TABLE team_members ADD COLUMN IF NOT EXISTS specialty VARCHAR(300);`;
 
     await sql`
       CREATE TABLE IF NOT EXISTS stats (
@@ -179,13 +181,87 @@ async function seedSiteCMS() {
   }
   console.log(`✅ Seeded ${pagesData.length} site pages.`);
 
-  // 3. Seed structured page_sections for /practice-areas and other routes
+  // 3. Seed structured page_sections for /practice-areas, /team, and other routes
   const sectionsData = [
     // Practice Areas structured sections
     { pageSlug: 'practice-areas', sectionKey: 'quote', title: 'Operating Resilience', bodyContent: 'Architecture in business is not just about structure; it is about the resilience to withstand global shifts.', isVisible: true, sortOrder: 0 },
     { pageSlug: 'practice-areas', sectionKey: 'multidisciplinary_intro', title: 'One Firm. Multiple Disciplines. One Integrated Perspective.', eyebrow: 'MULTIDISCIPLINARY EXPERTISE', bodyContent: 'In an increasingly interconnected global economy, business challenges rarely exist in isolation. A tax implication in one region often triggers a regulatory requirement in another, which in turn impacts operational efficiency.\n\nAt Advisory Global, we have structured our practice areas to operate as a single, fluid ecosystem. Our partners collaborate across borders and disciplines to ensure our clients receive not just a service, but a holistic architectural solution for their most complex challenges.', isVisible: true, sortOrder: 1 },
     { pageSlug: 'practice-areas', sectionKey: 'capabilities_header', title: 'Our Practice Areas', eyebrow: 'CORE CAPABILITIES', subtitle: 'EST. 2002 | Global Standards', isVisible: true, sortOrder: 2 },
     { pageSlug: 'practice-areas', sectionKey: 'final_cta', title: 'Complex Business Challenges Require Connected Thinking.', subtitle: 'Let us discuss how our multidisciplinary team can provide the architectural clarity your organization needs to thrive on a global scale.', primaryCtaText: 'BOOK A CONSULTATION', primaryCtaUrl: '/book-consultation', secondaryCtaText: 'CONTACT US', secondaryCtaUrl: '/contact', isVisible: true, sortOrder: 3 },
+
+    // Team structured sections
+    {
+      pageSlug: 'team',
+      sectionKey: 'philosophy',
+      title: 'A Philosophy Rooted in Structural Integrity',
+      subtitle: 'Strong businesses are built on thoughtful advice, enduring relationships and uncompromising integrity.',
+      bodyContent: JSON.stringify([
+        ['INSTITUTIONAL INTEGRITY', 'Our advisory model is built on the premise that complex challenges cannot be solved in isolation.'],
+        ['LONG-TERM RELATIONSHIPS', 'We cultivate long-term partnerships with our clients, acting as a steady hand through market transitions.'],
+        ['MULTIDISCIPLINARY COLLABORATION', 'Our collaborative approach ensures every strategic recommendation is vetted through multiple lenses.'],
+        ['TRUSTED ADVISORY', 'This holistic approach transforms traditional consulting into a trusted partnership that endures across generations.'],
+      ]),
+      isVisible: true,
+      sortOrder: 0,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'leadership',
+      title: 'Leadership',
+      primaryCtaText: 'VIEW ALL MEMBERS',
+      primaryCtaUrl: '/team',
+      isVisible: true,
+      sortOrder: 1,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'partners',
+      title: 'Partners',
+      isVisible: true,
+      sortOrder: 2,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'mentors',
+      title: 'Mentors',
+      isVisible: true,
+      sortOrder: 3,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'expertise',
+      title: 'Expertise Across Disciplines',
+      bodyContent: JSON.stringify([
+        ['Risk & Assurance', 'Fortifying structural integrity through meticulous audit, compliance, and proactive risk mitigation strategies.', 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85', '/practice-areas'],
+        ['Tax Advisory', 'Optimizing corporate structures with strategic tax planning and international compliance frameworks.', 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85', '/practice-areas'],
+        ['Corporate Law', 'Navigating complex M&A, structural reorganizations, and governance with robust legal foresight.', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=85', '/practice-areas'],
+      ]),
+      isVisible: true,
+      sortOrder: 4,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'supporting_values',
+      title: 'Core Capabilities',
+      bodyContent: JSON.stringify([
+        ['Integrated Expertise', 'We fuse diverse professional disciplines into a single, cohesive strategy, ensuring no structural vulnerability goes unaddressed.'],
+        ['Industry Experience', 'Decades of combined institutional experience across global markets, providing deep situational fluency for complex challenges.'],
+        ['Trusted Relationships', 'Built on discretion, rigor, and long-term partnership, we are the quiet force behind sustained corporate excellence.'],
+      ]),
+      isVisible: true,
+      sortOrder: 5,
+    },
+    {
+      pageSlug: 'team',
+      sectionKey: 'cta',
+      title: "Let's Start The Conversation.",
+      primaryCtaText: 'BOOK A CONSULTATION',
+      primaryCtaUrl: '/contact',
+      secondaryCtaText: 'MEET OUR EXPERTS',
+      secondaryCtaUrl: '/team',
+      isVisible: true,
+      sortOrder: 6,
+    },
   ];
 
   for (const sec of sectionsData) {
@@ -309,6 +385,39 @@ async function seedSiteCMS() {
     }
   }
   console.log(`✅ Seeded stats metrics rows.`);
+
+  // 6. Seed default team members (Leadership, Partners, Mentors)
+  const defaultTeamMembersData = [
+    { slug: 'julian-vance', name: 'Dr. Julian Vance', roleTitle: 'Founder & CEO', category: 'leadership', shortBio: 'With over three decades of experience in structural economics, Dr. Vance has advised four of the world’s top ten sovereign wealth funds.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', sortOrder: 0 },
+    { slug: 'helena-thorne', name: 'Helena Thorne', roleTitle: 'Partner, Digital Transformation', category: 'leadership', shortBio: 'Helena leads our transformation labs, bridging the gap between legacy infrastructure and emergent AI-driven business models.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', sortOrder: 1 },
+    { slug: 'marcus-oh', name: 'Marcus Oh', roleTitle: 'Principal, Global Logistics', category: 'leadership', shortBio: 'Marcus specializes in complex logistics and supply chain optimization, having managed projects exceeding $4B in annual spend.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', sortOrder: 2 },
+    { slug: 'sarah-jenkins', name: 'Sarah Jenkins', roleTitle: 'Partner, Tax Strategy', category: 'leadership', shortBio: 'Sarah advises multinational clients on cross-border tax structuring and long-term fiscal planning.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', sortOrder: 3 },
+    { slug: 'eleanor-vance', name: 'Eleanor Vance', roleTitle: 'Senior Partner', specialty: 'Corporate Law', category: 'partner', shortBio: 'Eleanor leads our corporate law practice, specializing in complex M&A and governance structuring.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', sortOrder: 4 },
+    { slug: 'david-chen', name: 'David Chen', roleTitle: 'Partner', specialty: 'Risk & Assurance', category: 'partner', shortBio: 'David oversees audit and compliance engagements for institutional clients across global markets.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', sortOrder: 5 },
+    { slug: 'amira-rossi', name: 'Amira Rossi', roleTitle: 'Partner', specialty: 'Business Advisory', category: 'partner', shortBio: 'Amira advises growth-stage enterprises on operational strategy and organizational design.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85', sortOrder: 6 },
+    { slug: 'robert-sterling', name: 'Robert Sterling', roleTitle: 'Senior Advisor, Global Markets', category: 'mentor', shortBio: 'Robert brings over 40 years of institutional experience guiding Fortune 500 companies through complex market transitions and cross-border expansions.', imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=85', sortOrder: 7 },
+    { slug: 'evelyn-hayes', name: 'Dr. Evelyn Hayes', roleTitle: 'Senior Advisor, Regulatory Affairs', category: 'mentor', shortBio: 'A former chief regulator, Dr. Hayes advises our structural teams on anticipating policy shifts and building resilient compliance frameworks.', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=85', sortOrder: 8 },
+  ];
+
+  for (const tm of defaultTeamMembersData) {
+    const [existing] = await db.select().from(teamMembers).where(eq(teamMembers.slug, tm.slug)).limit(1);
+    if (!existing) {
+      await db.insert(teamMembers).values({
+        ...tm,
+        isPublished: true,
+      });
+    } else {
+      await db.update(teamMembers).set({
+        roleTitle: existing.roleTitle || tm.roleTitle,
+        category: existing.category || tm.category,
+        specialty: existing.specialty || tm.specialty,
+        shortBio: existing.shortBio || tm.shortBio,
+        imageUrl: existing.imageUrl || tm.imageUrl,
+        isPublished: true,
+      }).where(eq(teamMembers.id, existing.id));
+    }
+  }
+  console.log(`✅ Seeded complete Team Members records.`);
 
   console.log('🎉 Site-Wide CMS Seeding Completed Successfully!');
 }

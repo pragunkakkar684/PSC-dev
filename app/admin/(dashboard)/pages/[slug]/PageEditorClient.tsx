@@ -74,6 +74,7 @@ interface PageEditorClientProps {
   careers: CareersPosition[];
   practiceAreasList?: PracticeAreaItem[];
   statList?: Stat[];
+  teamMemberList?: any[];
 }
 
 export function PageEditorClient({
@@ -86,8 +87,9 @@ export function PageEditorClient({
   careers: initialCareers,
   practiceAreasList: initialPracticeAreas = [],
   statList: initialStats = [],
+  teamMemberList = [],
 }: PageEditorClientProps) {
-  const [activeTab, setActiveTab] = useState<'content' | 'sections' | 'seo' | 'settings'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'sections' | 'people' | 'seo' | 'settings'>('content');
   const [isPublished, setIsPublished] = useState(initialIsPublished);
   const [heroForm, setHeroForm] = useState<Partial<HeroSection>>(
     initialHero || {
@@ -285,6 +287,27 @@ export function PageEditorClient({
         >
           <Layers size={16} /> Section Composition ({sections.length})
         </button>
+
+        {(slug === 'team' || teamMemberList.length > 0) && (
+          <button
+            onClick={() => setActiveTab('people')}
+            style={{
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: 600,
+              background: activeTab === 'people' ? 'var(--bg-surface)' : 'transparent',
+              color: activeTab === 'people' ? '#38bdf8' : 'var(--text-secondary)',
+              border: 'none',
+              borderBottom: activeTab === 'people' ? '2px solid #38bdf8' : '2px solid transparent',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <Users size={16} /> Team & Leadership ({teamMemberList.length})
+          </button>
+        )}
 
         <button
           onClick={() => setActiveTab('seo')}
@@ -738,6 +761,124 @@ export function PageEditorClient({
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: PEOPLE & LEADERSHIP ENTITIES */}
+          {activeTab === 'people' && (
+            <div style={{ display: 'grid', gap: '24px' }}>
+              <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Users size={20} className="text-sky-400" /> Team & Leadership Entities ({teamMemberList.length})
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                      Manage leadership, partners, and mentors assigned to the <code>/team</code> page. Changes to team member profiles are updated in real time across the site.
+                    </p>
+                  </div>
+
+                  <Link href="/admin/team/new" className="admin-button primary" style={{ fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Plus size={16} /> Add Team Member
+                  </Link>
+                </div>
+
+                {/* LEADERSHIP MEMBERS */}
+                <div>
+                  <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#38bdf8', marginBottom: '12px', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
+                    Leadership ({teamMemberList.filter((m: any) => m.category === 'leadership').length})
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                    {teamMemberList.filter((m: any) => m.category === 'leadership').map((m: any) => {
+                      const isComplete = Boolean(m.name && m.roleTitle && m.imageUrl && m.slug);
+                      return (
+                        <div key={m.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85'} alt={m.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.roleTitle}</div>
+                            <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isComplete ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: isComplete ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                                {isComplete ? 'Complete' : 'Incomplete'}
+                              </span>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: m.isPublished ? 'rgba(56, 189, 248, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: m.isPublished ? '#38bdf8' : '#f59e0b', fontWeight: 600 }}>
+                                {m.isPublished ? 'Live' : 'Draft'}
+                              </span>
+                            </div>
+                          </div>
+                          <Link href={`/admin/team/${m.id}`} className="admin-button secondary" style={{ padding: '6px 10px', fontSize: '12px' }}>
+                            Edit
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* PARTNERS */}
+                <div style={{ marginTop: '16px' }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#38bdf8', marginBottom: '12px', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
+                    Partners ({teamMemberList.filter((m: any) => m.category === 'partner').length})
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                    {teamMemberList.filter((m: any) => m.category === 'partner').map((m: any) => {
+                      const isComplete = Boolean(m.name && m.roleTitle && m.imageUrl && m.slug);
+                      return (
+                        <div key={m.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={m.imageUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=85'} alt={m.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.roleTitle} {m.specialty ? `· ${m.specialty}` : ''}</div>
+                            <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isComplete ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: isComplete ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                                {isComplete ? 'Complete' : 'Incomplete'}
+                              </span>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: m.isPublished ? 'rgba(56, 189, 248, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: m.isPublished ? '#38bdf8' : '#f59e0b', fontWeight: 600 }}>
+                                {m.isPublished ? 'Live' : 'Draft'}
+                              </span>
+                            </div>
+                          </div>
+                          <Link href={`/admin/team/${m.id}`} className="admin-button secondary" style={{ padding: '6px 10px', fontSize: '12px' }}>
+                            Edit
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* MENTORS & ADVISORS */}
+                <div style={{ marginTop: '16px' }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#38bdf8', marginBottom: '12px', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
+                    Mentors & Advisors ({teamMemberList.filter((m: any) => m.category === 'mentor' || m.category === 'advisor').length})
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                    {teamMemberList.filter((m: any) => m.category === 'mentor' || m.category === 'advisor').map((m: any) => {
+                      const isComplete = Boolean(m.name && m.roleTitle && m.imageUrl && m.slug);
+                      return (
+                        <div key={m.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={m.imageUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=85'} alt={m.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.roleTitle}</div>
+                            <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isComplete ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: isComplete ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                                {isComplete ? 'Complete' : 'Incomplete'}
+                              </span>
+                              <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: m.isPublished ? 'rgba(56, 189, 248, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: m.isPublished ? '#38bdf8' : '#f59e0b', fontWeight: 600 }}>
+                                {m.isPublished ? 'Live' : 'Draft'}
+                              </span>
+                            </div>
+                          </div>
+                          <Link href={`/admin/team/${m.id}`} className="admin-button secondary" style={{ padding: '6px 10px', fontSize: '12px' }}>
+                            Edit
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           )}

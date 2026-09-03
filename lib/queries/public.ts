@@ -195,6 +195,7 @@ export async function getPublicTeamMembers() {
       slug: 'vance-spencer',
       roleTitle: 'Managing Partner',
       category: 'partner',
+      specialty: 'Tax Policy',
       focusArea: 'Tax Policy & Cross-Border M&A',
       location: 'London / Singapore',
       email: 'v.spencer@pscglobal.com',

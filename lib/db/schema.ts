@@ -169,6 +169,7 @@ export const teamMembers = pgTable('team_members', {
   name: varchar('name', { length: 200 }).notNull(),
   roleTitle: varchar('role_title', { length: 300 }),
   category: varchar('category', { length: 50 }).notNull().default('partner'),
+  specialty: varchar('specialty', { length: 300 }),
   focusArea: varchar('focus_area', { length: 300 }),
   shortBio: text('short_bio'),
   longBioSections: jsonb('long_bio_sections'),

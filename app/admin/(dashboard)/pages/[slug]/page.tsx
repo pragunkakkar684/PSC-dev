@@ -11,6 +11,7 @@ import {
   practiceAreas,
   practiceAreaServices,
   stats,
+  teamMembers,
 } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
@@ -58,9 +59,10 @@ export default async function PageEditorPage({
   let careers: (typeof careersPositions.$inferSelect)[] = [];
   let practiceAreasList: any[] = [];
   let statList: (typeof stats.$inferSelect)[] = [];
+  let teamMemberList: (typeof teamMembers.$inferSelect)[] = [];
 
   try {
-    const [pRes, secRes, hList, sList, cList, paList, stList] = await Promise.all([
+    const [pRes, secRes, hList, sList, cList, paList, stList, tmList] = await Promise.all([
       db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1),
       db.select().from(pageSections).where(eq(pageSections.pageSlug, slug)).orderBy(asc(pageSections.sortOrder)),
       db.select().from(heroSections).where(eq(heroSections.pageSlug, slug)).limit(1),
@@ -74,6 +76,9 @@ export default async function PageEditorPage({
       slug === 'practice-areas'
         ? db.select().from(stats).orderBy(asc(stats.sortOrder))
         : Promise.resolve([]),
+      slug === 'team'
+        ? db.select().from(teamMembers).orderBy(asc(teamMembers.sortOrder))
+        : Promise.resolve([]),
     ]);
 
     pageRes = pRes;
@@ -82,6 +87,7 @@ export default async function PageEditorPage({
     seoList = sList;
     careers = cList;
     statList = stList;
+    teamMemberList = tmList;
 
     if (paList.length > 0) {
       practiceAreasList = await Promise.all(
@@ -119,6 +125,7 @@ export default async function PageEditorPage({
           careers={careers}
           practiceAreasList={practiceAreasList}
           statList={statList}
+          teamMemberList={teamMemberList}
         />
       </div>
     </>
