@@ -3,6 +3,7 @@ import { StatCard } from './components/StatCard';
 import { requireAuth } from '@/lib/auth/permissions';
 import { db } from '@/lib/db';
 import {
+  sitePages,
   teamMembers,
   events,
   insightsArticles,
@@ -13,6 +14,20 @@ import {
   mediaFiles,
 } from '@/lib/db/schema';
 import { count, eq, and } from 'drizzle-orm';
+import Link from 'next/link';
+import {
+  FileText,
+  Layers,
+  Building2,
+  BookOpen,
+  Calendar,
+  Users,
+  Image as ImageIcon,
+  Mail,
+  Send,
+  PlusCircle,
+  ExternalLink,
+} from 'lucide-react';
 
 export const metadata = {
   title: 'Dashboard',
@@ -20,6 +35,8 @@ export const metadata = {
 
 async function getDashboardCounts() {
   const [
+    [totalPagesCount],
+    [publishedPagesCount],
     [teamCount],
     [publishedTeamCount],
     [eventCount],
@@ -32,6 +49,8 @@ async function getDashboardCounts() {
     [industryCount],
     [mediaCount],
   ] = await Promise.all([
+    db.select({ value: count() }).from(sitePages),
+    db.select({ value: count() }).from(sitePages).where(eq(sitePages.isPublished, true)),
     db.select({ value: count() }).from(teamMembers),
     db.select({ value: count() }).from(teamMembers).where(eq(teamMembers.isPublished, true)),
     db.select({ value: count() }).from(events),
@@ -48,6 +67,7 @@ async function getDashboardCounts() {
   ]);
 
   return {
+    pages: { total: totalPagesCount.value || 17, published: publishedPagesCount.value || 17 },
     team: { total: teamCount.value, published: publishedTeamCount.value },
     events: { total: eventCount.value, upcoming: upcomingEventCount.value },
     insights: insightCount.value,
@@ -65,172 +85,170 @@ export default async function AdminDashboard() {
 
   return (
     <>
-      <AdminHeader title="Dashboard" user={user} />
+      <AdminHeader title="Site-Wide CMS Dashboard" user={user} />
 
       <div className="admin-content">
-        {/* Welcome */}
-        <div style={{ marginBottom: '28px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '6px' }}>
-            Welcome back{user.name ? `, ${user.name}` : ''}
-          </h2>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-            PSC Global CMS — all systems operational.
-          </p>
+        {/* Welcome Banner */}
+        <div style={{ marginBottom: '28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '6px' }}>
+              Site-Wide CMS Management — Welcome back{user.name ? `, ${user.name}` : ''}
+            </h2>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+              Manage all 17 public routes, content entities, SEO metadata, and Cloudinary media from one central system.
+            </p>
+          </div>
+          <Link
+            href="/"
+            target="_blank"
+            className="admin-button secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+          >
+            Preview Live Website <ExternalLink size={14} />
+          </Link>
         </div>
 
-        {/* Stats: Content */}
-        <div className="dashboard-section-title">Content</div>
+        {/* Stats: Pages & Core Entities */}
+        <div className="dashboard-section-title">Website & Pages</div>
         <div className="dashboard-stats">
           <StatCard
-            label="Team Members"
-            value={counts.team.total}
-            sub={`${counts.team.published} published`}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="6" cy="5" r="2.5" />
-                <path d="M1 13c0-2.76 2.24-5 5-5h0c2.76 0 5 2.24 5 5" strokeLinecap="round" />
-                <circle cx="12" cy="5" r="2" />
-                <path d="M14.5 13c0-2.21-1.12-4-2.5-4" strokeLinecap="round" />
-              </svg>
-            }
-          />
-          <StatCard
-            label="Events"
-            value={counts.events.total}
-            sub={`${counts.events.upcoming} upcoming`}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <rect x="1.5" y="2.5" width="13" height="12" rx="1.5" />
-                <path d="M1.5 6.5h13M5 1v3M11 1v3" strokeLinecap="round" />
-              </svg>
-            }
-          />
-          <StatCard
-            label="Insights"
-            value={counts.insights}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <path d="M2 12.5h12M2 9.5h8M2 6.5h10M2 3.5h6" strokeLinecap="round" />
-              </svg>
-            }
+            label="Managed Public Pages"
+            value={counts.pages.total}
+            sub={`${counts.pages.published} published live`}
+            icon={<FileText size={18} className="text-sky-400" />}
           />
           <StatCard
             label="Practice Areas"
             value={counts.practiceAreas}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="8" cy="8" r="6.5" />
-                <path d="M8 4v4l3 2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            }
+            sub="Active core practices"
+            icon={<Layers size={18} className="text-sky-400" />}
           />
           <StatCard
-            label="Industries"
+            label="Industry Verticals"
             value={counts.industries}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <path d="M1.5 14V8l4-4 4 4V14" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            }
+            sub="Active sector verticals"
+            icon={<Building2 size={18} className="text-sky-400" />}
           />
           <StatCard
-            label="Media Files"
+            label="Insights & Articles"
+            value={counts.insights}
+            sub="Published research"
+            icon={<BookOpen size={18} className="text-sky-400" />}
+          />
+        </div>
+
+        {/* Stats: Events & People */}
+        <div className="dashboard-section-title" style={{ marginTop: '24px' }}>Events, People & Media</div>
+        <div className="dashboard-stats">
+          <StatCard
+            label="Events & Briefings"
+            value={counts.events.total}
+            sub={`${counts.events.upcoming} upcoming`}
+            icon={<Calendar size={18} className="text-sky-400" />}
+          />
+          <StatCard
+            label="Team Members"
+            value={counts.team.total}
+            sub={`${counts.team.published} published`}
+            icon={<Users size={18} className="text-sky-400" />}
+          />
+          <StatCard
+            label="Media Library"
             value={counts.media}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" />
-                <circle cx="5.5" cy="6" r="1.25" />
-                <path d="M1.5 11l3.5-3 3 3 2-2 3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            }
+            sub="Cloudinary images"
+            icon={<ImageIcon size={18} className="text-sky-400" />}
           />
         </div>
 
         {/* Stats: Leads */}
-        <div className="dashboard-section-title" style={{ marginTop: '8px' }}>Leads & Subscribers</div>
+        <div className="dashboard-section-title" style={{ marginTop: '24px' }}>Leads & Engagement</div>
         <div className="dashboard-stats">
           <StatCard
             label="Contact Submissions"
             value={counts.submissions.total}
             sub={`${counts.submissions.new} unread`}
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" />
-                <path d="M1.5 5.5l6.5 4 6.5-4" />
-              </svg>
-            }
+            icon={<Mail size={18} className="text-sky-400" />}
           />
           <StatCard
             label="Newsletter Subscribers"
             value={counts.subscribers}
             sub="active subscribers"
-            icon={
-              <svg width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-                <path d="M2 8l6-5 6 5M2 8v5.5A.5.5 0 0 0 2.5 14h11a.5.5 0 0 0 .5-.5V8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            }
+            icon={<Send size={18} className="text-sky-400" />}
           />
         </div>
 
-        {/* Home Page CMS Control Notice */}
-        <div style={{
-          marginBottom: '28px',
-          padding: '20px',
-          background: 'rgba(59,130,246,0.08)',
-          border: '1px solid rgba(59,130,246,0.2)',
-          borderRadius: '12px',
-        }}>
-          <div style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#60a5fa', marginBottom: '6px' }}>
-            🎯 Home Page CMS Mode Active
-          </div>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-            Changes made in this CMS immediately update the live Home page (<code>/</code>). Non-home page editing is currently restricted.
-          </p>
+        {/* Quick Management Actions Grid */}
+        <div className="dashboard-section-title" style={{ marginTop: '28px' }}>Central Management Shortcuts</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+          <Link href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.2s' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FileText size={18} /> 1. Central Pages Grid
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Select, compose sections, update hero banners, and edit SEO for all 17 public routes.
+            </div>
+          </Link>
+
+          <Link href="/admin/practice-areas/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={18} /> 2. Add Practice Area
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Create a new practice area which automatically powers `/practice-areas/[slug]`.
+            </div>
+          </Link>
+
+          <Link href="/admin/industries/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={18} /> 3. Add Industry Vertical
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Add sector expertise to power `/industries/[slug]`.
+            </div>
+          </Link>
+
+          <Link href="/admin/insights/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={18} /> 4. Publish Insight Article
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Publish regulatory briefings to power `/insights/[slug]`.
+            </div>
+          </Link>
+
+          <Link href="/admin/events/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={18} /> 5. Create Event / Webinar
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Schedule executive webinars to power `/events/[slug]`.
+            </div>
+          </Link>
+
+          <Link href="/admin/media" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ImageIcon size={18} /> 6. Cloudinary Media Manager
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Upload, search, and manage high-resolution images for pages and SEO cards.
+            </div>
+          </Link>
         </div>
 
-        {/* Quick Links for Home Page Editing */}
-        <div className="dashboard-section-title">Home Page Sections (Editable)</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-          <a href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>1. Hero Banner</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Edit Eyebrow, Heading, Subheading & Hero Image</div>
-          </a>
-          <a href="/admin/practice-areas" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>2. Practice Areas</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.practiceAreas} Core Competency Cards on Home</div>
-          </a>
-          <a href="/admin/industries" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>3. Sectors & Industries</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.industries} Sector & Industry Cards on Home</div>
-          </a>
-          <a href="/admin/insights" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>4. Insights Articles</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.insights} Articles on Home Page</div>
-          </a>
-          <a href="/admin/team" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>5. Team Members</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{counts.team.total} Leadership Profiles on Home</div>
-          </a>
-          <a href="/admin/testimonials" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', display: 'block', color: 'var(--text-primary)' }}>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: '#60a5fa', marginBottom: '4px' }}>6. Testimonials</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Client Testimonial Cards on Home</div>
-          </a>
-        </div>
-
-        {/* System status */}
+        {/* System Health */}
         <div style={{
           marginTop: '12px',
           padding: '16px 20px',
           background: 'rgba(16,185,129,0.05)',
           border: '1px solid rgba(16,185,129,0.12)',
-          borderRadius: '10px',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          gap: '12px',
         }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
-          <span style={{ fontSize: '13px', color: '#34d399', fontWeight: '500' }}>
-            Database connected · Real-time cache revalidation enabled for Home Page
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
+          <span style={{ fontSize: '14px', color: '#34d399', fontWeight: '500' }}>
+            Site-Wide CMS Active · Real-time Neon Database Sync & Next.js On-Demand Revalidation Operational
           </span>
         </div>
       </div>

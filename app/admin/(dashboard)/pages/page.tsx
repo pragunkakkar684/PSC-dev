@@ -1,231 +1,320 @@
-'use client';
-
-import { useState, useEffect, useTransition } from 'react';
 import { AdminHeader } from '../components/AdminHeader';
 import { PageHeader } from '../components/PageHeader';
-import { FormField } from '../components/FormField';
-import { ImageUploadInput } from '../components/ImageUploadInput';
-import { LoadingState } from '../components/LoadingState';
-import { getHeroSections, updateHeroSectionAction } from './actions';
-import type { HeroSection } from '@/lib/db/schema';
-import { Layout, Save, Check } from 'lucide-react';
+import { db } from '@/lib/db';
+import { sitePages, pageSections } from '@/lib/db/schema';
+import { requireAuth } from '@/lib/auth/permissions';
+import Link from 'next/link';
+import {
+  FileText,
+  Edit3,
+  ExternalLink,
+  CheckCircle,
+  Eye,
+  Sliders,
+  Layers,
+  Sparkles,
+} from 'lucide-react';
 
-export default function PagesCMSPage() {
-  const [heroes, setHeroes] = useState<HeroSection[]>([]);
-  const [selectedSlug, setSelectedSlug] = useState<string>('home');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [isPending, startTransition] = useTransition();
+export const metadata = {
+  title: 'Site-Wide Pages CMS',
+};
 
-  const [formData, setFormData] = useState<Partial<HeroSection>>({
-    eyebrow: '',
-    heading: '',
-    subheading: '',
-    imageUrl: '',
-    cta1Text: '',
-    cta1Href: '',
-    cta2Text: '',
-    cta2Href: '',
-  });
+interface PageDef {
+  slug: string;
+  name: string;
+  route: string;
+  category: 'main' | 'template';
+  description: string;
+}
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const data = await getHeroSections();
-      setHeroes(data);
-      const active = data.find((h) => h.pageSlug === selectedSlug) || data[0];
-      if (active) {
-        setFormData(active);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const PUBLIC_PAGES_REGISTRY: PageDef[] = [
+  // MAIN PAGES
+  { slug: 'home', name: 'Home Page', route: '/', category: 'main', description: 'Hero banner, practice highlights, sector cards, stats, insights, and CTAs.' },
+  { slug: 'about', name: 'About Us', route: '/about', category: 'main', description: 'Firm history, executive mission, core values, timeline, and global footprint.' },
+  { slug: 'contact', name: 'Contact Us', route: '/contact', category: 'main', description: 'Office addresses, contact inquiry form configuration, and map embeds.' },
+  { slug: 'career', name: 'Careers', route: '/career', category: 'main', description: 'Working at PSC Global, workplace culture, benefits, and job openings listings.' },
+  { slug: 'events', name: 'Events Overview', route: '/events', category: 'main', description: 'Upcoming webinars, tax briefings, agenda highlights, and registration links.' },
+  { slug: 'gcc', name: 'GCC Advisory', route: '/gcc', category: 'main', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
+  { slug: 'industries', name: 'Industries Index', route: '/industries', category: 'main', description: 'Industry verticals directory (Financial Services, Tech, Energy, Healthcare).' },
+  { slug: 'insights', name: 'Insights Index', route: '/insights', category: 'main', description: 'Tax policy insights, landmark judgements, regulatory updates, and publications.' },
+  { slug: 'partner', name: 'Partner Network', route: '/partner', category: 'main', description: 'Global strategic partners, affiliate firms, and institutional relationships.' },
+  { slug: 'practice-areas', name: 'Practice Areas Index', route: '/practice-areas', category: 'main', description: 'Core practice areas (Tax Advisory, Risk & Assurance, M&A Due Diligence).' },
+  { slug: 'team', name: 'Leadership & Team', route: '/team', category: 'main', description: 'Executive managing partners, senior advisors, and practice leaders.' },
+  { slug: 'book-consultation', name: 'Book Consultation', route: '/book-consultation', category: 'main', description: 'Consultation scheduling form, booking parameters, and confirmation CTAs.' },
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  // DYNAMIC DETAIL TEMPLATES
+  { slug: 'events-detail', name: 'Event Detail Template', route: '/events/[slug]', category: 'template', description: 'Template & SEO configuration for individual webinar and seminar pages.' },
+  { slug: 'industries-detail', name: 'Industry Detail Template', route: '/industries/[slug]', category: 'template', description: 'Template & SEO configuration for individual sector detail pages.' },
+  { slug: 'insights-detail', name: 'Insight Detail Template', route: '/insights/[slug]', category: 'template', description: 'Template & SEO configuration for individual research article pages.' },
+  { slug: 'partner-detail', name: 'Partner Detail Template', route: '/partner/[slug]', category: 'template', description: 'Template & SEO configuration for individual partner profile pages.' },
+  { slug: 'practice-areas-detail', name: 'Practice Area Detail Template', route: '/practice-areas/[slug]', category: 'template', description: 'Template & SEO configuration for individual practice area pages.' },
+];
 
-  const handleSelectPage = (slug: string) => {
-    setSelectedSlug(slug);
-    setError(null);
-    setSuccess(false);
-    const active = heroes.find((h) => h.pageSlug === slug);
-    if (active) {
-      setFormData(active);
-    }
-  };
+export default async function PagesCMSPage() {
+  const user = await requireAuth();
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(false);
+  // Query site_pages and page_sections counts
+  const [dbPages, dbSections] = await Promise.all([
+    db.select().from(sitePages),
+    db.select().from(pageSections),
+  ]);
 
-    try {
-      const updated = await updateHeroSectionAction(selectedSlug, formData);
-      setSuccess(true);
-      setHeroes(heroes.map((h) => (h.pageSlug === selectedSlug ? updated : h)));
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save page hero');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <>
-        <AdminHeader title="Page Heroes" />
-        <LoadingState message="Loading page heroes..." />
-      </>
-    );
+  const pageStatusMap = new Map<string, boolean>();
+  for (const p of dbPages) {
+    pageStatusMap.set(p.slug, p.isPublished);
   }
+
+  const sectionCountMap = new Map<string, number>();
+  for (const s of dbSections) {
+    const current = sectionCountMap.get(s.pageSlug) || 0;
+    sectionCountMap.set(s.pageSlug, current + 1);
+  }
+
+  const mainPages = PUBLIC_PAGES_REGISTRY.filter((p) => p.category === 'main');
+  const templatePages = PUBLIC_PAGES_REGISTRY.filter((p) => p.category === 'template');
 
   return (
     <>
-      <AdminHeader title="Page Content CMS" />
+      <AdminHeader title="Site-Wide Pages Manager" user={user} />
 
       <div className="admin-content">
         <PageHeader
-          title="Page Heroes Management"
-          description="Edit hero headings, sub-headings, Cloudinary hero images, and call-to-action buttons for key site pages."
+          title="Website Pages & CMS Grid"
+          description="Select any of the 17 public routes to manage hero content, page sections, content composition, careers job listings, and page-specific SEO metadata."
         />
 
-        {/* Page Selector Tabs - Restricted to Home Page */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', padding: '12px 16px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-          <div style={{ padding: '6px 12px', background: 'rgba(59,130,246,0.15)', color: '#60a5fa', borderRadius: '8px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Layout size={16} />
-            <span>HOME PAGE HERO (ACTIVE)</span>
+        {/* SECTION 1: MAIN WEBSITE PAGES */}
+        <div style={{ marginBottom: '36px' }}>
+          <div
+            style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <FileText size={20} className="text-sky-400" />
+            Main Website Pages (12 Routes)
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-            Only the Home Page is editable right now. Non-home pages are restricted.
-          </span>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '20px',
+            }}
+          >
+            {mainPages.map((page) => {
+              const isPublished = pageStatusMap.get(page.slug) ?? true;
+              const sectionCount = sectionCountMap.get(page.slug) || 0;
+
+              return (
+                <div
+                  key={page.slug}
+                  style={{
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '14px',
+                    padding: '22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          fontFamily: 'monospace',
+                          color: '#38bdf8',
+                          background: 'rgba(56, 189, 248, 0.1)',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {page.route}
+                      </span>
+
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          padding: '2px 8px',
+                          borderRadius: '12px',
+                          background: isPublished ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                          color: isPublished ? '#10b981' : '#f59e0b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <CheckCircle size={10} />
+                        {isPublished ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
+
+                    <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: '4px 0 8px 0' }}>
+                      {page.name}
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      {page.description}
+                    </p>
+                  </div>
+
+                  <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sliders size={14} />
+                      <strong>{sectionCount}</strong> dynamic sections
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Link
+                        href={page.route}
+                        target="_blank"
+                        className="admin-button secondary"
+                        style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        title="Preview Live Page"
+                      >
+                        <Eye size={14} />
+                      </Link>
+
+                      <Link
+                        href={`/admin/pages/${page.slug}`}
+                        className="admin-button primary"
+                        style={{ padding: '6px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <Edit3 size={14} /> Edit Page
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {error && (
-          <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.1)', color: '#f87171', borderRadius: '8px', marginBottom: '20px', fontSize: '13px' }}>
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div style={{ padding: '12px 16px', background: 'rgba(16,185,129,0.1)', color: '#34d399', borderRadius: '8px', marginBottom: '20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Check size={16} />
-            <span>Hero section for &quot;{selectedSlug}&quot; saved successfully.</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSave} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
-          <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#60a5fa' }}>
-            Hero Banner Settings: {selectedSlug.toUpperCase()} PAGE
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            <FormField label="Eyebrow Text" hint="Small label above heading e.g. GLOBAL ADVISORY">
-              <input
-                type="text"
-                className="form-input"
-                value={formData.eyebrow || ''}
-                onChange={(e) => setFormData({ ...formData, eyebrow: e.target.value })}
-              />
-            </FormField>
-
-            <FormField label="Hero Heading">
-              <input
-                type="text"
-                className="form-input"
-                value={formData.heading || ''}
-                onChange={(e) => setFormData({ ...formData, heading: e.target.value })}
-              />
-            </FormField>
+        {/* SECTION 2: DYNAMIC DETAIL PAGE TEMPLATES */}
+        <div>
+          <div
+            style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <Sparkles size={20} className="text-amber-400" />
+            Dynamic Detail Page Templates (5 Dynamic Routes)
           </div>
 
-          <div style={{ marginTop: '20px' }}>
-            <FormField label="Hero Subheading / Tagline">
-              <textarea
-                rows={3}
-                className="form-input"
-                value={formData.subheading || ''}
-                onChange={(e) => setFormData({ ...formData, subheading: e.target.value })}
-              />
-            </FormField>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '20px',
+            }}
+          >
+            {templatePages.map((page) => {
+              const isPublished = pageStatusMap.get(page.slug) ?? true;
+              const sectionCount = sectionCountMap.get(page.slug) || 0;
+
+              return (
+                <div
+                  key={page.slug}
+                  style={{
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '14px',
+                    padding: '22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          fontFamily: 'monospace',
+                          color: '#fbbf24',
+                          background: 'rgba(251, 191, 36, 0.1)',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {page.route}
+                      </span>
+
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          padding: '2px 8px',
+                          borderRadius: '12px',
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          color: '#10b981',
+                        }}
+                      >
+                        Dynamic Entity Template
+                      </span>
+                    </div>
+
+                    <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: '4px 0 8px 0' }}>
+                      {page.name}
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      {page.description}
+                    </p>
+                  </div>
+
+                  <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                      Uses database entity table
+                    </div>
+
+                    <Link
+                      href={`/admin/pages/${page.slug}`}
+                      className="admin-button primary"
+                      style={{ padding: '6px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Edit3 size={14} /> Edit Template & SEO
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          <div style={{ marginTop: '20px' }}>
-            <FormField label="Hero Image (Cloudinary)">
-              <ImageUploadInput
-                value={formData.imageUrl || ''}
-                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
-                folder="psc-global/pages"
-                label="Upload Hero Background Image"
-              />
-            </FormField>
-          </div>
-
-          {/* CTA Buttons Config */}
-          <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--text-primary)' }}>Call to Action (CTA) Buttons</h4>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-              <div style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px' }}>
-                <h5 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '12px' }}>Primary Button (CTA 1)</h5>
-                <FormField label="Button Text">
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. SCHEDULE A DISCUSSION"
-                    value={formData.cta1Text || ''}
-                    onChange={(e) => setFormData({ ...formData, cta1Text: e.target.value })}
-                  />
-                </FormField>
-                <FormField label="Button Href / Link">
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. /contact or #contact"
-                    value={formData.cta1Href || ''}
-                    onChange={(e) => setFormData({ ...formData, cta1Href: e.target.value })}
-                  />
-                </FormField>
-              </div>
-
-              <div style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px' }}>
-                <h5 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '12px' }}>Secondary Button (CTA 2)</h5>
-                <FormField label="Button Text">
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. BOOK A CONSULTATION"
-                    value={formData.cta2Text || ''}
-                    onChange={(e) => setFormData({ ...formData, cta2Text: e.target.value })}
-                  />
-                </FormField>
-                <FormField label="Button Href / Link">
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. /contact"
-                    value={formData.cta2Href || ''}
-                    onChange={(e) => setFormData({ ...formData, cta2Href: e.target.value })}
-                  />
-                </FormField>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
-            <button type="submit" disabled={saving} className="btn btn-primary">
-              <Save size={16} />
-              <span>{saving ? 'Saving...' : `Save ${selectedSlug.toUpperCase()} Hero`}</span>
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </>
   );

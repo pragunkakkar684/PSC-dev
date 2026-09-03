@@ -15,7 +15,12 @@ import {
   testimonials,
   officeLocations,
   siteSettings,
+  sitePages,
+  pageSections,
+  pageSeo,
+  careersPositions,
 } from '@/lib/db/schema';
+import type { Metadata } from 'next';
 import { eq, and, asc, desc } from 'drizzle-orm';
 
 // ─── 1. SITE SETTINGS ────────────────────────────────────────────────────────
@@ -490,4 +495,95 @@ export async function getPublicOfficeLocations() {
   }
 
   return [];
+}
+
+// ─── 12. SITE-WIDE CMS QUERIES ───────────────────────────────────────────────
+
+export async function getSEOForTarget(targetType: string, targetIdentifier: string) {
+  try {
+    const [seo] = await db
+      .select()
+      .from(pageSeo)
+      .where(and(eq(pageSeo.targetType, targetType), eq(pageSeo.targetIdentifier, targetIdentifier)))
+      .limit(1);
+
+    return seo || null;
+  } catch (err) {
+    console.error(`Error querying pageSeo for ${targetType}:${targetIdentifier}:`, err);
+    return null;
+  }
+}
+
+export async function getPageCMS(pageSlug: string) {
+  try {
+    const [page] = await db.select().from(sitePages).where(eq(sitePages.slug, pageSlug)).limit(1);
+    const sections = await db
+      .select()
+      .from(pageSections)
+      .where(and(eq(pageSections.pageSlug, pageSlug), eq(pageSections.isVisible, true)))
+      .orderBy(asc(pageSections.sortOrder));
+
+    const sectionMap: Record<string, typeof pageSections.$inferSelect> = {};
+    for (const sec of sections) {
+      sectionMap[sec.sectionKey] = sec;
+    }
+
+    return {
+      page: page || null,
+      sections,
+      sectionMap,
+    };
+  } catch (err) {
+    console.error(`Error querying getPageCMS for ${pageSlug}:`, err);
+    const sectionMap: Record<string, typeof pageSections.$inferSelect> = {};
+    return { page: null, sections: [], sectionMap };
+  }
+}
+
+export async function getPublicCareersPositions() {
+  try {
+    const positions = await db
+      .select()
+      .from(careersPositions)
+      .where(eq(careersPositions.isPublished, true))
+      .orderBy(asc(careersPositions.sortOrder), desc(careersPositions.createdAt));
+
+    return positions;
+  } catch (err) {
+    console.error('Error querying careersPositions:', err);
+    return [];
+  }
+}
+
+export async function buildPageMetadata(
+  targetType: string,
+  targetIdentifier: string,
+  defaults: { title: string; description: string }
+): Promise<Metadata> {
+  const seo = await getSEOForTarget(targetType, targetIdentifier);
+
+  const title = seo?.metaTitle || defaults.title;
+  const description = seo?.metaDescription || defaults.description;
+  const canonical = seo?.canonicalUrl || undefined;
+
+  return {
+    title,
+    description,
+    alternates: canonical ? { canonical } : undefined,
+    openGraph: {
+      title: seo?.ogTitle || title,
+      description: seo?.ogDescription || description,
+      images: seo?.ogImage ? [{ url: seo.ogImage }] : undefined,
+    },
+    twitter: {
+      card: (seo?.twitterCard as any) || 'summary_large_image',
+      title: seo?.ogTitle || title,
+      description: seo?.ogDescription || description,
+      images: seo?.ogImage ? [seo.ogImage] : undefined,
+    },
+    robots: {
+      index: !seo?.noIndex,
+      follow: !seo?.noFollow,
+    },
+  };
 }
