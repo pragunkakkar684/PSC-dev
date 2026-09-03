@@ -12,9 +12,10 @@ import {
 import { eq, and, asc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   return {
-    title: `Edit ${params.slug.toUpperCase()} Page CMS`,
+    title: `Edit ${slug.toUpperCase()} Page CMS`,
   };
 }
 
@@ -24,16 +25,11 @@ const PAGE_TITLE_MAP: Record<string, string> = {
   contact: 'Contact Us',
   career: 'Careers',
   events: 'Events Overview',
-  'events-detail': 'Event Detail Template',
   gcc: 'GCC Advisory',
   industries: 'Industries Overview',
-  'industries-detail': 'Industry Detail Template',
   insights: 'Insights Overview',
-  'insights-detail': 'Insight Detail Template',
   partner: 'Partner Network',
-  'partner-detail': 'Partner Detail Template',
   'practice-areas': 'Practice Areas Overview',
-  'practice-areas-detail': 'Practice Area Detail Template',
   team: 'Leadership & Team',
   'book-consultation': 'Book Consultation',
 };
@@ -41,10 +37,14 @@ const PAGE_TITLE_MAP: Record<string, string> = {
 export default async function PageEditorPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const user = await requireAuth();
-  const slug = params.slug;
+  const { slug } = await params;
+
+  if (!slug) {
+    notFound();
+  }
 
   const pageTitle = PAGE_TITLE_MAP[slug] || slug.replace(/-/g, ' ').toUpperCase();
 
