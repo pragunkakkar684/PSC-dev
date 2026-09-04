@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { industries } from '@/lib/db/schema';
 import { requireEditor } from '@/lib/auth/permissions';
 import { industrySchema, slugify } from '@/lib/validation/cms';
-import { eq, and, ilike, asc } from 'drizzle-orm';
+import { eq, and, ilike, asc, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function getIndustries(options?: {
@@ -323,3 +323,14 @@ export async function removeIndustryInsightAction(linkId: number, industryId: nu
   revalidatePath('/industries');
   return { success: true };
 }
+
+export async function getIndustryPickerOptions() {
+  await requireEditor();
+  const [pas, tms, arts] = await Promise.all([
+    db.select().from(practiceAreas).where(eq(practiceAreas.isPublished, true)).orderBy(asc(practiceAreas.name)),
+    db.select().from(teamMembers).where(eq(teamMembers.isPublished, true)).orderBy(asc(teamMembers.name)),
+    db.select().from(insightsArticles).where(eq(insightsArticles.isPublished, true)).orderBy(desc(insightsArticles.id)),
+  ]);
+  return { allPracticeAreas: pas, allTeamMembers: tms, allInsightsArticles: arts };
+}
+
