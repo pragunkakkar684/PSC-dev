@@ -563,9 +563,9 @@ export default function SiteHeader() {
                   </div>
                   <div>
                     <strong>Global Capability Center</strong>
-                    <p>Our GCC model helps enterprise leaders scale specialized functions with architectural precision.</p>
+                    <p>Our CC Capital model helps enterprise leaders scale specialized functions with architectural precision.</p>
                   </div>
-                  <a href="/gcc" className="psc-gcc-link">Explore GCC →</a>
+                  <a href="/gcc" className="psc-gcc-link">Explore CC Capital →</a>
                   <Link href="/practice-areas" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></Link>
                 </div>
               </div>

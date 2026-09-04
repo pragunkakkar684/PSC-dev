@@ -28,7 +28,7 @@ const PRESET_ROUTES = [
   { label: '/industries — Sector Verticals Index', value: '/industries' },
   { label: '/insights — Publications & Regulatory Updates', value: '/insights' },
   { label: '/events — Executive Webinars & Briefings', value: '/events' },
-  { label: '/gcc — Global Capability Center Advisory', value: '/gcc' },
+  { label: '/gcc — CC Capital Advisory', value: '/gcc' },
   { label: '/partner — Global Partner Network', value: '/partner' },
   { label: '/career — Careers & Job Positions', value: '/career' },
 ];

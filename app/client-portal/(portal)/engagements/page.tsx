@@ -71,7 +71,7 @@ export default async function ClientEngagementsPage() {
                 <option value="Risk & Assurance Audit">Risk & Assurance Audit</option>
                 <option value="Corporate Law & Legal">Corporate Law & Legal</option>
                 <option value="ESG & Regulatory Compliance">ESG & Regulatory Compliance</option>
-                <option value="Global Expansion & GCC">Global Expansion & GCC</option>
+                <option value="Global Expansion & GCC">Global Expansion & CC Capital</option>
               </select>
             </div>
           </div>

@@ -113,7 +113,7 @@ const paList = [
     caps: [
       { t: "Mergers & Acquisitions Legal Counsel", d: "Structuring and negotiating share sales, asset purchases, and joint venture agreements." },
       { t: "Corporate Governance & Board Advisory", d: "Advising executive boards on fiduciary duty compliance, conflict management, and regulatory disclosures." },
-      { t: "Cross-Border Entity Formation", d: "Establishing tax-efficient entity presence across European, Asian, and GCC jurisdictions." },
+      { t: "Cross-Border Entity Formation", d: "Establishing tax-efficient entity presence across European, Asian, and CC Capital jurisdictions." },
       { t: "Commercial Contract Structuring", d: "Drafting high-value commercial supply, distribution, licensing, and partnership agreements." }
     ],
     services: ["Cross-Border M&A Legal Structuring", "Board Governance Frameworks", "Shareholder Agreements", "Regulatory Filings & Entity Maintenance"]
@@ -161,7 +161,7 @@ const paList = [
     sd: "Digital process modernization, workflow automation, and shared services.",
     he: "PRACTICE AREA",
     hh: "Business Process & Shared Services Advisory",
-    hd: "Modernizing operational workflows, establishing Global Capability Centers (GCCs), and driving process automation across enterprise functions.",
+    hd: "Modernizing operational workflows, establishing Global Capability Centers (CC Capitals), and driving process automation across enterprise functions.",
     hiu: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=85",
     hia: "Business process automation",
     hc1t: "TALK TO PROCESS EXPERTS",
@@ -183,12 +183,12 @@ const paList = [
     fc2t: "BOOK A CONSULTATION",
     fc2h: "/book-consultation",
     caps: [
-      { t: "Global Capability Center (GCC) Design", d: "End-to-end design, site selection, legal setup, and talent onboarding for offshore capability centers." },
+      { t: "Global Capability Center (CC Capital) Design", d: "End-to-end design, site selection, legal setup, and talent onboarding for offshore capability centers." },
       { t: "Robotic Process Automation (RPA)", d: "Deploying enterprise automation tools to eliminate manual data handling and reduce operational error rates." },
       { t: "Workflow Re-Engineering", d: "Mapping and redesigning core finance, HR, and procurement workflows for maximum speed and visibility." },
       { t: "Shared Services Governance", d: "Establishing Service Level Agreements (SLAs) and KPI dashboards to monitor shared service performance." }
     ],
-    services: ["GCC Setup & Advisory", "Workflow Automation & RPA", "Shared Services SLA Design", "Back-Office Restructuring"]
+    services: ["CC Capital Setup & Advisory", "Workflow Automation & RPA", "Shared Services SLA Design", "Back-Office Restructuring"]
   }
 ];
 

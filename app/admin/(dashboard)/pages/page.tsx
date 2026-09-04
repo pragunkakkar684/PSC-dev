@@ -42,7 +42,7 @@ const STATIC_PAGES_REGISTRY: StaticPageDef[] = [
   { slug: 'industries', name: 'Industries Index', route: '/industries', typeLabel: 'Collection Page', description: 'Industry verticals directory (Financial Services, Tech, Energy, Healthcare).' },
   { slug: 'insights', name: 'Insights Index', route: '/insights', typeLabel: 'Collection Page', description: 'Tax policy insights, landmark judgements, regulatory updates, and research publications.' },
   { slug: 'events', name: 'Events Overview', route: '/events', typeLabel: 'Collection Page', description: 'Upcoming webinars, tax briefings, agenda highlights, and registration links.' },
-  { slug: 'gcc', name: 'GCC Advisory', route: '/gcc', typeLabel: 'Landing Page', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
+  { slug: 'gcc', name: 'CC Capital Advisory', route: '/gcc', typeLabel: 'Landing Page', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
   { slug: 'partner', name: 'Partner Network', route: '/partner', typeLabel: 'Directory Page', description: 'Global strategic partners, affiliate firms, and institutional relationships.' },
   { slug: 'career', name: 'Careers', route: '/career', typeLabel: 'Careers Page', description: 'Working at PSC Global, workplace culture, benefits, and open job positions.' },
   { slug: 'contact', name: 'Contact Us', route: '/contact', typeLabel: 'Contact Page', description: 'Office addresses, contact inquiry form configuration, and map embeds.' },

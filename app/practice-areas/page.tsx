@@ -402,7 +402,7 @@ export default async function PracticeAreasPage() {
         </div>
       </AnimatedSection>
 
-      {/* GCC BANNER */}
+      {/* CC Capital BANNER */}
       <AnimatedSection className="bg-[#dbeafe] px-6 py-24 lg:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div>
@@ -410,7 +410,7 @@ export default async function PracticeAreasPage() {
               Building Global Capability From India to the World.
             </h2>
             <p className="mt-6 max-w-md text-base leading-7 text-slate-700 lg:text-lg">
-              Our India-based Global Capability Center (GCC) advisory helps multinational
+              Our India-based Global Capability Center (CC Capital) advisory helps multinational
               corporations tap into the world&apos;s most vibrant talent pool while ensuring global
               operational standards.
             </p>
@@ -418,7 +418,7 @@ export default async function PracticeAreasPage() {
               <div>
                 <p className="font-serif text-4xl text-ink">50+</p>
                 <p className="mt-1 font-mono text-xs tracking-[.14em] text-slate-600">
-                  GCCS ESTABLISHED
+                  CC CAPITALS ESTABLISHED
                 </p>
               </div>
               <div>

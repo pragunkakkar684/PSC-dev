@@ -79,7 +79,7 @@ export async function getPublicNavItems(menuKey?: string) {
     { id: 3, label: 'Practice Areas', href: '/practice-areas', menuKey: 'primary', sortOrder: 3, isActive: true },
     { id: 4, label: 'Industries', href: '/industries', menuKey: 'primary', sortOrder: 4, isActive: true },
     { id: 5, label: 'Insights', href: '/insights', menuKey: 'primary', sortOrder: 5, isActive: true },
-    { id: 6, label: 'GCC', href: '/gcc', menuKey: 'primary', sortOrder: 6, isActive: true },
+    { id: 6, label: 'CC Capital', href: '/gcc', menuKey: 'primary', sortOrder: 6, isActive: true },
     { id: 7, label: 'Contact', href: '/contact', menuKey: 'primary', sortOrder: 7, isActive: true },
   ];
 }
@@ -145,8 +145,8 @@ export async function getPublicHeroSection(pageSlug: string) {
     },
     gcc: {
       eyebrow: 'GLOBAL CAPABILITY CENTERS',
-      heading: 'GCC Structuring & Operating Models',
-      subheading: 'End-to-end setup, transfer pricing, talent governance, and regulatory clearance for GCCs.',
+      heading: 'CC Capital Structuring & Operating Models',
+      subheading: 'End-to-end setup, transfer pricing, talent governance, and regulatory clearance for CC Capitals.',
       imageUrl: '/gcc-hero.jpg',
       cta1Text: 'GET IN TOUCH',
       cta1Href: '/contact',

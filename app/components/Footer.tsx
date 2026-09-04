@@ -10,7 +10,7 @@ const footerLinks = [
     items: [
       { name: 'Practice Areas', href: '/practice-areas' },
       { name: 'Industries', href: '/industries' },
-      { name: 'GCC Advisory', href: '/gcc' },
+      { name: 'CC Capital Advisory', href: '/gcc' },
       { name: 'Events & Seminars', href: '/event' },
     ],
   },

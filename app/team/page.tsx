@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import {
   getPublicHeroSection,
   getPublicTeamMembers,
+  getPublicPracticeAreas,
   getPageCMS,
   buildPageMetadata,
 } from '@/lib/queries/public';
@@ -51,9 +52,10 @@ const defaultTeam = [
 ];
 
 export default async function OurTeamPage() {
-  const [hero, dbTeam, cms] = await Promise.all([
+  const [hero, dbTeam, dbPracticeAreas, cms] = await Promise.all([
     getPublicHeroSection('team'),
     getPublicTeamMembers(),
+    getPublicPracticeAreas(),
     getPageCMS('team'),
   ]);
 
@@ -79,7 +81,15 @@ export default async function OurTeamPage() {
   // Expertise/Disciplines section data
   const expertiseSec = cms.sectionMap.expertise;
   let disciplines = defaultDisciplines;
-  if (expertiseSec?.bodyContent) {
+  if (dbPracticeAreas.length > 0) {
+    disciplines = dbPracticeAreas.slice(0, 3).map((practiceArea, idx) => [
+      practiceArea.name,
+      practiceArea.shortDescription || practiceArea.longDescription || '',
+      practiceArea.imageUrl || defaultDisciplines[idx][2],
+      idx % 2 === 0 ? 'right' : 'left',
+      `/practice-areas/${practiceArea.slug}`,
+    ]);
+  } else if (expertiseSec?.bodyContent) {
     try {
       const parsed = JSON.parse(expertiseSec.bodyContent);
       if (Array.isArray(parsed) && parsed.length > 0) {

@@ -114,7 +114,7 @@ export default function PublicContactForm() {
           <option value="Tax Advisory">Tax Advisory</option>
           <option value="Risk & Assurance">Risk & Assurance</option>
           <option value="Business Advisory">Business Advisory</option>
-          <option value="GCC Structuring">GCC Structuring</option>
+          <option value="GCC Structuring">CC Capital Structuring</option>
         </select>
       </label>
 

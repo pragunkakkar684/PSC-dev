@@ -20,7 +20,7 @@ export function SEOEditor({
   targetIdentifier,
   initialSEO,
   defaultTitle = 'PSC Global — Strategic Business & Tax Advisory',
-  defaultDescription = 'Cross-border corporate tax, legal advisory, and GCC operations expertise.',
+  defaultDescription = 'Cross-border corporate tax, legal advisory, and CC Capital operations expertise.',
 }: SEOEditorProps) {
   const [formData, setFormData] = useState<Partial<PageSeo>>({
     metaTitle: initialSEO?.metaTitle || defaultTitle,

@@ -29,7 +29,7 @@ const PAGE_TITLE_MAP: Record<string, string> = {
   contact: 'Contact Us',
   career: 'Careers',
   events: 'Events Overview',
-  gcc: 'GCC Advisory',
+  gcc: 'CC Capital Advisory',
   industries: 'Industries Overview',
   insights: 'Insights Overview',
   partner: 'Partner Network',

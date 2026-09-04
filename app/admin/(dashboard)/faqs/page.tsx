@@ -169,7 +169,7 @@ export default function FaqsPage() {
       <div className="admin-content">
         <PageHeader
           title="Frequently Asked Questions"
-          description="Manage questions and answers displayed across Contact, GCC, and general site contexts."
+          description="Manage questions and answers displayed across Contact, CC Capital, and general site contexts."
           actions={
             <button type="button" onClick={() => handleOpenModal()} className="btn btn-primary">
               <Plus size={16} />
@@ -197,7 +197,7 @@ export default function FaqsPage() {
                 <option value="all">All Contexts</option>
                 <option value="general">General</option>
                 <option value="contact">Contact Page</option>
-                <option value="gcc">GCC Page</option>
+                <option value="gcc">CC Capital Page</option>
               </select>
             }
             emptyMessage="No FAQs found."
@@ -231,7 +231,7 @@ export default function FaqsPage() {
                 >
                   <option value="general">General / Shared</option>
                   <option value="contact">Contact Page</option>
-                  <option value="gcc">GCC Page</option>
+                  <option value="gcc">CC Capital Page</option>
                 </select>
               </FormField>
 
@@ -240,7 +240,7 @@ export default function FaqsPage() {
                   type="text"
                   required
                   className="form-input"
-                  placeholder="e.g. How long does it take to establish a GCC?"
+                  placeholder="e.g. How long does it take to establish a CC Capital?"
                   value={editFaq?.question || ''}
                   onChange={(e) => setEditFaq({ ...editFaq, question: e.target.value })}
                 />

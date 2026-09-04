@@ -171,7 +171,7 @@ async function seedSiteCMS() {
     { slug: 'industries', title: 'Industries Index', description: 'Industry verticals directory (Financial Services, Tech, Energy, Healthcare).' },
     { slug: 'insights', title: 'Insights Index', description: 'Tax policy insights, landmark judgements, regulatory updates, and research publications.' },
     { slug: 'events', title: 'Events Overview', description: 'Upcoming webinars, tax briefings, agenda highlights, and registration links.' },
-    { slug: 'gcc', title: 'GCC Advisory', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
+    { slug: 'gcc', title: 'CC Capital Advisory', description: 'Global Capability Center establishment, transfer pricing, and SEBI compliance.' },
     { slug: 'partner', title: 'Partner Network', description: 'Global strategic partners, affiliate firms, and institutional relationships.' },
     { slug: 'career', title: 'Careers', description: 'Working at PSC Global, workplace culture, benefits, and open job positions.' },
     { slug: 'contact', title: 'Contact Us', description: 'Office addresses, contact inquiry form configuration, and map embeds.' },

@@ -10,7 +10,7 @@ import { getPublicHeroSection, getPublicFaqs, buildPageMetadata } from '@/lib/qu
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('page', 'gcc', {
-    title: 'GCC Advisory | PSC Global',
+    title: 'CC Capital Advisory | PSC Global',
     description:
       'Empowering global enterprises to scale in India. End-to-end Global Capability Center setup, legal, tax, and operational advisory.',
   });
@@ -38,7 +38,7 @@ const services = [
 ] as const;
 
 const stats = [
-  ['150+', 'GCCs OPERATING'],
+  ['150+', 'CC CAPITALS OPERATING'],
   ['1.3M', 'STEM GRADUATES ANNUALLY'],
   ['#1', 'DESTINATION FOR DIGITAL CAPABILITY'],
 ] as const;
@@ -104,7 +104,7 @@ const insights = [
   },
   {
     tag: 'CASE STUDY',
-    title: 'Scaling a Fintech GCC to 500 Engineers',
+    title: 'Scaling a Fintech CC Capital to 500 Engineers',
     copy: 'How a European fintech navigated rapid talent acquisition and compliance hurdles.',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=85',
   },
@@ -117,9 +117,9 @@ const insights = [
 ] as const;
 
 const defaultFaqs = [
-  { id: '1', question: 'What is a Global Capability Center?', answer: 'A GCC is a dedicated offshore unit that centralizes finance, technology, or operational functions for a multinational enterprise.' },
+  { id: '1', question: 'What is a Global Capability Center?', answer: 'A CC Capital is a dedicated offshore unit that centralizes finance, technology, or operational functions for a multinational enterprise.' },
   { id: '2', question: 'How long does entity incorporation take?', answer: 'Typical incorporation timelines in India range from 4-8 weeks depending on the entity structure chosen.' },
-  { id: '3', question: 'Can you support ongoing compliance?', answer: 'Yes, our GCC advisory includes end-to-end statutory, tax, and regulatory compliance management.' },
+  { id: '3', question: 'Can you support ongoing compliance?', answer: 'Yes, our CC Capital advisory includes end-to-end statutory, tax, and regulatory compliance management.' },
 ];
 
 export default async function GCCPage() {
@@ -159,7 +159,7 @@ export default async function GCCPage() {
         <img
           className="h-[380px] w-full object-cover lg:h-[480px]"
           src={hero.imageUrl || 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=85'}
-          alt="GCC office"
+          alt="CC Capital office"
         />
       </AnimatedSection>
 
@@ -221,7 +221,7 @@ export default async function GCCPage() {
             Global leaders partner with PSC Global to mitigate risk and accelerate their India entry. We provide a singular, comprehensive advisory shield that replaces the traditional fragmented approach of engaging disparate legal, accounting, and operational consultants.
           </p>
           <p className="mt-4 text-sm leading-7 text-slate-600 lg:text-base">
-            Our senior partners bring decades of institutional knowledge, navigating the intricacies of the Indian business landscape to build GCCs that are compliant by design, structurally sound, and scaled for long-term dominance.
+            Our senior partners bring decades of institutional knowledge, navigating the intricacies of the Indian business landscape to build CC Capitals that are compliant by design, structurally sound, and scaled for long-term dominance.
           </p>
           <Link href="/team" className="mt-6 inline-block border-b border-ink text-xs font-bold tracking-wide text-ink">
             MEET OUR LEADERSHIP TEAM
@@ -350,7 +350,7 @@ export default async function GCCPage() {
 
       {/* SERVICES */}
       <AnimatedSection id="services" className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center border-t border-slate-200 px-6 py-20 lg:px-10">
-        <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">GCC Advisory &amp; Support Services</h2>
+        <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">CC Capital Advisory &amp; Support Services</h2>
         <div className="mt-12 space-y-12">
           {services.map(([title, copy, image, align]) => (
             <div
@@ -393,7 +393,7 @@ export default async function GCCPage() {
       {faqs.length > 0 && (
         <AnimatedSection className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-16 lg:px-10">
           <div className="mx-auto max-w-2xl">
-            <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">GCC Frequently Asked Questions</h2>
+            <h2 className="text-center font-serif text-5xl text-ink lg:text-6xl">CC Capital Frequently Asked Questions</h2>
             <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
               {faqs.map((faq) => (
                 <details className="group py-6" key={faq.id}>
