@@ -13,6 +13,11 @@ export default async function ClientPortalLayout({ children }: { children: React
 
   const portalCtx = await getPortalContext();
 
+  // If logged in user is Portal Admin, redirect them to Portal Admin dashboard
+  if (portalCtx?.portalRole === 'PORTAL_ADMIN') {
+    redirect('/client-portal/admin');
+  }
+
   const companyName = portalCtx?.client?.companyName || session.user.name || 'Client Portal';
   const initials = companyName
     .split(' ')

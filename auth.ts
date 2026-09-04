@@ -1,17 +1,9 @@
-/**
- * Auth.js (NextAuth v5) — Full Configuration
- *
- * Contains the Credentials provider with bcrypt password verification.
- * This file uses Node.js APIs and MUST NOT run on the Edge runtime.
- *
- * Exports: { handlers, auth, signIn, signOut }
- */
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users, portalUsers } from '@/lib/db/schema';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
 
@@ -36,7 +28,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: users.name,
             email: users.email,
             role: users.role,
-            // Select password hash for verification only — never returned to client
             password: users.password,
           })
           .from(users)
@@ -48,12 +39,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, user.password);
         if (!passwordsMatch) return null;
 
-        // Return user WITHOUT the password hash
+        const [pUser] = await db
+          .select({ portalRole: portalUsers.portalRole })
+          .from(portalUsers)
+          .where(eq(portalUsers.userId, user.id))
+          .limit(1);
+
+        const portalRole = pUser?.portalRole || (user.role === 'admin' || user.role === 'editor' ? 'PORTAL_ADMIN' : 'CLIENT');
+
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
+          portalRole,
         };
       },
     }),
