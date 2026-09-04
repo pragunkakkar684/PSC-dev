@@ -96,7 +96,7 @@ export function MediaPickerModal({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ImageIcon size={20} className="text-sky-400" />
+            <ImageIcon size={20} style={{ color: 'var(--accent)' }} />
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary, #f8fafc)', margin: 0 }}>
               Cloudinary Media Library Picker
             </h3>
@@ -133,7 +133,7 @@ export function MediaPickerModal({
               placeholder="Search media library..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="admin-input"
+              className="form-input"
               style={{ paddingLeft: '36px', width: '100%' }}
             />
           </div>
@@ -188,16 +188,16 @@ export function MediaPickerModal({
                     onClose();
                   }}
                   style={{
-                    border: '1px solid var(--border, #334155)',
-                    borderRadius: '10px',
+                    border: '1px solid var(--border, #262b38)',
+                    borderRadius: '6px',
                     overflow: 'hidden',
                     cursor: 'pointer',
-                    background: '#020617',
+                    background: '#0f1118',
                     position: 'relative',
                     aspectRatio: '4/3',
                     transition: 'transform 0.2s, border-color 0.2s',
                   }}
-                  className="group hover:border-sky-500 hover:scale-105"
+                  className="group hover:border-amber-500/60 hover:scale-105"
                 >
                   <img
                     src={img.url}

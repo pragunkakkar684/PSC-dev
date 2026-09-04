@@ -93,10 +93,7 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #0f1117;
-          background-image:
-            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.08), transparent),
-            radial-gradient(ellipse 40% 40% at 80% 80%, rgba(99, 102, 241, 0.06), transparent);
+          background: #0b0d12;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
           padding: 24px;
         }
@@ -104,13 +101,11 @@ export default function LoginPage() {
         .login-card {
           width: 100%;
           max-width: 400px;
-          background: #1a1d27;
+          background: #141720;
           border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 16px;
+          border-radius: 12px;
           padding: 40px;
-          box-shadow:
-            0 0 0 1px rgba(0,0,0,0.5),
-            0 24px 48px rgba(0,0,0,0.4);
+          box-shadow: 0 24px 48px rgba(0,0,0,0.5);
         }
 
         .login-brand {
@@ -122,22 +117,23 @@ export default function LoginPage() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 56px;
-          height: 56px;
-          background: linear-gradient(135deg, #3b82f6, #6366f1);
-          border-radius: 12px;
-          color: white;
-          font-size: 18px;
-          font-weight: 700;
+          width: 52px;
+          height: 52px;
+          background: #1c202d;
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 8px;
+          color: #f3f4f6;
+          font-size: 16px;
+          font-weight: 800;
           letter-spacing: 0.05em;
           margin-bottom: 16px;
         }
 
         .login-subtitle {
           color: #6b7280;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: 0.04em;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
         }
 
@@ -147,10 +143,10 @@ export default function LoginPage() {
           gap: 8px;
           background: rgba(239, 68, 68, 0.1);
           border: 1px solid rgba(239, 68, 68, 0.2);
-          border-radius: 8px;
+          border-radius: 6px;
           padding: 12px 14px;
           color: #f87171;
-          font-size: 14px;
+          font-size: 13px;
           margin-bottom: 24px;
         }
 
@@ -176,9 +172,9 @@ export default function LoginPage() {
         .form-input {
           width: 100%;
           padding: 10px 14px;
-          background: #111318;
+          background: #0f1118;
           border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px;
+          border-radius: 6px;
           color: #f9fafb;
           font-size: 14px;
           line-height: 1.5;
@@ -191,22 +187,27 @@ export default function LoginPage() {
         }
 
         .form-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+          border-color: #c59b27;
+          box-shadow: 0 0 0 2px rgba(197, 155, 39, 0.15);
         }
 
         .login-btn {
           width: 100%;
           padding: 11px;
-          background: linear-gradient(135deg, #3b82f6, #6366f1);
+          background: #1c202d;
           color: white;
-          border: none;
-          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 6px;
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;
-          transition: opacity 0.15s, transform 0.1s;
+          transition: background 0.15s, border-color 0.15s;
           margin-top: 4px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+          background: #24293a;
+          border-color: #c59b27;
         }
 
         .login-btn:hover:not(:disabled) {

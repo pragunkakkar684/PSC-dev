@@ -12,10 +12,10 @@ const variantStyles: Record<string, { bg: string; color: string; dot: string }> 
   draft:     { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' },
   inactive:  { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' },
   archived:  { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' },
-  new:       { bg: 'rgba(59,130,246,0.1)', color: '#60a5fa', dot: '#3b82f6' },
-  read:      { bg: 'rgba(99,102,241,0.1)', color: '#a5b4fc', dot: '#6366f1' },
-  admin:     { bg: 'rgba(245,158,11,0.1)', color: '#fbbf24', dot: '#f59e0b' },
-  editor:    { bg: 'rgba(59,130,246,0.1)', color: '#60a5fa', dot: '#3b82f6' },
+  new:       { bg: 'rgba(245,158,11,0.1)', color: '#fbbf24', dot: '#f59e0b' },
+  read:      { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' },
+  admin:     { bg: 'rgba(197,155,39,0.12)', color: '#f59e0b', dot: '#c59b27' },
+  editor:    { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' },
 };
 
 const defaultStyle = { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', dot: '#6b7280' };

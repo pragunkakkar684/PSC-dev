@@ -64,34 +64,34 @@ export function SEOEditor({
         description={`Manage meta titles, descriptions, canonical URLs, Open Graph social share cards, and search engine indexing for ${targetType}:${targetIdentifier}.`}
       />
 
-      {/* Real-time Google SERP Snippet Preview Box */}
+      {/* Snippet Preview Card */}
       <div
         style={{
-          background: '#0f172a',
-          border: '1px solid #1e293b',
-          borderRadius: '12px',
+          background: 'var(--bg-surface, #13161f)',
+          border: '1px solid var(--border, rgba(255,255,255,0.08))',
+          borderRadius: '8px',
           padding: '20px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px' }}>
-          <Search size={14} className="text-sky-400" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
+          <Search size={14} style={{ color: 'var(--accent)' }} />
           Google Search Result Snippet Preview
         </div>
 
         <div style={{ fontFamily: 'sans-serif', maxWidth: '600px' }}>
-          <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Globe size={12} className="text-emerald-400" />
             {previewUrl}
           </div>
-          <div style={{ fontSize: '18px', fontWeight: 600, color: '#38bdf8', marginBottom: '6px', lineHeight: 1.3, cursor: 'pointer' }}>
+          <div style={{ fontSize: '17px', fontWeight: 600, color: '#f3f4f6', marginBottom: '6px', lineHeight: 1.3, cursor: 'pointer' }}>
             {previewTitle}
           </div>
-          <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
+          <div style={{ fontSize: '13px', color: '#9ca3af', lineHeight: 1.5 }}>
             {previewDesc.length > 160 ? `${previewDesc.substring(0, 160)}...` : previewDesc}
           </div>
         </div>
 
-        <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid #1e293b', display: 'flex', gap: '16px', fontSize: '12px', color: '#64748b' }}>
+        <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--text-muted)' }}>
           <span>Meta Title: <strong style={{ color: previewTitle.length > 60 ? '#f43f5e' : '#10b981' }}>{previewTitle.length} / 60 chars</strong></span>
           <span>Meta Description: <strong style={{ color: previewDesc.length > 160 ? '#f43f5e' : '#10b981' }}>{previewDesc.length} / 160 chars</strong></span>
         </div>
@@ -111,9 +111,9 @@ export function SEOEditor({
         )}
 
         {/* Basic Metadata */}
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', display: 'grid', gap: '16px' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', display: 'grid', gap: '16px' }}>
           <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Globe size={16} className="text-sky-400" /> Basic Search Meta Tags
+            <Globe size={16} style={{ color: 'var(--accent)' }} /> Basic Search Meta Tags
           </div>
 
           <FormField
@@ -124,7 +124,7 @@ export function SEOEditor({
               type="text"
               value={formData.metaTitle || ''}
               onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-              className="admin-input"
+              className="form-input"
               placeholder="e.g. PSC Global — Strategic Business & Tax Advisory"
             />
           </FormField>
@@ -137,7 +137,7 @@ export function SEOEditor({
               rows={3}
               value={formData.metaDescription || ''}
               onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-              className="admin-input"
+              className="form-textarea"
               placeholder="Enter a compelling summary for search results..."
             />
           </FormField>
@@ -150,16 +150,16 @@ export function SEOEditor({
               type="text"
               value={formData.canonicalUrl || ''}
               onChange={(e) => setFormData({ ...formData, canonicalUrl: e.target.value })}
-              className="admin-input"
+              className="form-input"
               placeholder="https://pscglobal.com/about"
             />
           </FormField>
         </div>
 
         {/* Open Graph / Social Sharing */}
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', display: 'grid', gap: '16px' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', display: 'grid', gap: '16px' }}>
           <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Share2 size={16} className="text-sky-400" /> Open Graph & Social Cards
+            <Share2 size={16} style={{ color: 'var(--accent)' }} /> Open Graph & Social Cards
           </div>
 
           <FormField label="OG Title" hint="Title displayed when shared on LinkedIn, Twitter, Facebook">
@@ -167,7 +167,7 @@ export function SEOEditor({
               type="text"
               value={formData.ogTitle || ''}
               onChange={(e) => setFormData({ ...formData, ogTitle: e.target.value })}
-              className="admin-input"
+              className="form-input"
               placeholder="Social share title"
             />
           </FormField>
@@ -177,7 +177,7 @@ export function SEOEditor({
               rows={2}
               value={formData.ogDescription || ''}
               onChange={(e) => setFormData({ ...formData, ogDescription: e.target.value })}
-              className="admin-input"
+              className="form-textarea"
               placeholder="Social share description"
             />
           </FormField>
@@ -187,16 +187,16 @@ export function SEOEditor({
               type="text"
               value={formData.ogImage || ''}
               onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
-              className="admin-input"
+              className="form-input"
               placeholder="https://res.cloudinary.com/.../og-banner.jpg"
             />
           </FormField>
         </div>
 
         {/* Search Engine Indexing Controls */}
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', display: 'grid', gap: '16px' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', display: 'grid', gap: '16px' }}>
           <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Eye size={16} className="text-sky-400" /> Search Engine Robots Directives
+            <Eye size={16} style={{ color: 'var(--accent)' }} /> Search Engine Robots Directives
           </div>
 
           <div style={{ display: 'flex', gap: '24px' }}>
@@ -209,7 +209,7 @@ export function SEOEditor({
                   const newRobots = `${e.target.checked ? 'noindex' : 'index'}, ${noFollow ? 'nofollow' : 'follow'}`;
                   setFormData({ ...formData, robots: newRobots });
                 }}
-                style={{ width: '16px', height: '16px', accentColor: '#38bdf8' }}
+                style={{ width: '16px', height: '16px', accentColor: '#c59b27' }}
               />
               <strong>noindex</strong> (Hide this page from Google search results)
             </label>
@@ -223,7 +223,7 @@ export function SEOEditor({
                   const newRobots = `${noIndex ? 'noindex' : 'index'}, ${e.target.checked ? 'nofollow' : 'follow'}`;
                   setFormData({ ...formData, robots: newRobots });
                 }}
-                style={{ width: '16px', height: '16px', accentColor: '#38bdf8' }}
+                style={{ width: '16px', height: '16px', accentColor: '#c59b27' }}
               />
               <strong>nofollow</strong> (Instruct robots not to follow links on this page)
             </label>

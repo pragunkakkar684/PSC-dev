@@ -50,7 +50,7 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: 'CONTENT ENTITIES',
+    title: 'CONTENT',
     items: [
       { label: 'Practice Areas', href: '/admin/practice-areas', icon: <Layers size={16} /> },
       { label: 'Industries', href: '/admin/industries', icon: <Building2 size={16} /> },

@@ -50,14 +50,14 @@ const STATIC_PAGES_REGISTRY: StaticPageDef[] = [
 ];
 
 const DYNAMIC_ENTITIES_REGISTRY = [
-  { name: 'Practice Areas', href: '/admin/practice-areas', icon: <Layers size={18} className="text-sky-400" />, description: 'Manage individual practice areas & service offerings' },
-  { name: 'Industries', href: '/admin/industries', icon: <Building2 size={18} className="text-sky-400" />, description: 'Manage sector verticals & industry expertise' },
-  { name: 'Insights Articles', href: '/admin/insights', icon: <BookOpen size={18} className="text-sky-400" />, description: 'Manage publications, research & regulatory updates' },
-  { name: 'Events & Briefings', href: '/admin/events', icon: <Calendar size={18} className="text-sky-400" />, description: 'Manage executive webinars, roundtables & agendas' },
-  { name: 'Team Members', href: '/admin/team', icon: <Users size={18} className="text-sky-400" />, description: 'Manage managing partner & leadership bios' },
-  { name: 'Client Testimonials', href: '/admin/testimonials', icon: <Quote size={18} className="text-sky-400" />, description: 'Manage client recommendations & feedback' },
-  { name: 'Office Locations', href: '/admin/office-locations', icon: <MapPin size={18} className="text-sky-400" />, description: 'Manage global offices & coordinates' },
-  { name: 'FAQs', href: '/admin/faqs', icon: <HelpCircle size={18} className="text-sky-400" />, description: 'Manage frequently asked questions & categories' },
+  { name: 'Practice Areas', href: '/admin/practice-areas', icon: <Layers size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage individual practice areas & service offerings' },
+  { name: 'Industries', href: '/admin/industries', icon: <Building2 size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage sector verticals & industry expertise' },
+  { name: 'Insights Articles', href: '/admin/insights', icon: <BookOpen size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage publications, research & regulatory updates' },
+  { name: 'Events & Briefings', href: '/admin/events', icon: <Calendar size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage executive webinars, roundtables & agendas' },
+  { name: 'Team Members', href: '/admin/team', icon: <Users size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage managing partner & leadership bios' },
+  { name: 'Client Testimonials', href: '/admin/testimonials', icon: <Quote size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage client recommendations & feedback' },
+  { name: 'Office Locations', href: '/admin/office-locations', icon: <MapPin size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage global offices & coordinates' },
+  { name: 'FAQs', href: '/admin/faqs', icon: <HelpCircle size={18} style={{ color: 'var(--accent)' }} />, description: 'Manage frequently asked questions & categories' },
 ];
 
 export default async function PagesCMSPage() {

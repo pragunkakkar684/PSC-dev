@@ -453,7 +453,7 @@ export function PageEditorClient({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div>
                         <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Layers size={20} className="text-sky-400" /> Practice Area Entities Audit & Real-Time Management
+                          <Layers size={20} style={{ color: 'var(--accent)' }} /> Practice Area Entities Audit & Real-Time Management
                         </h3>
                         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                           Verify completeness and edit headings, descriptions, images, and services for all 5 core practice area cards rendered on <code>/practice-areas</code>.
@@ -473,9 +473,9 @@ export function PageEditorClient({
                           <div
                             key={pa.id}
                             style={{
-                              background: '#020617',
-                              border: `1px solid ${isComplete ? '#1e293b' : 'rgba(239, 68, 68, 0.4)'}`,
-                              borderRadius: '10px',
+                              background: '#0e1017',
+                              border: `1px solid ${isComplete ? 'var(--border)' : 'rgba(239, 68, 68, 0.4)'}`,
+                              borderRadius: '8px',
                               padding: '16px',
                               display: 'flex',
                               alignItems: 'center',
@@ -486,7 +486,7 @@ export function PageEditorClient({
                           >
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: 700, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: 700, color: '#f3f4f6', background: '#1c202d', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px' }}>
                                   {pa.number || 'PA'}
                                 </span>
                                 <strong style={{ fontSize: '15px', color: '#f8fafc' }}>{pa.name}</strong>
@@ -538,7 +538,7 @@ export function PageEditorClient({
                   <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '24px', display: 'grid', gap: '16px' }}>
                     <div>
                       <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <BarChart3 size={20} className="text-sky-400" /> Key Statistics & Impact Metrics
+                        <BarChart3 size={20} style={{ color: 'var(--accent)' }} /> Key Statistics & Impact Metrics
                       </h3>
                       <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                         Manage the 4 key stat numbers rendered in the website Statistics section.
@@ -547,7 +547,7 @@ export function PageEditorClient({
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                       {statsList.map((st) => (
-                        <div key={st.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '16px', display: 'grid', gap: '10px' }}>
+                        <div key={st.id} style={{ background: '#0e1017', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', display: 'grid', gap: '10px' }}>
                           <FormField label="Stat Label">
                             <input
                               type="text"

@@ -300,7 +300,7 @@ export default function EditPracticeAreaPage({ params }: { params: Promise<{ id:
           <div style={{ padding: '16px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', borderRadius: '8px' }}>
             {error}
           </div>
-          <Link href="/admin/practice-areas" style={{ display: 'inline-block', marginTop: '16px', color: '#3b82f6' }}>
+          <Link href="/admin/practice-areas" style={{ display: 'inline-block', marginTop: '16px', color: 'var(--accent, #c59b27)' }}>
             Back to Practice Areas
           </Link>
         </div>
@@ -358,7 +358,7 @@ export default function EditPracticeAreaPage({ params }: { params: Promise<{ id:
                 disabled={saving}
                 style={{
                   padding: '8px 18px',
-                  background: 'var(--accent, #3b82f6)',
+                  background: 'var(--accent, #c59b27)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',

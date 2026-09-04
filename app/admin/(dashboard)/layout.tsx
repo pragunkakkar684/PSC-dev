@@ -29,19 +29,21 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-          --bg-base: #0f1117;
-          --bg-surface: #1a1d27;
-          --bg-elevated: #21253a;
-          --border: rgba(255,255,255,0.07);
-          --text-primary: #f1f5f9;
-          --text-secondary: #94a3b8;
-          --text-muted: #475569;
-          --accent: #3b82f6;
-          --accent-hover: #2563eb;
+          --bg-base: #0b0d12;
+          --bg-surface: #13161f;
+          --bg-elevated: #191c28;
+          --bg-input: #0f1118;
+          --border: rgba(255, 255, 255, 0.08);
+          --border-strong: rgba(255, 255, 255, 0.16);
+          --text-primary: #f3f4f6;
+          --text-secondary: #9ca3af;
+          --text-muted: #6b7280;
+          --accent: #c59b27;
+          --accent-hover: #b48a1f;
           --success: #10b981;
           --warning: #f59e0b;
           --danger: #ef4444;
-          --radius: 8px;
+          --radius: 6px;
         }
 
         html, body { height: 100%; background: var(--bg-base); }
@@ -56,9 +58,9 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
         /* ── Sidebar ─────────────────────────────────────── */
         .sidebar {
-          width: 230px;
+          width: 240px;
           flex-shrink: 0;
-          background: var(--bg-surface);
+          background: #11141c;
           border-right: 1px solid var(--border);
           display: flex;
           flex-direction: column;
@@ -71,118 +73,128 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         .sidebar-brand {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 20px 16px;
+          gap: 12px;
+          padding: 20px 18px;
           border-bottom: 1px solid var(--border);
         }
 
         .sidebar-logo {
-          width: 34px;
-          height: 34px;
-          background: linear-gradient(135deg, #3b82f6, #6366f1);
-          border-radius: 8px;
+          width: 36px;
+          height: 36px;
+          background: #1c202d;
+          border: 1px solid var(--border-strong);
+          border-radius: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
-          font-weight: 700;
-          color: white;
-          letter-spacing: 0.04em;
+          font-size: 11px;
+          font-weight: 800;
+          color: #f3f4f6;
+          letter-spacing: 0.06em;
           flex-shrink: 0;
         }
 
         .sidebar-title {
           font-size: 13px;
           font-weight: 700;
-          color: var(--text-primary);
+          color: #f3f4f6;
           line-height: 1.2;
+          letter-spacing: 0.02em;
         }
 
         .sidebar-cms-label {
-          font-size: 10px;
+          font-size: 9px;
           color: var(--text-muted);
-          letter-spacing: 0.08em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          margin-top: 1px;
+          margin-top: 2px;
         }
 
         .sidebar-nav {
           flex: 1;
-          padding: 10px 8px;
+          padding: 14px 10px;
           display: flex;
           flex-direction: column;
-          gap: 1px;
+        }
+
+        .sidebar-section-label {
+          padding: 6px 10px;
+          font-size: 9px;
+          font-weight: 700;
+          color: var(--text-muted);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          margin-top: 12px;
+          margin-bottom: 4px;
+        }
+
+        .sidebar-section-label:first-child {
+          margin-top: 0;
         }
 
         .sidebar-link {
           display: flex;
           align-items: center;
-          gap: 9px;
+          gap: 10px;
           padding: 8px 10px;
-          border-radius: var(--radius);
-          font-size: 13px;
+          border-radius: 5px;
+          font-size: 12.5px;
           font-weight: 500;
           color: var(--text-secondary);
           text-decoration: none;
-          transition: background 0.1s, color 0.1s;
-          position: relative;
+          transition: background 0.15s, color 0.15s, border-color 0.15s;
+          border-left: 2px solid transparent;
         }
 
         .sidebar-link:hover {
-          background: rgba(255,255,255,0.05);
+          background: #161a25;
           color: var(--text-primary);
         }
 
         .sidebar-link-active {
-          background: rgba(59,130,246,0.12);
-          color: #60a5fa;
+          background: #191d29;
+          color: #ffffff;
+          border-left-color: var(--accent);
+          font-weight: 600;
         }
 
         .sidebar-link-active:hover {
-          background: rgba(59,130,246,0.16);
+          background: #1d2230;
         }
 
-        .sidebar-icon { display: flex; align-items: center; flex-shrink: 0; opacity: 0.8; }
+        .sidebar-icon { display: flex; align-items: center; flex-shrink: 0; opacity: 0.75; }
+        .sidebar-link-active .sidebar-icon { opacity: 1; color: var(--accent); }
         .sidebar-label { flex: 1; }
 
-        .sidebar-badge {
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          padding: 2px 5px;
-          border-radius: 4px;
-          background: rgba(245,158,11,0.15);
-          color: #fbbf24;
-        }
-
         .sidebar-footer {
-          padding: 12px 10px;
+          padding: 14px 12px;
           border-top: 1px solid var(--border);
           display: flex;
           align-items: center;
           gap: 8px;
+          background: #0e1017;
         }
 
         .sidebar-user {
           flex: 1;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           min-width: 0;
         }
 
         .sidebar-avatar {
           width: 30px;
           height: 30px;
-          background: linear-gradient(135deg, #3b82f6, #6366f1);
+          background: #1c202d;
+          border: 1px solid var(--border);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
-          color: white;
+          color: #f3f4f6;
           flex-shrink: 0;
         }
 
@@ -196,10 +208,10 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           text-overflow: ellipsis;
         }
         .sidebar-user-role {
-          font-size: 10px;
+          font-size: 9px;
           color: var(--text-muted);
           text-transform: uppercase;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.08em;
         }
 
         .sidebar-signout {
@@ -207,15 +219,15 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           border: none;
           color: var(--text-muted);
           cursor: pointer;
-          padding: 5px;
-          border-radius: 6px;
+          padding: 6px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
-          transition: color 0.1s, background 0.1s;
+          transition: color 0.15s, background 0.15s;
         }
         .sidebar-signout:hover {
           color: var(--danger);
-          background: rgba(239,68,68,0.08);
+          background: rgba(239,68,68,0.1);
         }
 
         /* ── Main Content ─────────────────────────────────── */
@@ -223,6 +235,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           flex: 1;
           min-width: 0;
           overflow-y: auto;
+          background: var(--bg-base);
         }
 
         /* ── Admin Header ─────────────────────────────────── */
@@ -230,40 +243,43 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 18px 28px;
+          padding: 16px 28px;
           border-bottom: 1px solid var(--border);
-          background: var(--bg-surface);
+          background: #11141c;
           position: sticky;
           top: 0;
           z-index: 10;
         }
 
         .admin-header-title {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 700;
           color: var(--text-primary);
+          letter-spacing: -0.01em;
         }
 
         .admin-header-user {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
         }
 
         .admin-header-role-badge {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
-          padding: 2px 7px;
+          letter-spacing: 0.08em;
+          padding: 2px 8px;
           border-radius: 4px;
-          background: rgba(59,130,246,0.12);
-          color: #60a5fa;
+          background: #1c202d;
+          border: 1px solid var(--border);
+          color: var(--text-secondary);
         }
 
         .admin-header-role-badge[data-role="admin"] {
-          background: rgba(245,158,11,0.12);
-          color: #fbbf24;
+          background: rgba(197, 155, 39, 0.12);
+          border-color: rgba(197, 155, 39, 0.25);
+          color: #f59e0b;
         }
 
         .admin-header-name {
@@ -280,9 +296,10 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           margin-bottom: 24px;
         }
         .page-header-title {
-          font-size: 20px;
+          font-size: 22px;
           font-weight: 700;
           color: var(--text-primary);
+          letter-spacing: -0.02em;
         }
         .page-header-description {
           font-size: 13px;
@@ -292,11 +309,77 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         }
         .page-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
+        /* ── Shared Form Controls ───────────────────────────── */
+        .form-input, .form-select, .form-textarea {
+          width: 100%;
+          padding: 9px 12px;
+          background: var(--bg-input);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          color: var(--text-primary);
+          font-size: 13px;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+          border-color: var(--accent);
+          box-shadow: 0 0 0 2px rgba(197, 155, 39, 0.15);
+        }
+        .form-input::placeholder, .form-textarea::placeholder {
+          color: #4b5563;
+        }
+
+        /* ── Shared Buttons ────────────────────────────────── */
+        .btn, .admin-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: var(--radius);
+          font-size: 12.5px;
+          font-weight: 600;
+          cursor: pointer;
+          border: 1px solid transparent;
+          text-decoration: none;
+          transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+          white-space: nowrap;
+        }
+        .btn:hover, .admin-button:hover { opacity: 0.9; }
+        .btn:disabled, .admin-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary, .admin-button.primary {
+          background: #1c202d;
+          color: #ffffff;
+          border-color: var(--border-strong);
+        }
+        .btn-primary:hover, .admin-button.primary:hover {
+          background: #24293a;
+          border-color: var(--accent);
+        }
+        .btn-secondary, .admin-button.secondary {
+          background: #141720;
+          color: var(--text-secondary);
+          border-color: var(--border);
+        }
+        .btn-secondary:hover, .admin-button.secondary:hover {
+          background: #191c28;
+          color: var(--text-primary);
+          border-color: var(--border-strong);
+        }
+        .btn-danger {
+          background: rgba(239,68,68,0.1);
+          color: #f87171;
+          border-color: rgba(239,68,68,0.2);
+        }
+        .btn-danger:hover {
+          background: rgba(239,68,68,0.18);
+        }
+
         /* ── Stat Cards ────────────────────────────────────── */
         .stat-card {
           background: var(--bg-surface);
           border: 1px solid var(--border);
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 20px;
         }
         .stat-card-top {
@@ -306,15 +389,15 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           margin-bottom: 12px;
         }
         .stat-card-label {
-          font-size: 12px;
-          font-weight: 600;
+          font-size: 11px;
+          font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.08em;
           color: var(--text-muted);
         }
-        .stat-card-icon { color: var(--text-muted); opacity: 0.7; }
+        .stat-card-icon { color: var(--text-muted); opacity: 0.6; }
         .stat-card-value {
-          font-size: 32px;
+          font-size: 30px;
           font-weight: 700;
           color: var(--text-primary);
           line-height: 1;
@@ -338,7 +421,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         .empty-state-icon {
           font-size: 32px;
           margin-bottom: 16px;
-          opacity: 0.5;
+          opacity: 0.4;
         }
         .empty-state-title {
           font-size: 16px;
@@ -354,80 +437,10 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         }
         .empty-state-action { margin-top: 20px; }
 
-        /* ── Shared Buttons ────────────────────────────────── */
-        .btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          border-radius: var(--radius);
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          border: none;
-          text-decoration: none;
-          transition: opacity 0.15s;
-          white-space: nowrap;
-        }
-        .btn:hover { opacity: 0.85; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-primary {
-          background: var(--accent);
-          color: white;
-        }
-        .btn-secondary {
-          background: rgba(255,255,255,0.06);
-          color: var(--text-secondary);
-          border: 1px solid var(--border);
-        }
-        .btn-danger {
-          background: rgba(239,68,68,0.12);
-          color: #f87171;
-          border: 1px solid rgba(239,68,68,0.2);
-        }
-
         /* ── Shared Content Area ───────────────────────────── */
         .admin-content {
           padding: 28px;
           max-width: 1200px;
-        }
-
-        /* ── Coming Soon Placeholder ───────────────────────── */
-        .coming-soon {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 300px;
-          text-align: center;
-          color: var(--text-muted);
-        }
-        .coming-soon-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 10px;
-          border-radius: 999px;
-          background: rgba(245,158,11,0.1);
-          color: #fbbf24;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          margin-bottom: 16px;
-        }
-        .coming-soon-title {
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--text-secondary);
-          margin-bottom: 8px;
-        }
-        .coming-soon-text {
-          font-size: 14px;
-          color: var(--text-muted);
-          max-width: 360px;
-          line-height: 1.6;
         }
 
         /* ── Dashboard Grid ────────────────────────────────── */
@@ -439,10 +452,10 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         }
 
         .dashboard-section-title {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.1em;
           color: var(--text-muted);
           margin-bottom: 12px;
         }

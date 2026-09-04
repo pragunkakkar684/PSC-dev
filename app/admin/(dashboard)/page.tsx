@@ -115,25 +115,25 @@ export default async function AdminDashboard() {
             label="Managed Public Pages"
             value={counts.pages.total}
             sub={`${counts.pages.published} published live`}
-            icon={<FileText size={18} className="text-sky-400" />}
+            icon={<FileText size={18} />}
           />
           <StatCard
             label="Practice Areas"
             value={counts.practiceAreas}
             sub="Active core practices"
-            icon={<Layers size={18} className="text-sky-400" />}
+            icon={<Layers size={18} />}
           />
           <StatCard
             label="Industry Verticals"
             value={counts.industries}
             sub="Active sector verticals"
-            icon={<Building2 size={18} className="text-sky-400" />}
+            icon={<Building2 size={18} />}
           />
           <StatCard
             label="Insights & Articles"
             value={counts.insights}
             sub="Published research"
-            icon={<BookOpen size={18} className="text-sky-400" />}
+            icon={<BookOpen size={18} />}
           />
         </div>
 
@@ -144,19 +144,19 @@ export default async function AdminDashboard() {
             label="Events & Briefings"
             value={counts.events.total}
             sub={`${counts.events.upcoming} upcoming`}
-            icon={<Calendar size={18} className="text-sky-400" />}
+            icon={<Calendar size={18} />}
           />
           <StatCard
             label="Team Members"
             value={counts.team.total}
             sub={`${counts.team.published} published`}
-            icon={<Users size={18} className="text-sky-400" />}
+            icon={<Users size={18} />}
           />
           <StatCard
             label="Media Library"
             value={counts.media}
             sub="Cloudinary images"
-            icon={<ImageIcon size={18} className="text-sky-400" />}
+            icon={<ImageIcon size={18} />}
           />
         </div>
 
@@ -167,67 +167,67 @@ export default async function AdminDashboard() {
             label="Contact Submissions"
             value={counts.submissions.total}
             sub={`${counts.submissions.new} unread`}
-            icon={<Mail size={18} className="text-sky-400" />}
+            icon={<Mail size={18} />}
           />
           <StatCard
             label="Newsletter Subscribers"
             value={counts.subscribers}
             sub="active subscribers"
-            icon={<Send size={18} className="text-sky-400" />}
+            icon={<Send size={18} />}
           />
         </div>
 
         {/* Quick Management Actions Grid */}
         <div className="dashboard-section-title" style={{ marginTop: '28px' }}>Central Management Shortcuts</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-          <Link href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.2s' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText size={18} /> 1. Central Pages Grid
+          <Link href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FileText size={16} style={{ color: 'var(--accent)' }} /> 1. Central Pages Grid
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Select, compose sections, update hero banners, and edit SEO for all 17 public routes.
             </div>
           </Link>
 
-          <Link href="/admin/practice-areas/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={18} /> 2. Add Practice Area
+          <Link href="/admin/practice-areas/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 2. Add Practice Area
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Create a new practice area which automatically powers `/practice-areas/[slug]`.
             </div>
           </Link>
 
-          <Link href="/admin/industries/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={18} /> 3. Add Industry Vertical
+          <Link href="/admin/industries/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 3. Add Industry Vertical
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Add sector expertise to power `/industries/[slug]`.
             </div>
           </Link>
 
-          <Link href="/admin/insights/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={18} /> 4. Publish Insight Article
+          <Link href="/admin/insights/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 4. Publish Insight Article
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Publish regulatory briefings to power `/insights/[slug]`.
             </div>
           </Link>
 
-          <Link href="/admin/events/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={18} /> 5. Create Event / Webinar
+          <Link href="/admin/events/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 5. Create Event / Webinar
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Schedule executive webinars to power `/events/[slug]`.
             </div>
           </Link>
 
-          <Link href="/admin/media" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', color: 'var(--text-primary)' }} className="hover:border-sky-500">
-            <div style={{ fontWeight: 700, fontSize: '16px', color: '#38bdf8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ImageIcon size={18} /> 6. Cloudinary Media Manager
+          <Link href="/admin/media" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ImageIcon size={16} style={{ color: 'var(--accent)' }} /> 6. Cloudinary Media Manager
             </div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Upload, search, and manage high-resolution images for pages and SEO cards.
@@ -238,16 +238,16 @@ export default async function AdminDashboard() {
         {/* System Health */}
         <div style={{
           marginTop: '12px',
-          padding: '16px 20px',
-          background: 'rgba(16,185,129,0.05)',
+          padding: '14px 18px',
+          background: 'rgba(16,185,129,0.04)',
           border: '1px solid rgba(16,185,129,0.12)',
-          borderRadius: '12px',
+          borderRadius: '8px',
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
         }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
-          <span style={{ fontSize: '14px', color: '#34d399', fontWeight: '500' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
+          <span style={{ fontSize: '13px', color: '#34d399', fontWeight: '500' }}>
             Site-Wide CMS Active · Real-time Neon Database Sync & Next.js On-Demand Revalidation Operational
           </span>
         </div>
