@@ -6,6 +6,9 @@ import { useEffect, useState } from 'react';
 export interface TestimonialItem {
   id?: number;
   quote: string;
+  personName?: string | null;
+  personTitle?: string | null;
+  companyName?: string | null;
   authorName?: string | null;
   name?: string;
   authorRole?: string | null;
@@ -57,8 +60,13 @@ export default function Testimonial({ data }: { data?: TestimonialItem[] }) {
   const rawActive = list[index] || list[0];
   const active = {
     quote: rawActive.quote,
-    name: rawActive.authorName || rawActive.name || 'Anonymous',
-    role: [rawActive.authorRole, rawActive.authorCompany].filter(Boolean).join(', ') || rawActive.role || '',
+    name: rawActive.personName || rawActive.authorName || rawActive.name || rawActive.companyName || 'Anonymous',
+    role:
+      [rawActive.personTitle, rawActive.authorRole, rawActive.companyName, rawActive.authorCompany]
+        .filter(Boolean)
+        .join(', ') ||
+      rawActive.role ||
+      '',
     avatar: rawActive.authorAvatarUrl || rawActive.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80',
   };
 

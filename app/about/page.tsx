@@ -304,7 +304,7 @@ export default async function AboutPage() {
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
-            href={ctaSec?.primaryCtaUrl || '/contact'}
+            href="/book-consultation"
             className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-slate-800"
           >
             {ctaSec?.primaryCtaText || 'BOOK A CONSULTATION'}

@@ -25,11 +25,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const ind = await getPublicIndustryBySlug(params.slug);
+  const { slug } = await params;
+  const ind = await getPublicIndustryBySlug(slug);
   if (!ind) return {};
-  return buildPageMetadata('industry', params.slug, {
+  return buildPageMetadata('industry', slug, {
     title: `${ind.name} | PSC Global Advisory`,
     description: ind.heroDescription || ind.shortDescription || '',
   });
@@ -39,9 +40,10 @@ export async function generateMetadata({
 export default async function IndustryDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const ind = await getPublicIndustryBySlug(params.slug);
+  const { slug } = await params;
+  const ind = await getPublicIndustryBySlug(slug);
 
   if (!ind) {
     notFound();
@@ -275,7 +277,7 @@ export default async function IndustryDetailPage({
             {ind.finalCta1Text || 'TALK TO OUR INDUSTRY EXPERTS'}
           </Link>
           <Link
-            href={ind.finalCta2Href || '/book-consultation'}
+            href="/book-consultation"
             className="bg-ink px-5 py-3 text-center text-xs font-bold tracking-wide text-white transition hover:bg-slate-800"
           >
             {ind.finalCta2Text || 'BOOK A CONSULTATION'}

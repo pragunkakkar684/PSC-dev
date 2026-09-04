@@ -40,19 +40,21 @@ export default function Insights({ data }: InsightsProps) {
         <div className="mt-10 grid gap-10 lg:grid-cols-[2fr_1fr]">
           {hasDbData && featured ? (
             <article className="insight-card">
-              <img
-                className="h-72 w-full object-cover sm:h-80 lg:h-[440px]"
-                src={
-                  featured.imageUrl ||
-                  'https://images.unsplash.com/photo-1661956600684-97d3a4320e45?auto=format&fit=crop&w=1200&q=85'
-                }
-                alt={featured.title}
-              />
-              <small className="mt-5 block text-[10px] tracking-widest text-slate-500 uppercase">
-                {featured.tag || featured.contentType} · {featured.readTimeMins || 5} MIN READ
-              </small>
-              <h3 className="mt-3 font-serif text-4xl leading-tight">{featured.title}</h3>
-              <p className="mt-4 text-sm leading-6 text-slate-600">{featured.summary}</p>
+              <Link href={`/insights/${featured.slug}`} className="block">
+                <img
+                  className="h-72 w-full object-cover sm:h-80 lg:h-[440px]"
+                  src={
+                    featured.imageUrl ||
+                    'https://images.unsplash.com/photo-1661956600684-97d3a4320e45?auto=format&fit=crop&w=1200&q=85'
+                  }
+                  alt={featured.title}
+                />
+                <small className="mt-5 block text-[10px] tracking-widest text-slate-500 uppercase">
+                  {featured.tag || featured.contentType} · {featured.readTimeMins || 5} MIN READ
+                </small>
+                <h3 className="mt-3 font-serif text-4xl leading-tight">{featured.title}</h3>
+                <p className="mt-4 text-sm leading-6 text-slate-600">{featured.summary}</p>
+              </Link>
             </article>
           ) : (
             <article className="insight-card">
@@ -83,20 +85,22 @@ export default function Insights({ data }: InsightsProps) {
             {hasDbData
               ? list.map((art) => (
                   <article className="insight-card flex gap-4 border-b border-slate-200 pb-6" key={art.id}>
-                    <img
-                      className="h-16 w-16 shrink-0 object-cover"
-                      src={
-                        art.imageUrl ||
-                        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=200&q=70'
-                      }
-                      alt=""
-                    />
-                    <div>
-                      <small className="text-[10px] font-semibold tracking-widest text-slate-700 uppercase">
-                        {art.tag || art.contentType}
-                      </small>
-                      <h3 className="mt-2 font-serif text-xl leading-snug">{art.title}</h3>
-                    </div>
+                    <Link href={`/insights/${art.slug}`} className="flex w-full gap-4">
+                      <img
+                        className="h-16 w-16 shrink-0 object-cover"
+                        src={
+                          art.imageUrl ||
+                          'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=200&q=70'
+                        }
+                        alt=""
+                      />
+                      <div>
+                        <small className="text-[10px] font-semibold tracking-widest text-slate-700 uppercase">
+                          {art.tag || art.contentType}
+                        </small>
+                        <h3 className="mt-2 font-serif text-xl leading-snug">{art.title}</h3>
+                      </div>
+                    </Link>
                   </article>
                 ))
               : sideArticles.map(([tag, title, image]) => (

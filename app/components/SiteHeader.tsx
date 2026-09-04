@@ -69,47 +69,52 @@ const BOOK_CONSULTATION_HREF = "/book-consultation";
 
 const ABOUT_HREFS: Record<string, string> = {
   "Company Overview": "/about",
-  "Our Story": "/about#story",
-  Leadership: "/team",
-  "Why PSC": "/about#why-psc",
-  "Global Presence": "/about#global-presence",
-  "Awards & Recognitions": "/about#awards",
-  "Memberships & Certifications": "/about#memberships",
-  Careers: "/contact#careers",
+  "Our Story": "/about",
+  Leadership: "/team#leadership",
+  "Why PSC": "/about",
+  "Global Presence": "/about#offices",
+  "Awards & Recognitions": "/about",
+  "Memberships & Certifications": "/about",
+  Careers: "/career",
 };
 
 const TEAM_HREFS: Record<string, string> = {
   Leadership: "/team#leadership",
   Partners: "/partner",
-  Mentors: "/team#mentors",
+  Mentors: "/team",
+};
+
+const PRACTICE_HREFS: Record<string, string> = {
+  "Risk & Assurance": "/practice-areas/risk-assurance",
+  "Tax & Fiscal Advisory": "/practice-areas/tax-fiscal-advisory",
+  "Corporate Law": "/practice-areas/corporate-law",
+  "Business Advisory": "/practice-areas/business-advisory",
+  "Business Process": "/practice-areas/business-process-advisory",
 };
 
 const INDUSTRY_HREFS: Record<string, string> = {
-  Manufacturing: "/industries#manufacturing",
-  Infrastructure: "/industries#infrastructure",
-  "Real Estate": "/industries#real-estate",
-  Aviation: "/industries#aviation",
-  Energy: "/industries#energy",
-  "Banking & Financial Services": "/industries#banking-financial-services",
-  Healthcare: "/industries#healthcare",
-  NGOs: "/industries#ngos",
-  Technology: "/industries#technology",
-  "E-Commerce": "/industries#e-commerce",
-  Media: "/industries#media",
-  Startups: "/industries#startups",
+  Manufacturing: "/industries/manufacturing",
+  Infrastructure: "/industries/infrastructure",
+  "Real Estate": "/industries/real-estate",
+  Aviation: "/industries/aviation",
+  Energy: "/industries/energy",
+  "Banking & Financial Services": "/industries/banking-finance",
+  Healthcare: "/industries/healthcare",
+  NGOs: "/industries/ngos",
+  Technology: "/industries/technology",
+  "E-Commerce": "/industries/e-commerce",
+  Media: "/industries/media",
+  Startups: "/industries/startups",
 };
 
 const INSIGHTS_HREFS: Record<string, string> = {
   "Upcoming Events": "/events",
-  Webinars: "/insights#webinars",
-  Seminars: "/events#seminars",
-  Conferences: "/events#conferences",
-  "Event Recordings": "/events#recordings",
-  "Event Gallery": "/events#gallery",
+  Webinars: "/events#upcoming",
+  Seminars: "/events#upcoming",
+  Conferences: "/events#upcoming",
+  "Event Recordings": "/events",
+  "Event Gallery": "/events",
 };
-
-const sectionHref = (page: string, label: string) =>
-  `${page}#${label.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 
 export default function SiteHeader() {
   const [active, setActive] = useState<string | null>(null);
@@ -546,7 +551,7 @@ export default function SiteHeader() {
                       <p className="psc-col-title">{col.title}</p>
                       <div className="psc-col-list">
                         {col.items.map((i) => (
-                          <a href={sectionHref("/practice-areas", i)} key={i}>{i}</a>
+                          <a href={PRACTICE_HREFS[col.title] || "/practice-areas"} key={i}>{i}</a>
                         ))}
                       </div>
                     </div>
@@ -561,7 +566,7 @@ export default function SiteHeader() {
                     <p>Our GCC model helps enterprise leaders scale specialized functions with architectural precision.</p>
                   </div>
                   <a href="/gcc" className="psc-gcc-link">Explore GCC →</a>
-                  <a href="/practice-areas" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></a>
+                  <Link href="/practice-areas" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></Link>
                 </div>
               </div>
             )}
@@ -574,9 +579,9 @@ export default function SiteHeader() {
                     <p className="psc-menu-desc">
                       Sector-focused expertise backed by multidisciplinary advisory capabilities.
                     </p>
-                    <a href="/industries" className="psc-explore" style={{ marginTop: 0 }}>
+                    <Link href="/industries" className="psc-explore" style={{ marginTop: 0 }}>
                       Explore All Industries <ArrowRight size={14} />
-                    </a>
+                    </Link>
                   </div>
                   <div className="psc-cols psc-cols-3">
                     {INDUSTRY_COLUMNS.map((col, idx) => (
@@ -609,8 +614,8 @@ export default function SiteHeader() {
                     <p className="psc-spotlight-title">
                       Global Infrastructure &amp; Sustainable Finance Summit
                     </p>
-                    <a href="/event#register" className="reg">Register <ArrowRight size={14} /></a>
-                    <a href="/event" className="view">View All Events →</a>
+                    <Link href="/events#upcoming" className="reg">Register <ArrowRight size={14} /></Link>
+                    <Link href="/events" className="view">View All Events →</Link>
                   </div>
                 </div>
               </div>

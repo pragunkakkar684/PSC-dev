@@ -25,11 +25,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const pa = await getPublicPracticeAreaBySlug(params.slug);
+  const { slug } = await params;
+  const pa = await getPublicPracticeAreaBySlug(slug);
   if (!pa) return {};
-  return buildPageMetadata('practice-area', params.slug, {
+  return buildPageMetadata('practice-area', slug, {
     title: `${pa.name} | PSC Global Advisory`,
     description: pa.heroDescription || pa.shortDescription || '',
   });
@@ -39,9 +40,10 @@ export async function generateMetadata({
 export default async function PracticeAreaDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const pa = await getPublicPracticeAreaBySlug(params.slug);
+  const { slug } = await params;
+  const pa = await getPublicPracticeAreaBySlug(slug);
 
   if (!pa) {
     notFound();
@@ -275,7 +277,7 @@ export default async function PracticeAreaDetailPage({
             {pa.finalCta1Text || 'TALK TO OUR ADVISORS'}
           </Link>
           <Link
-            href={pa.finalCta2Href || '/book-consultation'}
+            href="/book-consultation"
             className="bg-ink px-5 py-3 text-center text-xs font-bold tracking-wide text-white transition hover:bg-slate-800"
           >
             {pa.finalCta2Text || 'BOOK A CONSULTATION'}

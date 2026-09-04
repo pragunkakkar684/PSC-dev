@@ -57,7 +57,7 @@ export default function PartnerProfilePage() {
             <a href="#contact" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white">
               SCHEDULE A DISCUSSION
             </a>
-            <a href="#contact" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide">
+            <a href="/book-consultation" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide">
               BOOK A CONSULTATION
             </a>
           </div>

@@ -420,7 +420,7 @@ export default async function EventsPage() {
           <a href="#upcoming" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
             REGISTER FOR EVENTS
           </a>
-          <Link href="/contact" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide text-ink transition hover:bg-slate-100">
+          <Link href="/book-consultation" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide text-ink transition hover:bg-slate-100">
             BOOK A CONSULTATION
           </Link>
         </div>

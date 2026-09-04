@@ -93,6 +93,11 @@ async function seedSiteCMS() {
     await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS published_at TIMESTAMP;`;
     await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS person_name VARCHAR(200);`;
     await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS person_title VARCHAR(300);`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS client_name VARCHAR(200);`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS client_title VARCHAR(300);`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS rating INTEGER DEFAULT 5 NOT NULL;`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);`;
+    await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW() NOT NULL;`;
     await sql`ALTER TABLE faqs ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'general';`;
     await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS category VARCHAR(100);`;
     await sql`ALTER TABLE insights_articles ADD COLUMN IF NOT EXISTS author_name VARCHAR(200);`;

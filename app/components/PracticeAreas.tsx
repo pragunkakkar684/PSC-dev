@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, Compass } from 'lucide-react';
 import type { PracticeArea } from '@/lib/db/schema';
+import Link from 'next/link';
 import { useStaggerAnimation } from './useStaggerAnimation';
 
 interface PracticeAreasProps {
@@ -59,32 +60,34 @@ export default function PracticeAreas({ data }: PracticeAreasProps) {
 
         <div ref={gridRef} className="mt-12 grid gap-4 md:grid-cols-3">
           {hasDbData
-            ? data.map((pa, idx) => (
+            ? data.slice(0, 5).map((pa, idx) => (
                 <article
                   className={`relative min-h-44 border border-slate-200 p-8 transition duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:shadow-xl ${
                     idx === 0 ? 'bg-navy text-white md:col-span-2' : idx === 1 ? 'bg-[#e7f1ff]' : ''
                   }`}
                   key={pa.id}
                 >
-                  <div className="flex items-start justify-between">
-                    <small className="text-[10px] tracking-widest opacity-65">
-                      {pa.number || `0${idx + 1}`}. {pa.slug?.toUpperCase()}
-                    </small>
-                    {idx === 0 && <Compass size={22} className="text-white/80" />}
-                  </div>
-                  <h3 className="mt-6 font-serif text-3xl leading-tight font-medium">{pa.name}</h3>
-                  <p className="mt-4 text-sm leading-6 opacity-75">{pa.shortDescription}</p>
+                  <Link href={`/practice-areas/${pa.slug}`} className="block h-full">
+                    <div className="flex items-start justify-between">
+                      <small className="text-[10px] tracking-widest opacity-65">
+                        {pa.number || `0${idx + 1}`}. {pa.slug?.toUpperCase()}
+                      </small>
+                      {idx === 0 && <Compass size={22} className="text-white/80" />}
+                    </div>
+                    <h3 className="mt-6 font-serif text-3xl leading-tight font-medium">{pa.name}</h3>
+                    <p className="mt-4 text-sm leading-6 opacity-75">{pa.shortDescription}</p>
 
-                  {pa.services && pa.services.length > 0 && (
-                    <ul className="mt-5 space-y-2.5 text-sm">
-                      {pa.services.slice(0, 4).map((s) => (
-                        <li className="flex items-center gap-2.5" key={s.name}>
-                          <span className="h-1.5 w-1.5 shrink-0 bg-current" />
-                          {s.name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                    {pa.services && pa.services.length > 0 && (
+                      <ul className="mt-5 space-y-2.5 text-sm">
+                        {pa.services.slice(0, 4).map((s) => (
+                          <li className="flex items-center gap-2.5" key={s.name}>
+                            <span className="h-1.5 w-1.5 shrink-0 bg-current" />
+                            {s.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </Link>
                 </article>
               ))
             : defaultAreas.map(([no, tag, title, copy, style], i) => (
@@ -117,6 +120,15 @@ export default function PracticeAreas({ data }: PracticeAreasProps) {
                   )}
                 </article>
               ))}
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            className="inline-flex items-center gap-2 text-xs font-bold text-navy underline underline-offset-4"
+            href="/practice-areas"
+          >
+            Browse All Practice Areas <ArrowUpRight size={15} />
+          </Link>
         </div>
       </div>
     </section>

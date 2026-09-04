@@ -107,7 +107,7 @@ export default async function ContactPage() {
             {hero.subheading || 'Whether you are navigating complex regulatory landscapes, restructuring for global expansion, or seeking strategic counsel, our partners are ready to engage.'}
           </p>
           <div className="mt-8 flex gap-3">
-            <a href="#contact-form" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
+            <a href="/book-consultation" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
               BOOK A CONSULTATION
             </a>
             <a href="#leadership" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide transition hover:bg-slate-100">
@@ -291,7 +291,7 @@ export default async function ContactPage() {
           Let&apos;s Build Something Meaningful Together.
         </h2>
         <div className="mt-9 flex justify-center gap-3">
-          <a href="#contact-form" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
+          <a href="/book-consultation" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800">
             BOOK A CONSULTATION
           </a>
           <a href="#leadership" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide transition hover:bg-slate-100">

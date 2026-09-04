@@ -25,7 +25,9 @@ export default function Hero({ data }: HeroProps) {
   const cta1Text = data?.cta1Text || 'Explore Practice Areas';
   const cta1Href = data?.cta1Href || '/practice-areas';
   const cta2Text = data?.cta2Text || 'Book a Consultation';
-  const cta2Href = data?.cta2Href || '/book-consultation';
+  const cta2Href = /book\s+(a\s+)?consultation/i.test(cta2Text)
+    ? '/book-consultation'
+    : data?.cta2Href || '/book-consultation';
 
   useEffect(() => {
     const ctx = gsap.context(() => {

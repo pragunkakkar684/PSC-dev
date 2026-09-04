@@ -43,9 +43,10 @@ import { notFound } from 'next/navigation';
 export default async function EventDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const detail: any = await getPublicEventBySlug(params.slug);
+  const { slug } = await params;
+  const detail: any = await getPublicEventBySlug(slug);
 
   if (!detail) {
     notFound();

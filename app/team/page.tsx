@@ -144,7 +144,7 @@ export default async function OurTeamPage() {
               {hero.cta1Text || 'MEET OUR PARTNERS'} <ArrowDown size={14} />
             </a>
             <Link
-              href={hero.cta2Href && hero.cta2Href !== '#' ? hero.cta2Href : '/contact'}
+              href="/book-consultation"
               className="inline-flex items-center gap-3 border border-white px-5 py-3 text-xs font-bold text-white transition hover:bg-white hover:text-ink"
             >
               {hero.cta2Text || 'BOOK A CONSULTATION'}
@@ -309,7 +309,7 @@ export default async function OurTeamPage() {
           </h2>
           <div className="mt-8 flex justify-center gap-3">
             <Link
-              href={ctaSec?.primaryCtaUrl && ctaSec.primaryCtaUrl !== '#' ? ctaSec.primaryCtaUrl : '/contact'}
+              href="/book-consultation"
               className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-slate-800"
             >
               {ctaSec?.primaryCtaText || 'BOOK A CONSULTATION'}

@@ -1,6 +1,7 @@
 'use client';
 
 import type { Industry } from '@/lib/db/schema';
+import Link from 'next/link';
 import AnimatedSection from './AnimatedSection';
 import { useStaggerAnimation } from './useStaggerAnimation';
 
@@ -40,16 +41,24 @@ export default function Sectors({ data }: SectorsProps) {
         >
           OUR ECOSYSTEM
         </p>
-        <div className="mt-4 flex flex-col justify-between gap-6 md:flex-row md:items-center">
+        <div className="mt-4 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <h2 className="font-serif text-5xl sm:text-6xl">Sectors We Serve</h2>
-          <p className="max-w-sm border-l border-white/20 pl-8 text-[15px] leading-7 text-slate-300">
-            Specialized expertise tailored for industries that define the global economy. From heavy
-            infrastructure to digital finance, we build bridges between potential and performance.
-          </p>
+          <div className="flex flex-col items-start gap-4 md:items-end">
+            <p className="max-w-sm border-l border-white/20 pl-8 text-[15px] leading-7 text-slate-300">
+              Specialized expertise tailored for industries that define the global economy. From heavy
+              infrastructure to digital finance, we build bridges between potential and performance.
+            </p>
+            <Link
+              className="text-xs font-semibold text-white underline underline-offset-4"
+              href="/industries"
+            >
+              Browse All Industries
+            </Link>
+          </div>
         </div>
         <div ref={cardRef} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {hasDbData
-            ? data.map((ind) => {
+            ? data.slice(0, 4).map((ind) => {
                 const img =
                   ind.imageUrl ||
                   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=70';
@@ -61,7 +70,9 @@ export default function Sectors({ data }: SectorsProps) {
                     }}
                     key={ind.id}
                   >
-                    <span className="font-serif text-2xl leading-tight sm:text-[28px]">{ind.name}</span>
+                    <Link href={`/industries/${ind.slug}`} className="block w-full">
+                      <span className="font-serif text-2xl leading-tight sm:text-[28px]">{ind.name}</span>
+                    </Link>
                   </article>
                 );
               })
@@ -71,7 +82,7 @@ export default function Sectors({ data }: SectorsProps) {
                   style={{
                     backgroundImage: `linear-gradient(0deg,rgba(0,18,38,.95),rgba(0,18,38,.08)),url(${image})`,
                   }}
-                  key={title}
+                  key={title as string}
                 >
                   <span className="font-serif text-2xl leading-tight sm:text-[28px]">{title}</span>
                 </article>

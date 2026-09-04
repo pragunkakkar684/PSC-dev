@@ -199,10 +199,7 @@ export default async function PracticeAreasPage() {
     finalCtaSection?.subtitle ||
     'Let us discuss how our multidisciplinary team can provide the architectural clarity your organization needs to thrive on a global scale.';
   const primaryCtaText = finalCtaSection?.primaryCtaText || 'BOOK A CONSULTATION';
-  const primaryCtaUrl =
-    finalCtaSection?.primaryCtaUrl && finalCtaSection.primaryCtaUrl !== '#'
-      ? finalCtaSection.primaryCtaUrl
-      : '/book-consultation';
+  const primaryCtaUrl = '/book-consultation';
   const secondaryCtaText = finalCtaSection?.secondaryCtaText || 'CONTACT US';
   const secondaryCtaUrl =
     finalCtaSection?.secondaryCtaUrl && finalCtaSection.secondaryCtaUrl !== '#'

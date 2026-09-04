@@ -60,7 +60,7 @@ export default function Team({ data }: TeamProps) {
       </p>
       <div className="mt-4 flex items-end justify-between gap-6">
         <h2 className="max-w-3xl font-serif text-5xl sm:text-6xl">The Leadership Behind the Architecture.</h2>
-        <div className="hidden shrink-0 gap-2 sm:flex">
+        <div className="flex shrink-0 gap-2">
           <button
             aria-label="Previous"
             onClick={() => scroll('left')}
@@ -79,11 +79,14 @@ export default function Team({ data }: TeamProps) {
       </div>
       <div
         ref={trackRef}
-        className="mt-10 flex snap-x snap-mandatory gap-7 overflow-x-auto scroll-smooth pb-2 md:grid md:grid-cols-3 md:overflow-visible"
+        className="mt-10 flex snap-x snap-mandatory gap-7 overflow-x-auto scroll-smooth pb-2"
       >
         {hasDbData
           ? data.map((m) => (
-              <article className="profile-card group w-[85vw] shrink-0 snap-start sm:w-auto" key={m.id}>
+              <article
+                className="profile-card group w-[85vw] shrink-0 snap-start sm:w-[340px]"
+                key={m.id}
+              >
                 <Link href={`/partner/${m.slug}`}>
                   <div className="relative overflow-hidden">
                     <img
@@ -115,7 +118,10 @@ export default function Team({ data }: TeamProps) {
               </article>
             ))
           : defaultLeaders.map(([image, name, badge, byline, bio, slug]) => (
-              <article className="profile-card group w-[85vw] shrink-0 snap-start sm:w-auto" key={name}>
+              <article
+                className="profile-card group w-[85vw] shrink-0 snap-start sm:w-[340px]"
+                key={name}
+              >
                 <Link href={`/partner/${slug}`}>
                   <div className="relative overflow-hidden">
                     <img

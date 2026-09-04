@@ -13,7 +13,7 @@ export default function Contact() {
         </p>
       </div>
       <a
-        href="#contact"
+        href="/book-consultation"
         className="inline-flex shrink-0 items-center gap-3 bg-ink px-8 py-4 text-base font-semibold text-white transition hover:-translate-y-1 hover:shadow-xl"
       >
         Book Consultation
