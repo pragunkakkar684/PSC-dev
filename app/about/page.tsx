@@ -111,8 +111,8 @@ export default async function AboutPage() {
     getPageCMS('about'),
   ]);
 
-  const team = dbTeam.length > 1 ? dbTeam : defaultTeam;
-  const offices = dbOffices.length > 0 ? dbOffices : defaultOffices;
+  const team = dbTeam;
+  const offices = dbOffices;
 
   // Extract CMS page sections
   const whoWeAreSec = cms.sectionMap['who-we-are'];

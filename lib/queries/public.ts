@@ -6,6 +6,9 @@ import {
   teamMemberExpertise,
   practiceAreas,
   practiceAreaServices,
+  practiceAreaCapabilities,
+  practiceAreaExperts,
+  practiceAreaInsights,
   industries,
   industryChallenges,
   industrySolutions,
@@ -284,14 +287,50 @@ export async function getPublicPracticeAreaBySlug(slug: string) {
       .where(and(eq(practiceAreas.slug, slug), eq(practiceAreas.isPublished, true)))
       .limit(1);
 
-    if (area) {
-      const srv = await db
-        .select()
-        .from(practiceAreaServices)
-        .where(eq(practiceAreaServices.practiceAreaId, area.id))
-        .orderBy(asc(practiceAreaServices.sortOrder));
-      return { ...area, services: srv };
-    }
+    if (!area) return null;
+
+    // Fetch services
+    const services = await db
+      .select()
+      .from(practiceAreaServices)
+      .where(eq(practiceAreaServices.practiceAreaId, area.id))
+      .orderBy(asc(practiceAreaServices.sortOrder));
+
+    // Fetch capabilities
+    const capabilities = await db
+      .select()
+      .from(practiceAreaCapabilities)
+      .where(and(eq(practiceAreaCapabilities.practiceAreaId, area.id), eq(practiceAreaCapabilities.isVisible, true)))
+      .orderBy(asc(practiceAreaCapabilities.sortOrder));
+
+    // Fetch related industries
+    const indLinks = await db
+      .select({ ind: industries, sortOrder: industryPracticeAreas.sortOrder })
+      .from(industryPracticeAreas)
+      .innerJoin(industries, eq(industryPracticeAreas.industryId, industries.id))
+      .where(and(eq(industryPracticeAreas.practiceAreaId, area.id), eq(industries.isPublished, true)))
+      .orderBy(asc(industryPracticeAreas.sortOrder));
+    const relatedIndustries = indLinks.map((r) => r.ind);
+
+    // Fetch related experts
+    const expertLinks = await db
+      .select({ tm: teamMembers, sortOrder: practiceAreaExperts.sortOrder })
+      .from(practiceAreaExperts)
+      .innerJoin(teamMembers, eq(practiceAreaExperts.teamMemberId, teamMembers.id))
+      .where(and(eq(practiceAreaExperts.practiceAreaId, area.id), eq(teamMembers.isPublished, true)))
+      .orderBy(asc(practiceAreaExperts.sortOrder));
+    const relatedExperts = expertLinks.map((r) => r.tm);
+
+    // Fetch related insights
+    const insightLinks = await db
+      .select({ art: insightsArticles, sortOrder: practiceAreaInsights.sortOrder })
+      .from(practiceAreaInsights)
+      .innerJoin(insightsArticles, eq(practiceAreaInsights.articleId, insightsArticles.id))
+      .where(and(eq(practiceAreaInsights.practiceAreaId, area.id), eq(insightsArticles.isPublished, true)))
+      .orderBy(asc(practiceAreaInsights.sortOrder));
+    const relatedInsights = insightLinks.map((r) => r.art);
+
+    return { ...area, services, capabilities, relatedIndustries, relatedExperts, relatedInsights };
   } catch (err) {
     console.error(`Error querying practiceArea by slug ${slug}:`, err);
   }

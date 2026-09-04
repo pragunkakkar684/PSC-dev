@@ -3,7 +3,19 @@
 import { Quote } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const testimonials = [
+export interface TestimonialItem {
+  id?: number;
+  quote: string;
+  authorName?: string | null;
+  name?: string;
+  authorRole?: string | null;
+  role?: string;
+  authorCompany?: string | null;
+  authorAvatarUrl?: string | null;
+  avatar?: string;
+}
+
+const defaultTestimonials: TestimonialItem[] = [
   {
     quote:
       'PSC Global has been instrumental in our expansion across three continents. Their integrated approach to tax and legal simplified what would have otherwise been a logistical nightmare.',
@@ -29,17 +41,26 @@ const testimonials = [
 
 const INTERVAL_MS = 5000;
 
-export default function Testimonial() {
+export default function Testimonial({ data }: { data?: TestimonialItem[] }) {
   const [index, setIndex] = useState(0);
 
+  const list = data && data.length > 0 ? data : defaultTestimonials;
+
   useEffect(() => {
+    if (list.length <= 1) return;
     const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % testimonials.length);
+      setIndex((prev) => (prev + 1) % list.length);
     }, INTERVAL_MS);
     return () => clearInterval(timer);
-  }, []);
+  }, [list.length]);
 
-  const active = testimonials[index];
+  const rawActive = list[index] || list[0];
+  const active = {
+    quote: rawActive.quote,
+    name: rawActive.authorName || rawActive.name || 'Anonymous',
+    role: [rawActive.authorRole, rawActive.authorCompany].filter(Boolean).join(', ') || rawActive.role || '',
+    avatar: rawActive.authorAvatarUrl || rawActive.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80',
+  };
 
   return (
     <section className="mx-auto flex min-h-[75vh] max-w-5xl flex-col justify-center px-6 py-24 lg:px-10">
@@ -56,22 +77,27 @@ export default function Testimonial() {
           />
           <div className="text-left">
             <p className="text-sm font-semibold text-ink">{active.name}</p>
-            <p className="text-sm text-slate-500">{active.role}</p>
+            {active.role && <p className="text-sm text-slate-500">{active.role}</p>}
           </div>
         </div>
       </div>
-      <div className="mt-8 flex justify-center gap-2">
-        {testimonials.map((t, i) => (
-          <button
-            key={t.name}
-            aria-label={`Show testimonial from ${t.name}`}
-            onClick={() => setIndex(i)}
-            className={`h-2 rounded-full transition-all ${
-              i === index ? 'w-5 bg-sky-600' : 'w-2 bg-slate-300'
-            }`}
-          />
-        ))}
-      </div>
+      {list.length > 1 && (
+        <div className="mt-8 flex justify-center gap-2">
+          {list.map((t, i) => {
+            const tName = t.authorName || t.name || `Testimonial ${i + 1}`;
+            return (
+              <button
+                key={t.id || i}
+                aria-label={`Show testimonial from ${tName}`}
+                onClick={() => setIndex(i)}
+                className={`h-2 rounded-full transition-all ${
+                  i === index ? 'w-5 bg-sky-600' : 'w-2 bg-slate-300'
+                }`}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

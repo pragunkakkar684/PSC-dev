@@ -15,30 +15,34 @@ import {
   getPublicIndustries,
   getPublicInsights,
   getPublicTeamMembers,
+  getPublicStats,
+  getPublicTestimonials,
 } from '@/lib/queries/public';
 
 export const revalidate = 0;
 
 export default async function Home() {
-  const [heroData, practiceData, industryData, insightData, teamData] = await Promise.all([
+  const [heroData, practiceData, industryData, insightData, teamData, statsData, testimonialData] = await Promise.all([
     getPublicHeroSection('home'),
     getPublicPracticeAreas(),
     getPublicIndustries(),
     getPublicInsights(),
     getPublicTeamMembers(),
+    getPublicStats(),
+    getPublicTestimonials(),
   ]);
 
   return (
     <main>
       <SiteHeader />
       <Hero data={heroData} />
-      <Stats />
+      <Stats data={statsData} />
       <PracticeAreas data={practiceData} />
       <Sectors data={industryData} />
       <Insights data={insightData} />
-      <Team  data={teamData}/>
+      <Team data={teamData} />
       <About />
-      <Testimonial />
+      <Testimonial data={testimonialData} />
       <Contact />
       <Footer />
     </main>

@@ -115,13 +115,42 @@ export const insightArticleSchema = z.object({
 export const practiceAreaSchema = z.object({
   name: z.string().min(2, 'Name is required').max(200),
   slug: z.string().min(2, 'Slug is required').max(100),
-  number: z.string().max(5).optional().nullable(),
+  number: z.string().max(10).optional().nullable(),
   shortDescription: z.string().optional().nullable(),
   longDescription: z.string().optional().nullable(),
   iconName: z.string().max(100).optional().nullable(),
   styleClass: z.string().max(200).optional().nullable(),
   sortOrder: z.number().int().default(0),
   isPublished: z.boolean().default(false),
+  // Hero fields
+  heroEyebrow: z.string().max(200).optional().nullable(),
+  heroHeading: z.string().max(400).optional().nullable(),
+  heroDescription: z.string().optional().nullable(),
+  heroImageUrl: z.string().url('Invalid image URL').or(z.literal('')).optional().nullable(),
+  heroImageAlt: z.string().max(300).optional().nullable(),
+  heroCta1Text: z.string().max(100).optional().nullable(),
+  heroCta1Href: z.string().max(500).optional().nullable(),
+  heroCta2Text: z.string().max(100).optional().nullable(),
+  heroCta2Href: z.string().max(500).optional().nullable(),
+  // Overview fields
+  overviewHeading: z.string().max(400).optional().nullable(),
+  overviewQuote: z.string().optional().nullable(),
+  overviewBody: z.string().optional().nullable(),
+  overviewBody2: z.string().optional().nullable(),
+  overviewImageUrl: z.string().url('Invalid image URL').or(z.literal('')).optional().nullable(),
+  overviewImageAlt: z.string().max(300).optional().nullable(),
+  // Capabilities & Services intro
+  capabilitiesHeading: z.string().max(400).optional().nullable(),
+  capabilitiesIntro: z.string().optional().nullable(),
+  servicesHeading: z.string().max(400).optional().nullable(),
+  servicesIntro: z.string().optional().nullable(),
+  // Final CTA fields
+  finalCtaHeading: z.string().max(400).optional().nullable(),
+  finalCtaDescription: z.string().optional().nullable(),
+  finalCta1Text: z.string().max(100).optional().nullable(),
+  finalCta1Href: z.string().max(500).optional().nullable(),
+  finalCta2Text: z.string().max(100).optional().nullable(),
+  finalCta2Href: z.string().max(500).optional().nullable(),
 });
 
 export const practiceAreaServiceSchema = z.object({

@@ -136,6 +136,35 @@ export const practiceAreas = pgTable('practice_areas', {
   isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  // Hero content
+  heroEyebrow: varchar('hero_eyebrow', { length: 200 }),
+  heroHeading: varchar('hero_heading', { length: 400 }),
+  heroDescription: text('hero_description'),
+  heroImageUrl: varchar('hero_image_url', { length: 1000 }),
+  heroImageAlt: varchar('hero_image_alt', { length: 300 }),
+  heroCta1Text: varchar('hero_cta1_text', { length: 100 }),
+  heroCta1Href: varchar('hero_cta1_href', { length: 500 }),
+  heroCta2Text: varchar('hero_cta2_text', { length: 100 }),
+  heroCta2Href: varchar('hero_cta2_href', { length: 500 }),
+  // Overview section
+  overviewHeading: varchar('overview_heading', { length: 400 }),
+  overviewQuote: text('overview_quote'),
+  overviewBody: text('overview_body'),
+  overviewBody2: text('overview_body2'),
+  overviewImageUrl: varchar('overview_image_url', { length: 1000 }),
+  overviewImageAlt: varchar('overview_image_alt', { length: 300 }),
+  // Capabilities & Services intro
+  capabilitiesHeading: varchar('capabilities_heading', { length: 400 }),
+  capabilitiesIntro: text('capabilities_intro'),
+  servicesHeading: varchar('services_heading', { length: 400 }),
+  servicesIntro: text('services_intro'),
+  // Final CTA section
+  finalCtaHeading: varchar('final_cta_heading', { length: 400 }),
+  finalCtaDescription: text('final_cta_description'),
+  finalCta1Text: varchar('final_cta1_text', { length: 100 }),
+  finalCta1Href: varchar('final_cta1_href', { length: 500 }),
+  finalCta2Text: varchar('final_cta2_text', { length: 100 }),
+  finalCta2Href: varchar('final_cta2_href', { length: 500 }),
 });
 
 export const practiceAreaServices = pgTable('practice_area_services', {
@@ -144,6 +173,41 @@ export const practiceAreaServices = pgTable('practice_area_services', {
     .notNull()
     .references(() => practiceAreas.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 200 }).notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
+export const practiceAreaCapabilities = pgTable('practice_area_capabilities', {
+  id: serial('id').primaryKey(),
+  practiceAreaId: integer('practice_area_id')
+    .notNull()
+    .references(() => practiceAreas.id, { onDelete: 'cascade' }),
+  title: varchar('title', { length: 300 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const practiceAreaExperts = pgTable('practice_area_experts', {
+  id: serial('id').primaryKey(),
+  practiceAreaId: integer('practice_area_id')
+    .notNull()
+    .references(() => practiceAreas.id, { onDelete: 'cascade' }),
+  teamMemberId: integer('team_member_id')
+    .notNull()
+    .references(() => teamMembers.id, { onDelete: 'cascade' }),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
+export const practiceAreaInsights = pgTable('practice_area_insights', {
+  id: serial('id').primaryKey(),
+  practiceAreaId: integer('practice_area_id')
+    .notNull()
+    .references(() => practiceAreas.id, { onDelete: 'cascade' }),
+  articleId: integer('article_id')
+    .notNull()
+    .references(() => insightsArticles.id, { onDelete: 'cascade' }),
   sortOrder: integer('sort_order').notNull().default(0),
 });
 

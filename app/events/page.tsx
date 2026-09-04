@@ -147,7 +147,7 @@ export default async function EventsPage() {
     getPublicEvents(),
   ]);
 
-  const events = dbEvents.length > 0 ? dbEvents : defaultEvents;
+  const events = dbEvents;
   const featured = events.find((e: any) => e.isFeatured) || events[0];
   const upcomingList = events.filter((e: any) => e.status === 'upcoming' && e.id !== featured?.id);
   const pastList = events.filter((e: any) => e.status === 'past');
