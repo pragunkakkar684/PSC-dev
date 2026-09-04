@@ -159,6 +159,151 @@ export const industries = pgTable('industries', {
   isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  // Hero content
+  heroEyebrow: varchar('hero_eyebrow', { length: 200 }),
+  heroHeading: varchar('hero_heading', { length: 400 }),
+  heroDescription: text('hero_description'),
+  heroImageUrl: varchar('hero_image_url', { length: 1000 }),
+  heroImageAlt: varchar('hero_image_alt', { length: 300 }),
+  heroCta1Text: varchar('hero_cta1_text', { length: 100 }),
+  heroCta1Href: varchar('hero_cta1_href', { length: 500 }),
+  heroCta2Text: varchar('hero_cta2_text', { length: 100 }),
+  heroCta2Href: varchar('hero_cta2_href', { length: 500 }),
+  // Overview / Understanding section
+  overviewHeading: varchar('overview_heading', { length: 400 }),
+  overviewQuote: text('overview_quote'),
+  overviewBody: text('overview_body'),
+  overviewBody2: text('overview_body2'),
+  overviewImageUrl: varchar('overview_image_url', { length: 1000 }),
+  overviewImageAlt: varchar('overview_image_alt', { length: 300 }),
+  // Challenges section
+  challengesIntro: text('challenges_intro'),
+  // Solutions / How We Help section
+  solutionsHeading: varchar('solutions_heading', { length: 400 }),
+  solutionsIntro: text('solutions_intro'),
+  // Final CTA section
+  finalCtaHeading: varchar('final_cta_heading', { length: 400 }),
+  finalCtaDescription: text('final_cta_description'),
+  finalCta1Text: varchar('final_cta1_text', { length: 100 }),
+  finalCta1Href: varchar('final_cta1_href', { length: 500 }),
+  finalCta2Text: varchar('final_cta2_text', { length: 100 }),
+  finalCta2Href: varchar('final_cta2_href', { length: 500 }),
+});
+
+export const industryChallenges = pgTable('industry_challenges', {
+  id: serial('id').primaryKey(),
+  industryId: integer('industry_id')
+    .notNull()
+    .references(() => industries.id, { onDelete: 'cascade' }),
+  number: varchar('number', { length: 10 }).notNull().default('01.'),
+  title: varchar('title', { length: 300 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const industrySolutions = pgTable('industry_solutions', {
+  id: serial('id').primaryKey(),
+  industryId: integer('industry_id')
+    .notNull()
+    .references(() => industries.id, { onDelete: 'cascade' }),
+  label: varchar('label', { length: 200 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const industryPracticeAreas = pgTable('industry_practice_areas', {
+  id: serial('id').primaryKey(),
+  industryId: integer('industry_id')
+    .notNull()
+    .references(() => industries.id, { onDelete: 'cascade' }),
+  practiceAreaId: integer('practice_area_id')
+    .notNull()
+    .references(() => practiceAreas.id, { onDelete: 'cascade' }),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
+export const industryExperts = pgTable('industry_experts', {
+  id: serial('id').primaryKey(),
+  industryId: integer('industry_id')
+    .notNull()
+    .references(() => industries.id, { onDelete: 'cascade' }),
+  teamMemberId: integer('team_member_id')
+    .notNull()
+    .references(() => teamMembers.id, { onDelete: 'cascade' }),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
+export const industryInsights = pgTable('industry_insights', {
+  id: serial('id').primaryKey(),
+  industryId: integer('industry_id')
+    .notNull()
+    .references(() => industries.id, { onDelete: 'cascade' }),
+  articleId: integer('article_id')
+    .notNull()
+    .references(() => insightsArticles.id, { onDelete: 'cascade' }),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
+// ─── INDUSTRIES INDEX PAGE — SHARED CHALLENGES ───────────────────────────────
+
+export const industrySharedChallenges = pgTable('industry_shared_challenges', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 300 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// ─── REGULATORY UPDATES ──────────────────────────────────────────────────────
+
+export const regulatoryUpdates = pgTable('regulatory_updates', {
+  id: serial('id').primaryKey(),
+  authority: varchar('authority', { length: 200 }).notNull(),
+  date: varchar('date', { length: 100 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  description: text('description'),
+  link: varchar('link', { length: 1000 }),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// ─── KEY JUDGEMENTS ──────────────────────────────────────────────────────────
+
+export const keyJudgements = pgTable('key_judgements', {
+  id: serial('id').primaryKey(),
+  court: varchar('court', { length: 300 }).notNull(),
+  date: varchar('date', { length: 100 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// ─── RESEARCH RESOURCES ──────────────────────────────────────────────────────
+
+export const researchResources = pgTable('research_resources', {
+  id: serial('id').primaryKey(),
+  tag: varchar('tag', { length: 100 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  description: text('description'),
+  fileUrl: varchar('file_url', { length: 1000 }),
+  ctaUrl: varchar('cta_url', { length: 1000 }).notNull().default('/contact'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 // ─── TEAM MEMBERS ───────────────────────────────────────────────────────────
@@ -274,6 +419,9 @@ export const insightsArticles = pgTable('insights_articles', {
   isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  // Cross-links to related entities
+  relatedIndustryId: integer('related_industry_id').references(() => industries.id, { onDelete: 'set null' }),
+  relatedPracticeAreaId: integer('related_practice_area_id').references(() => practiceAreas.id, { onDelete: 'set null' }),
 });
 
 // ─── TESTIMONIALS ────────────────────────────────────────────────────────────
@@ -453,6 +601,12 @@ export type Event = typeof events.$inferSelect;
 export type InsightsArticle = typeof insightsArticles.$inferSelect;
 export type PracticeArea = typeof practiceAreas.$inferSelect;
 export type Industry = typeof industries.$inferSelect;
+export type IndustryChallenge = typeof industryChallenges.$inferSelect;
+export type IndustrySolution = typeof industrySolutions.$inferSelect;
+export type IndustrySharedChallenge = typeof industrySharedChallenges.$inferSelect;
+export type RegulatoryUpdate = typeof regulatoryUpdates.$inferSelect;
+export type KeyJudgement = typeof keyJudgements.$inferSelect;
+export type ResearchResource = typeof researchResources.$inferSelect;
 export type Faq = typeof faqs.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type OfficeLocation = typeof officeLocations.$inferSelect;

@@ -112,3 +112,214 @@ export async function toggleIndustryPublishAction(id: number, isPublished: boole
   revalidatePath('/');
   return { success: true };
 }
+
+// ─── RELATIONAL ACTIONS ──────────────────────────────────────────────────────
+
+import {
+  industryChallenges,
+  industrySolutions,
+  industryPracticeAreas,
+  industryExperts,
+  industryInsights,
+  practiceAreas,
+  teamMembers,
+  insightsArticles,
+} from '@/lib/db/schema';
+
+export async function getIndustryWithRelations(id: number) {
+  await requireEditor();
+
+  const [industry] = await db.select().from(industries).where(eq(industries.id, id)).limit(1);
+  if (!industry) return null;
+
+  const challenges = await db
+    .select()
+    .from(industryChallenges)
+    .where(eq(industryChallenges.industryId, id))
+    .orderBy(asc(industryChallenges.sortOrder));
+
+  const solutions = await db
+    .select()
+    .from(industrySolutions)
+    .where(eq(industrySolutions.industryId, id))
+    .orderBy(asc(industrySolutions.sortOrder));
+
+  const paLinks = await db
+    .select({ id: industryPracticeAreas.id, pa: practiceAreas })
+    .from(industryPracticeAreas)
+    .innerJoin(practiceAreas, eq(industryPracticeAreas.practiceAreaId, practiceAreas.id))
+    .where(eq(industryPracticeAreas.industryId, id))
+    .orderBy(asc(industryPracticeAreas.sortOrder));
+
+  const expertLinks = await db
+    .select({ id: industryExperts.id, tm: teamMembers })
+    .from(industryExperts)
+    .innerJoin(teamMembers, eq(industryExperts.teamMemberId, teamMembers.id))
+    .where(eq(industryExperts.industryId, id))
+    .orderBy(asc(industryExperts.sortOrder));
+
+  const insightLinks = await db
+    .select({ id: industryInsights.id, art: insightsArticles })
+    .from(industryInsights)
+    .innerJoin(insightsArticles, eq(industryInsights.articleId, insightsArticles.id))
+    .where(eq(industryInsights.industryId, id))
+    .orderBy(asc(industryInsights.sortOrder));
+
+  return {
+    ...industry,
+    challenges,
+    solutions,
+    practiceAreas: paLinks,
+    experts: expertLinks,
+    insights: insightLinks,
+  };
+}
+
+export async function createIndustryChallengeAction(data: {
+  industryId: number;
+  number?: string;
+  title: string;
+  description?: string;
+  sortOrder?: number;
+}) {
+  await requireEditor();
+  const [c] = await db
+    .insert(industryChallenges)
+    .values({
+      industryId: data.industryId,
+      number: data.number || '01.',
+      title: data.title,
+      description: data.description || null,
+      sortOrder: data.sortOrder || 0,
+      isVisible: true,
+    })
+    .returning();
+  revalidatePath(`/admin/industries/${data.industryId}`);
+  revalidatePath('/industries');
+  return c;
+}
+
+export async function updateIndustryChallengeAction(
+  id: number,
+  data: { number?: string; title?: string; description?: string; sortOrder?: number; isVisible?: boolean }
+) {
+  await requireEditor();
+  const [c] = await db
+    .update(industryChallenges)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(industryChallenges.id, id))
+    .returning();
+  revalidatePath('/admin/industries');
+  revalidatePath('/industries');
+  return c;
+}
+
+export async function deleteIndustryChallengeAction(id: number, industryId: number) {
+  await requireEditor();
+  await db.delete(industryChallenges).where(eq(industryChallenges.id, id));
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function createIndustrySolutionAction(data: {
+  industryId: number;
+  label: string;
+  description?: string;
+  sortOrder?: number;
+}) {
+  await requireEditor();
+  const [s] = await db
+    .insert(industrySolutions)
+    .values({
+      industryId: data.industryId,
+      label: data.label,
+      description: data.description || null,
+      sortOrder: data.sortOrder || 0,
+      isVisible: true,
+    })
+    .returning();
+  revalidatePath(`/admin/industries/${data.industryId}`);
+  revalidatePath('/industries');
+  return s;
+}
+
+export async function updateIndustrySolutionAction(
+  id: number,
+  data: { label?: string; description?: string; sortOrder?: number; isVisible?: boolean }
+) {
+  await requireEditor();
+  const [s] = await db
+    .update(industrySolutions)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(industrySolutions.id, id))
+    .returning();
+  revalidatePath('/admin/industries');
+  revalidatePath('/industries');
+  return s;
+}
+
+export async function deleteIndustrySolutionAction(id: number, industryId: number) {
+  await requireEditor();
+  await db.delete(industrySolutions).where(eq(industrySolutions.id, id));
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function addIndustryPracticeAreaAction(industryId: number, practiceAreaId: number) {
+  await requireEditor();
+  await db
+    .insert(industryPracticeAreas)
+    .values({ industryId, practiceAreaId, sortOrder: 0 })
+    .onConflictDoNothing();
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function removeIndustryPracticeAreaAction(linkId: number, industryId: number) {
+  await requireEditor();
+  await db.delete(industryPracticeAreas).where(eq(industryPracticeAreas.id, linkId));
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function addIndustryExpertAction(industryId: number, teamMemberId: number) {
+  await requireEditor();
+  await db
+    .insert(industryExperts)
+    .values({ industryId, teamMemberId, sortOrder: 0 })
+    .onConflictDoNothing();
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function removeIndustryExpertAction(linkId: number, industryId: number) {
+  await requireEditor();
+  await db.delete(industryExperts).where(eq(industryExperts.id, linkId));
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function addIndustryInsightAction(industryId: number, articleId: number) {
+  await requireEditor();
+  await db
+    .insert(industryInsights)
+    .values({ industryId, articleId, sortOrder: 0 })
+    .onConflictDoNothing();
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}
+
+export async function removeIndustryInsightAction(linkId: number, industryId: number) {
+  await requireEditor();
+  await db.delete(industryInsights).where(eq(industryInsights.id, linkId));
+  revalidatePath(`/admin/industries/${industryId}`);
+  revalidatePath('/industries');
+  return { success: true };
+}

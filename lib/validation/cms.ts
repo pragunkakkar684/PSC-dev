@@ -139,6 +139,35 @@ export const industrySchema = z.object({
   imageUrl: z.string().url('Invalid image URL').or(z.literal('')).optional().nullable(),
   sortOrder: z.number().int().default(0),
   isPublished: z.boolean().default(false),
+  // Hero fields
+  heroEyebrow: z.string().max(200).optional().nullable(),
+  heroHeading: z.string().max(400).optional().nullable(),
+  heroDescription: z.string().optional().nullable(),
+  heroImageUrl: z.string().url('Invalid image URL').or(z.literal('')).optional().nullable(),
+  heroImageAlt: z.string().max(300).optional().nullable(),
+  heroCta1Text: z.string().max(100).optional().nullable(),
+  heroCta1Href: z.string().max(500).optional().nullable(),
+  heroCta2Text: z.string().max(100).optional().nullable(),
+  heroCta2Href: z.string().max(500).optional().nullable(),
+  // Overview fields
+  overviewHeading: z.string().max(400).optional().nullable(),
+  overviewQuote: z.string().optional().nullable(),
+  overviewBody: z.string().optional().nullable(),
+  overviewBody2: z.string().optional().nullable(),
+  overviewImageUrl: z.string().url('Invalid image URL').or(z.literal('')).optional().nullable(),
+  overviewImageAlt: z.string().max(300).optional().nullable(),
+  // Challenges intro
+  challengesIntro: z.string().optional().nullable(),
+  // Solutions / How We Help fields
+  solutionsHeading: z.string().max(400).optional().nullable(),
+  solutionsIntro: z.string().optional().nullable(),
+  // Final CTA fields
+  finalCtaHeading: z.string().max(400).optional().nullable(),
+  finalCtaDescription: z.string().optional().nullable(),
+  finalCta1Text: z.string().max(100).optional().nullable(),
+  finalCta1Href: z.string().max(500).optional().nullable(),
+  finalCta2Text: z.string().max(100).optional().nullable(),
+  finalCta2Href: z.string().max(500).optional().nullable(),
 });
 
 // ─── FAQ SCHEMA ──────────────────────────────────────────────────────────────

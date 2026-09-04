@@ -7,6 +7,15 @@ import {
   practiceAreas,
   practiceAreaServices,
   industries,
+  industryChallenges,
+  industrySolutions,
+  industryPracticeAreas,
+  industryExperts,
+  industryInsights,
+  industrySharedChallenges,
+  regulatoryUpdates,
+  keyJudgements,
+  researchResources,
   events,
   eventAgendaItems,
   eventSpeakers,
@@ -314,7 +323,50 @@ export async function getPublicIndustryBySlug(slug: string) {
       .where(and(eq(industries.slug, slug), eq(industries.isPublished, true)))
       .limit(1);
 
-    if (ind) return ind;
+    if (!ind) return null;
+
+    // Fetch related challenges
+    const challenges = await db
+      .select()
+      .from(industryChallenges)
+      .where(and(eq(industryChallenges.industryId, ind.id), eq(industryChallenges.isVisible, true)))
+      .orderBy(asc(industryChallenges.sortOrder));
+
+    // Fetch related solutions
+    const solutions = await db
+      .select()
+      .from(industrySolutions)
+      .where(and(eq(industrySolutions.industryId, ind.id), eq(industrySolutions.isVisible, true)))
+      .orderBy(asc(industrySolutions.sortOrder));
+
+    // Fetch related practice areas
+    const paLinks = await db
+      .select({ pa: practiceAreas, sortOrder: industryPracticeAreas.sortOrder })
+      .from(industryPracticeAreas)
+      .innerJoin(practiceAreas, eq(industryPracticeAreas.practiceAreaId, practiceAreas.id))
+      .where(eq(industryPracticeAreas.industryId, ind.id))
+      .orderBy(asc(industryPracticeAreas.sortOrder));
+    const relatedPracticeAreas = paLinks.map((r) => r.pa);
+
+    // Fetch related experts
+    const expertLinks = await db
+      .select({ tm: teamMembers, sortOrder: industryExperts.sortOrder })
+      .from(industryExperts)
+      .innerJoin(teamMembers, eq(industryExperts.teamMemberId, teamMembers.id))
+      .where(eq(industryExperts.industryId, ind.id))
+      .orderBy(asc(industryExperts.sortOrder));
+    const relatedExperts = expertLinks.map((r) => r.tm);
+
+    // Fetch related insights
+    const insightLinks = await db
+      .select({ art: insightsArticles, sortOrder: industryInsights.sortOrder })
+      .from(industryInsights)
+      .innerJoin(insightsArticles, eq(industryInsights.articleId, insightsArticles.id))
+      .where(eq(industryInsights.industryId, ind.id))
+      .orderBy(asc(industryInsights.sortOrder));
+    const relatedInsights = insightLinks.map((r) => r.art);
+
+    return { ...ind, challenges, solutions, relatedPracticeAreas, relatedExperts, relatedInsights };
   } catch (err) {
     console.error(`Error querying industry by slug ${slug}:`, err);
   }
@@ -424,15 +476,26 @@ export async function getPublicInsightBySlug(slug: string) {
       .limit(1);
 
     if (article) {
-      let author = null;
+      let author: any = null;
       if (article.authorId) {
         const [a] = await db.select().from(teamMembers).where(eq(teamMembers.id, article.authorId)).limit(1);
         author = a || null;
       }
+      if (!author && article.authorName) {
+        author = { name: article.authorName, roleTitle: article.authorRole || null, imageUrl: null };
+      }
 
-      const content =
-        (article as any).content ??
-        ((article as any).body ? [{ type: 'paragraph', text: (article as any).body }] : []);
+      let content: any[] = [];
+      if (article.bodyContent) {
+        try {
+          content = JSON.parse(article.bodyContent);
+        } catch {
+          content = [];
+        }
+      }
+      if (content.length === 0 && article.body) {
+        content = [{ type: 'paragraph', text: article.body }];
+      }
 
       return { ...article, author, content };
     }
@@ -577,6 +640,64 @@ export async function getPublicCareersPositions() {
     return [];
   }
 }
+
+// ─── REGULATORY UPDATES ──────────────────────────────────────────────────────
+export async function getPublicRegulatoryUpdates() {
+  try {
+    return await db
+      .select()
+      .from(regulatoryUpdates)
+      .where(eq(regulatoryUpdates.isVisible, true))
+      .orderBy(asc(regulatoryUpdates.sortOrder));
+  } catch (err) {
+    console.error('Error querying regulatory updates:', err);
+    return [];
+  }
+}
+
+// ─── KEY JUDGEMENTS ──────────────────────────────────────────────────────────
+export async function getPublicKeyJudgements() {
+  try {
+    return await db
+      .select()
+      .from(keyJudgements)
+      .where(eq(keyJudgements.isVisible, true))
+      .orderBy(asc(keyJudgements.sortOrder));
+  } catch (err) {
+    console.error('Error querying key judgements:', err);
+    return [];
+  }
+}
+
+// ─── RESEARCH RESOURCES ──────────────────────────────────────────────────────
+export async function getPublicResearchResources() {
+  try {
+    return await db
+      .select()
+      .from(researchResources)
+      .where(eq(researchResources.isVisible, true))
+      .orderBy(asc(researchResources.sortOrder));
+  } catch (err) {
+    console.error('Error querying research resources:', err);
+    return [];
+  }
+}
+
+// ─── SHARED INDUSTRY CHALLENGES ───────────────────────────────────────────────
+export async function getPublicSharedChallenges() {
+  try {
+    return await db
+      .select()
+      .from(industrySharedChallenges)
+      .where(eq(industrySharedChallenges.isVisible, true))
+      .orderBy(asc(industrySharedChallenges.sortOrder));
+  } catch (err) {
+    console.error('Error querying shared challenges:', err);
+    return [];
+  }
+}
+
+
 
 export async function buildPageMetadata(
   targetType: string,

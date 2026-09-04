@@ -1,0 +1,31 @@
+﻿import { neon } from "@neondatabase/serverless";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+const sql = neon(process.env.DATABASE_URL!);
+async function migrate() {
+  console.log("Starting migration...");
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_eyebrow VARCHAR(200)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_heading VARCHAR(400)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_description TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(1000)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_image_alt VARCHAR(300)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_cta1_text VARCHAR(100)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_cta1_href VARCHAR(500)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_cta2_text VARCHAR(100)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS hero_cta2_href VARCHAR(500)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS overview_heading VARCHAR(400)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS overview_quote TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS overview_body TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS overview_body2 TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS challenges_intro TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS solutions_heading VARCHAR(400)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS solutions_intro TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta_heading VARCHAR(400)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta_description TEXT`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta1_text VARCHAR(100)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta1_href VARCHAR(500)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta2_text VARCHAR(100)`;
+  await sql`ALTER TABLE industries ADD COLUMN IF NOT EXISTS final_cta2_href VARCHAR(500)`;
+  console.log("Done DDL");
+}
+migrate().catch(e => { console.error(e); process.exit(1); });

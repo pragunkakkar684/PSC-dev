@@ -1,10 +1,11 @@
 import SiteHeader from '../../components/SiteHeader';
 import Footer from '../../components/Footer';
 import Link from 'next/link';
-import { getPublicInsightBySlug } from '@/lib/queries/public';
+import { getPublicInsightBySlug, buildPageMetadata, getPublicInsights } from '@/lib/queries/public';
 import { notFound } from 'next/navigation';
 import { FileText, User } from 'lucide-react';
 import ShareInsight from './ShareInsight';
+import type { Metadata } from 'next';
 
 type ContentBlock =
   | { type: 'paragraph'; text: string }
@@ -12,170 +13,27 @@ type ContentBlock =
   | { type: 'list'; items: { label: string; text: string }[] }
   | { type: 'quote'; text: string };
 
-type Article = {
-  title: string;
-  summary: string;
-  tag: string;
-  contentType: string;
-  imageUrl: string | null;
-  readTimeMins: number;
-  publishedAt: string;
-  fileUrl: string | null;
-  author: { name: string; roleTitle: string; imageUrl: string | null } | null;
-  content: ContentBlock[];
-};
+export async function generateStaticParams() {
+  try {
+    const articles = await getPublicInsights();
+    return articles.map((art) => ({ slug: art.slug }));
+  } catch {
+    return [];
+  }
+}
 
-const defaultArticlesBySlug: Record<string, Article> = {
-  'navigating-regulatory-complexity-2025': {
-    title: 'Navigating Regulatory Complexity: What Businesses Need to Know in 2025.',
-    summary:
-      'As global markets continue to interconnect, the regulatory frameworks governing them are evolving at an unprecedented pace. Organizations must proactively adapt their compliance strategies to maintain operational resilience and strategic advantage.',
-    tag: 'REGULATORY UPDATE',
-    contentType: 'Article',
-    imageUrl: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=85',
-    readTimeMins: 8,
-    publishedAt: '2024-10-12',
-    fileUrl: null,
-    author: {
-      name: 'Dr. Eleanor Vance',
-      roleTitle: 'Director of Regulatory Strategy',
-      imageUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
-    },
-    content: [
-      {
-        type: 'paragraph',
-        text: 'The upcoming year represents a critical inflection point for international trade and corporate governance. Emerging mandates across multiple jurisdictions are coalescing to demand unprecedented transparency from multinational entities. This shift from reactionary compliance to proactive risk management requires a fundamental realignment of operational priorities.',
-      },
-      { type: 'heading', text: 'The Changing Landscape' },
-      {
-        type: 'paragraph',
-        text: 'Historically, regulatory bodies operated within isolated silos, creating a patchwork of localized requirements. Today, we observe a harmonization of standards, particularly concerning digital privacy, environmental impact reporting, and supply chain auditability. This convergence, while intellectually elegant, introduces complex tactical challenges for legacy systems.',
-      },
-      {
-        type: 'list',
-        items: [
-          {
-            label: 'Cross-Border Data Flows',
-            text: 'Stringent new localized storage requirements conflicting with global operational models.',
-          },
-          { label: 'Scope 3 Emissions', text: 'Mandatory granular reporting on indirect value chain impacts.' },
-          {
-            label: 'Algorithmic Accountability',
-            text: 'Establishing governance frameworks for automated decision-making processes.',
-          },
-        ],
-      },
-      {
-        type: 'quote',
-        text: 'Compliance is no longer a localized checklist; it is a global architectural imperative.',
-      },
-      { type: 'heading', text: 'Key Implications for Leadership' },
-      {
-        type: 'paragraph',
-        text: 'Executive boards must transition their perspective of regulatory affairs from a cost center to a critical component of strategic resilience. Failure to anticipate these shifts will not merely result in punitive fines, but in substantive market exclusion. Organizations that embed agility into their compliance frameworks will secure a distinct competitive moat.',
-      },
-    ],
-  },
-
-  'navigating-cross-border-ma-2024': {
-    title: 'Navigating the Complexity of Cross-Border M&A in 2024.',
-    summary:
-      'As geopolitical landscapes shift, structural integrity in transaction planning becomes paramount. Our definitive guide to mitigating regulatory risk and structuring for long-term value creation.',
-    tag: 'STRATEGIC ADVISORY',
-    contentType: 'Report',
-    imageUrl: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=85',
-    readTimeMins: 12,
-    publishedAt: '2024-10-24',
-    fileUrl: null,
-    author: {
-      name: 'Dr. Julian Vance',
-      roleTitle: 'Managing Partner',
-      imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80',
-    },
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Cross-border M&A activity in 2024 is being reshaped by a wave of national security screening regimes and diverging antitrust philosophies across major economies.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Dealmakers can no longer treat regulatory clearance as a late-stage formality. Structuring decisions made at term sheet stage now materially affect the probability and timeline of closing, particularly in transactions touching critical infrastructure, data, or semiconductors.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Our advisory work across recent transactions highlights a consistent pattern: acquirers who build a joint regulatory workstream from day one of due diligence close with meaningfully less friction than those who treat it as a closing-condition checklist.',
-      },
-    ],
-  },
-
-  'implications-new-global-minimum-tax-regime': {
-    title: 'Implications of the New Global Minimum Tax Regime.',
-    summary: 'An analysis of structural adjustments required by multinational entities to comply with recent OECD directives.',
-    tag: 'TAX POLICY',
-    contentType: 'Article',
-    imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=85',
-    readTimeMins: 6,
-    publishedAt: '2024-10-14',
-    fileUrl: null,
-    author: null,
-    content: [
-      {
-        type: 'paragraph',
-        text: "The rollout of the global minimum tax continues to reshape how multinational groups approach effective tax rate planning, particularly under Pillar Two's top-up tax provisions.",
-      },
-      {
-        type: 'paragraph',
-        text: 'Organizations with operations across multiple low-tax jurisdictions should expect increased scrutiny and should begin modeling exposure well ahead of local implementation deadlines.',
-      },
-    ],
-  },
-
-  'real-estate-infrastructure-2025-outlook': {
-    title: 'Real Estate Infrastructure: 2025 Outlook.',
-    summary: 'Evaluating capital allocation strategies in an era of fluctuating interest rates and stringent sustainability mandates.',
-    tag: 'INDUSTRY',
-    contentType: 'Report',
-    imageUrl: null,
-    readTimeMins: 7,
-    publishedAt: '2024-10-10',
-    fileUrl: null,
-    author: null,
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Institutional real estate portfolios are entering 2025 under a materially different cost-of-capital environment than the decade prior, forcing a re-underwriting of hold periods and exit assumptions across asset classes.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Sustainability-linked financing terms are increasingly setting the floor for building specification, not the ceiling, as lenders price climate risk directly into loan covenants.',
-      },
-    ],
-  },
-
-  'architecting-corporate-governance-frameworks': {
-    title: 'Architecting Corporate Governance Frameworks.',
-    summary: 'Building resilient internal controls that withstand intense regulatory scrutiny and shareholder activism.',
-    tag: 'RISK ADVISORY',
-    contentType: 'Article',
-    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=85',
-    readTimeMins: 8,
-    publishedAt: '2024-10-05',
-    fileUrl: null,
-    author: null,
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Boards are facing a widening gap between the pace of activist campaigns and the cadence of traditional governance review cycles.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Resilient governance frameworks now require real-time escalation pathways and pre-negotiated response protocols, rather than the annual review structures that defined the last decade of practice.',
-      },
-    ],
-  },
-};
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getPublicInsightBySlug(slug);
+  if (!article) return {};
+  return buildPageMetadata('insight', slug, {
+    title: `${article.title} | PSC Global Insights`,
+    description: article.summary || article.title,
+  });
+}
 
 function ArticleContent({ blocks }: { blocks: ContentBlock[] }) {
+  if (!blocks || blocks.length === 0) return null;
   return (
     <div className="space-y-6">
       {blocks.map((block, i) => {
@@ -218,29 +76,9 @@ function ArticleContent({ blocks }: { blocks: ContentBlock[] }) {
   );
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const article = await getPublicInsightBySlug(slug);
-  const fallback = defaultArticlesBySlug[slug];
-  const resolved = article || fallback;
-
-  if (resolved) {
-    return {
-      title: `${resolved.title} | PSC Global Insights`,
-      description: resolved.summary || resolved.title,
-    };
-  }
-  return {
-    title: 'Insight Article | PSC Global',
-  };
-}
-
 export default async function InsightArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const dbArticle = await getPublicInsightBySlug(slug);
-
-  // Fall back to placeholder content only when the DB has no matching row.
-  const article: any = dbArticle || defaultArticlesBySlug[slug];
+  const article = await getPublicInsightBySlug(slug);
 
   if (!article) {
     notFound();
