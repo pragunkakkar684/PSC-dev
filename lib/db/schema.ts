@@ -684,3 +684,203 @@ export type SitePage = typeof sitePages.$inferSelect;
 export type PageSection = typeof pageSections.$inferSelect;
 export type PageSeo = typeof pageSeo.$inferSelect;
 export type Stat = typeof stats.$inferSelect;
+
+// ─── CLIENT PORTAL TABLES ───────────────────────────────────────────────────
+
+export const portalClients = pgTable('portal_clients', {
+  id: serial('id').primaryKey(),
+  companyName: varchar('company_name', { length: 255 }).notNull(),
+  contactName: varchar('contact_name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 320 }).notNull().unique(),
+  phone: varchar('phone', { length: 50 }),
+  address: text('address'),
+  status: varchar('status', { length: 20 }).notNull().default('ACTIVE'),
+  createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalUsers = pgTable('portal_users', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  clientId: integer('client_id').references(() => portalClients.id, { onDelete: 'cascade' }),
+  portalRole: varchar('portal_role', { length: 20 }).notNull().default('CLIENT'), // 'PORTAL_ADMIN' | 'CLIENT'
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const portalEngagements = pgTable('portal_engagements', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  serviceCategory: varchar('service_category', { length: 150 }),
+  description: text('description'),
+  status: varchar('status', { length: 50 }).notNull().default('ACTIVE'),
+  startDate: date('start_date'),
+  endDate: date('end_date'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalTasks = pgTable('portal_tasks', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  engagementId: integer('engagement_id').references(() => portalEngagements.id, { onDelete: 'set null' }),
+  name: varchar('name', { length: 255 }).notNull(),
+  dueDate: date('due_date'),
+  status: varchar('status', { length: 50 }).notNull().default('UPCOMING'),
+  priority: varchar('priority', { length: 20 }).default('NORMAL'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalComplianceItems = pgTable('portal_compliance_items', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  engagementId: integer('engagement_id').references(() => portalEngagements.id, { onDelete: 'set null' }),
+  requirement: varchar('requirement', { length: 255 }).notNull(),
+  dueDate: date('due_date'),
+  status: varchar('status', { length: 50 }).notNull().default('PENDING'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalDocuments = pgTable('portal_documents', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  engagementId: integer('engagement_id').references(() => portalEngagements.id, { onDelete: 'set null' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  fileUrl: varchar('file_url', { length: 1000 }).notNull(),
+  fileType: varchar('file_type', { length: 50 }),
+  fileSize: varchar('file_size', { length: 50 }),
+  category: varchar('category', { length: 100 }),
+  status: varchar('status', { length: 50 }).notNull().default('APPROVED'),
+  uploadedBy: text('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalInvoices = pgTable('portal_invoices', {
+  id: serial('id').primaryKey(),
+  invoiceNumber: varchar('invoice_number', { length: 100 }).notNull(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  engagementId: integer('engagement_id').references(() => portalEngagements.id, { onDelete: 'set null' }),
+  amount: varchar('amount', { length: 50 }).notNull(),
+  issueDate: date('issue_date'),
+  dueDate: date('due_date'),
+  status: varchar('status', { length: 50 }).notNull().default('UNPAID'),
+  pdfUrl: varchar('pdf_url', { length: 1000 }),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalPayments = pgTable('portal_payments', {
+  id: serial('id').primaryKey(),
+  paymentRef: varchar('payment_ref', { length: 100 }).notNull(),
+  invoiceId: integer('invoice_id').references(() => portalInvoices.id, { onDelete: 'set null' }),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  amount: varchar('amount', { length: 50 }).notNull(),
+  paymentDate: date('payment_date'),
+  paymentMethod: varchar('payment_method', { length: 50 }).default('BANK_TRANSFER'),
+  status: varchar('status', { length: 50 }).notNull().default('COMPLETED'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const portalMeetings = pgTable('portal_meetings', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  requestedDate: date('requested_date'),
+  timeSlot: varchar('time_slot', { length: 100 }),
+  notes: text('notes'),
+  status: varchar('status', { length: 50 }).notNull().default('REQUESTED'),
+  meetingUrl: varchar('meeting_url', { length: 1000 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalReports = pgTable('portal_reports', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  engagementId: integer('engagement_id').references(() => portalEngagements.id, { onDelete: 'set null' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  period: varchar('period', { length: 100 }),
+  publicationDate: date('publication_date'),
+  fileUrl: varchar('file_url', { length: 1000 }),
+  summary: text('summary'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalSupportTickets = pgTable('portal_support_tickets', {
+  id: serial('id').primaryKey(),
+  ticketNumber: varchar('ticket_number', { length: 50 }).notNull(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  subject: varchar('subject', { length: 255 }).notNull(),
+  category: varchar('category', { length: 100 }),
+  priority: varchar('priority', { length: 50 }).default('MEDIUM'),
+  status: varchar('status', { length: 50 }).notNull().default('OPEN'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalTicketReplies = pgTable('portal_ticket_replies', {
+  id: serial('id').primaryKey(),
+  ticketId: integer('ticket_id')
+    .notNull()
+    .references(() => portalSupportTickets.id, { onDelete: 'cascade' }),
+  senderId: text('sender_id').references(() => users.id, { onDelete: 'set null' }),
+  senderType: varchar('sender_type', { length: 20 }).notNull(), // 'CLIENT' | 'PORTAL_ADMIN'
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const portalNotifications = pgTable('portal_notifications', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .notNull()
+    .references(() => portalClients.id, { onDelete: 'cascade' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  type: varchar('type', { length: 50 }).default('INFO'),
+  isRead: boolean('is_read').notNull().default(false),
+  link: varchar('link', { length: 500 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Portal Types
+export type PortalClient = typeof portalClients.$inferSelect;
+export type PortalUser = typeof portalUsers.$inferSelect;
+export type PortalEngagement = typeof portalEngagements.$inferSelect;
+export type PortalTask = typeof portalTasks.$inferSelect;
+export type PortalComplianceItem = typeof portalComplianceItems.$inferSelect;
+export type PortalDocument = typeof portalDocuments.$inferSelect;
+export type PortalInvoice = typeof portalInvoices.$inferSelect;
+export type PortalPayment = typeof portalPayments.$inferSelect;
+export type PortalMeeting = typeof portalMeetings.$inferSelect;
+export type PortalReport = typeof portalReports.$inferSelect;
+export type PortalSupportTicket = typeof portalSupportTickets.$inferSelect;
+export type PortalTicketReply = typeof portalTicketReplies.$inferSelect;
+export type PortalNotification = typeof portalNotifications.$inferSelect;
+

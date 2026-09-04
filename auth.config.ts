@@ -1,12 +1,3 @@
-/**
- * Auth.js (NextAuth v5) — Edge-compatible Configuration
- *
- * This file contains ONLY what can run on the Edge runtime
- * (no Node.js-specific APIs like bcryptjs).
- *
- * Used by middleware.ts for route protection.
- * The full auth config (with Credentials + bcrypt) is in auth.ts.
- */
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig: NextAuthConfig = {
@@ -16,42 +7,79 @@ export const authConfig: NextAuthConfig = {
   },
   callbacks: {
     /**
-     * Controls access to pages.
-     * Unauthenticated requests to /admin/* → redirect to login.
-     * Authenticated users on /admin/login → redirect to dashboard.
+     * Route Protection & Authorization
      */
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isAdminPath = nextUrl.pathname.startsWith('/admin');
-      const isLoginPage = nextUrl.pathname === '/admin/login';
+      const pathname = nextUrl.pathname;
 
-      if (isAdminPath && !isLoginPage) {
-        // Protect all /admin/* except /admin/login
+      const isAdminPath = pathname.startsWith('/admin');
+      const isAdminLoginPage = pathname === '/admin/login';
+
+      const isClientPortalPath = pathname.startsWith('/client-portal');
+      const isClientPortalAdminPath = pathname.startsWith('/client-portal/admin');
+      const isClientPortalLoginPage = pathname === '/client-portal/login';
+
+      // ─── CMS ADMIN PROTECTION (/admin/*) ───────────────────────────
+      if (isAdminPath && !isAdminLoginPage) {
         return isLoggedIn;
       }
-
-      if (isLoginPage && isLoggedIn) {
-        // Already logged in — redirect away from login page
+      if (isAdminLoginPage && isLoggedIn) {
         return Response.redirect(new URL('/admin', nextUrl));
+      }
+
+      // ─── CLIENT PORTAL PROTECTION (/client-portal/*) ───────────────
+      if (isClientPortalPath && !isClientPortalLoginPage) {
+        if (!isLoggedIn) {
+          // Unauthenticated -> redirect to Client Portal login
+          return Response.redirect(new URL('/client-portal/login', nextUrl));
+        }
+
+        // If client user attempts to access Portal Admin (/client-portal/admin)
+        const role = (auth?.user as any)?.role;
+        const portalRole = (auth?.user as any)?.portalRole;
+
+        if (isClientPortalAdminPath) {
+          const isPortalAdmin = portalRole === 'PORTAL_ADMIN' || role === 'admin' || role === 'editor' || role === 'superadmin';
+          if (!isPortalAdmin) {
+            // Deny client access to portal admin
+            return Response.redirect(new URL('/client-portal', nextUrl));
+          }
+        }
+        return true;
+      }
+
+      if (isClientPortalLoginPage && isLoggedIn) {
+        const role = (auth?.user as any)?.role;
+        const portalRole = (auth?.user as any)?.portalRole;
+        const isPortalAdmin = portalRole === 'PORTAL_ADMIN' || role === 'admin' || role === 'editor' || role === 'superadmin';
+
+        if (isPortalAdmin) {
+          return Response.redirect(new URL('/client-portal/admin', nextUrl));
+        } else {
+          return Response.redirect(new URL('/client-portal', nextUrl));
+        }
       }
 
       return true;
     },
 
-    /** Attach role to JWT token */
+    /** Attach role + id + portalRole to JWT token */
     jwt({ token, user }) {
       if (user) {
         token.role = (user as { role?: string }).role;
+        token.portalRole = (user as { portalRole?: string }).portalRole;
         token.id = user.id;
       }
       return token;
     },
 
-    /** Expose role + id in the session object */
+    /** Expose role + portalRole + id in session */
     session({ session, token }) {
       if (token && session.user) {
-        (session.user as { role?: string; id?: string }).role = token.role as string;
-        (session.user as { role?: string; id?: string }).id = token.id as string;
+        (session.user as { role?: string; portalRole?: string; id?: string }).role = token.role as string;
+        (session.user as { portalRole?: string }).portalRole = token.portalRole as string;
+        (session.user as { id?: string }).id = token.id as string;
       }
       return session;
     },
@@ -59,5 +87,3 @@ export const authConfig: NextAuthConfig = {
   providers: [],
   session: { strategy: 'jwt' },
 };
-
-//test

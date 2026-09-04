@@ -1,132 +1,175 @@
-'use client';
+import { db } from '@/lib/db';
+import { portalSupportTickets, portalTicketReplies, users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { getPortalContext } from '@/lib/auth/portalAuth';
+import { LifeBuoy, Send } from 'lucide-react';
+import {
+  clientRaiseSupportTicketAction,
+  clientReplySupportTicketAction,
+} from '@/app/actions/clientPortalActions';
 
-import { useState } from 'react';
+export default async function ClientSupportPage() {
+  const portalCtx = await getPortalContext();
+  const clientId = portalCtx?.clientId;
 
-const categories = ['Document Request', 'Billing Question', 'Technical Issue', 'General Enquiry'];
-const priorities = ['Low', 'Medium', 'High'];
-
-const recentTickets = [
-  ['Tax Compliance', 'Annual Audit', '18/08/26', 'PROCESSED'],
-  ['Tax Compliance', 'Annual Audit', '18/08/26', 'PROCESSED'],
-];
-
-export default function ClientPortalSupportPage() {
-  const [priority, setPriority] = useState('Medium');
+  const tickets = clientId
+    ? await db
+        .select()
+        .from(portalSupportTickets)
+        .where(eq(portalSupportTickets.clientId, clientId))
+        .orderBy(portalSupportTickets.createdAt)
+    : [];
 
   return (
-    <>
-      <h1 className="font-serif text-5xl tracking-tight text-ink">Raise a Support Ticket</h1>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
-        Let us know what you need help with and a member of your PSC Global team will follow up.
-      </p>
+    <div className="max-w-4xl space-y-10">
+      <div>
+        <h1 className="font-serif text-5xl tracking-tight text-ink">Support & Assistance</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
+          Raise technical inquiries, advisory support requests, or audit communications.
+        </p>
+      </div>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div>
-          <h2 className="border-b border-slate-200 pb-4 font-serif text-3xl text-ink">Submit a Request</h2>
-
-          <div className="mt-8 space-y-8">
-            <label className="block">
-              <span className="text-[10px] font-bold tracking-wide text-slate-500">SUBJECT</span>
+      {/* Raise Ticket Form */}
+      <div className="border border-slate-200 bg-white p-8">
+        <h2 className="font-serif text-2xl text-ink">Raise Support Ticket</h2>
+        <form action={clientRaiseSupportTicketAction} className="mt-6 space-y-6">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className="block text-[11px] font-bold tracking-wider text-slate-600">
+                SUBJECT *
+              </label>
               <input
-                className="mt-2 w-full border border-slate-200 px-4 py-3 text-sm outline-none"
-                placeholder="Briefly summarize your request"
+                type="text"
+                name="subject"
+                required
+                placeholder="Inquiry Subject"
+                className="mt-2 w-full border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-ink outline-none focus:border-ink focus:bg-white"
               />
-            </label>
-
-            <div className="grid gap-6 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-[10px] font-bold tracking-wide text-slate-500">RELATED ENGAGEMENT</span>
-                <select className="mt-2 w-full border border-slate-200 px-4 py-3 text-sm text-slate-500 outline-none">
-                  <option>Select an engagement</option>
-                </select>
-              </label>
-              <label className="block">
-                <span className="text-[10px] font-bold tracking-wide text-slate-500">CATEGORY</span>
-                <select className="mt-2 w-full border border-slate-200 px-4 py-3 text-sm text-slate-500 outline-none">
-                  {categories.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-              </label>
             </div>
 
             <div>
-              <span className="text-[10px] font-bold tracking-wide text-slate-500">PRIORITY</span>
-              <div className="mt-2 grid grid-cols-3 gap-4">
-                {priorities.map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => setPriority(p)}
-                    className={`border px-4 py-3 text-sm font-semibold ${
-                      priority === p ? 'border-ink bg-slate-50 text-ink' : 'border-slate-200 text-slate-600'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
+              <label className="block text-[11px] font-bold tracking-wider text-slate-600">
+                CATEGORY
+              </label>
+              <select
+                name="category"
+                className="mt-2 w-full border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-ink outline-none focus:border-ink focus:bg-white"
+              >
+                <option value="Tax & Advisory">Tax & Advisory</option>
+                <option value="Audit & Compliance">Audit & Compliance</option>
+                <option value="Invoicing & Payments">Invoicing & Payments</option>
+                <option value="Portal Support">Portal Technical Support</option>
+              </select>
             </div>
+          </div>
 
-            <label className="block">
-              <span className="text-[10px] font-bold tracking-wide text-slate-500">DESCRIPTION</span>
-              <textarea
-                className="mt-2 h-32 w-full border border-slate-200 px-4 py-3 text-sm outline-none"
-                placeholder="Describe your issue or request in detail..."
-              />
+          <div>
+            <label className="block text-[11px] font-bold tracking-wider text-slate-600">
+              DESCRIPTION / DETAILS *
             </label>
-
-            <div className="flex items-center gap-5 border-t border-slate-200 pt-8">
-              <button type="button" className="bg-ink px-6 py-4 text-xs font-bold tracking-wide text-white">
-                SUBMIT TICKET
-              </button>
-              <p className="max-w-xs text-xs leading-5 text-slate-500">
-                Our team typically responds within 1 business day.
-              </p>
-            </div>
+            <textarea
+              name="message"
+              required
+              rows={4}
+              placeholder="Describe your request or question in detail..."
+              className="mt-2 w-full border border-slate-200 bg-slate-50/50 p-4 text-sm text-ink outline-none focus:border-ink focus:bg-white"
+            />
           </div>
-        </div>
 
-        <aside className="h-fit border border-slate-200 bg-[#fdf9f8] p-6">
-          <h3 className="font-serif text-2xl text-ink">Need Something Faster?</h3>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            For urgent matters, you can also book a direct meeting with your engagement lead or
-            reach out to the knowledge centre for self-serve answers.
-          </p>
-          <div className="mt-6 space-y-3 border-t border-slate-200 pt-5">
-            <a href="/client-portal/book-meeting" className="block border border-ink px-5 py-3 text-center text-xs font-bold tracking-wide text-ink">
-              BOOK A MEETING
-            </a>
-            <a href="/client-portal/knowledge-centre" className="block bg-ink px-5 py-3 text-center text-xs font-bold tracking-wide text-white">
-              KNOWLEDGE CENTRE
-            </a>
-          </div>
-        </aside>
+          <button
+            type="submit"
+            className="flex items-center gap-2 bg-navy px-8 py-3 text-xs font-bold tracking-wider text-white transition hover:bg-slate-800"
+          >
+            <LifeBuoy size={16} /> SUBMIT TICKET
+          </button>
+        </form>
       </div>
 
-      <h2 className="mt-16 border-b border-ink pb-3 font-serif text-3xl text-ink" style={{ display: 'inline-block' }}>
-        Recent Tickets
-      </h2>
-      <table className="mt-4 w-full border-t border-slate-200 bg-white text-left text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 text-[10px] font-bold tracking-wide text-slate-500">
-            <th className="px-6 py-4">REQUEST</th>
-            <th className="px-6 py-4">ENGAGEMENT</th>
-            <th className="px-6 py-4">DATE</th>
-            <th className="px-6 py-4">STATUS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {recentTickets.map(([request, engagement, date, status], i) => (
-            <tr className="border-b border-slate-100 last:border-b-0" key={i}>
-              <td className="px-6 py-6 font-semibold text-ink">{request}</td>
-              <td className="px-6 py-6 text-slate-600">{engagement}</td>
-              <td className="px-6 py-6 font-semibold text-ink">{date}</td>
-              <td className="px-6 py-6 text-xs font-bold tracking-wide text-slate-600">{status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
+      {/* Tickets History & Threads */}
+      <div className="space-y-6">
+        <h2 className="font-serif text-2xl text-ink">My Support Tickets</h2>
+
+        {tickets.length === 0 ? (
+          <div className="border border-slate-200 bg-white p-12 text-center text-xs text-slate-500">
+            No support tickets raised yet.
+          </div>
+        ) : (
+          tickets.map(async (t) => {
+            const replies = await db
+              .select({
+                id: portalTicketReplies.id,
+                message: portalTicketReplies.message,
+                senderType: portalTicketReplies.senderType,
+                createdAt: portalTicketReplies.createdAt,
+                senderName: users.name,
+              })
+              .from(portalTicketReplies)
+              .leftJoin(users, eq(portalTicketReplies.senderId, users.id))
+              .where(eq(portalTicketReplies.ticketId, t.id))
+              .orderBy(portalTicketReplies.createdAt);
+
+            return (
+              <div key={t.id} className="border border-slate-200 bg-white p-6">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs font-bold text-slate-500">{t.ticketNumber}</span>
+                    <h3 className="font-serif text-xl text-ink">{t.subject}</h3>
+                  </div>
+                  <span
+                    className={`px-3 py-1 text-[10px] font-bold ${
+                      t.status === 'OPEN' ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-700'
+                    }`}
+                  >
+                    {t.status}
+                  </span>
+                </div>
+
+                {/* Conversation Thread */}
+                <div className="mt-4 space-y-3">
+                  {replies.map((r) => (
+                    <div
+                      key={r.id}
+                      className={`p-4 text-xs ${
+                        r.senderType === 'CLIENT'
+                          ? 'border-l-2 border-slate-300 bg-slate-50 text-slate-700'
+                          : 'border-l-2 border-navy bg-white text-ink'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between font-bold text-slate-500">
+                        <span>
+                          {r.senderType === 'CLIENT' ? 'YOU' : 'PSC GLOBAL SUPPORT'}
+                        </span>
+                        <span className="text-[10px] font-normal">
+                          {new Date(r.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="mt-2 leading-relaxed">{r.message}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Reply Form */}
+                <form action={clientReplySupportTicketAction} className="mt-4 flex items-center gap-3">
+                  <input type="hidden" name="ticketId" value={t.id} />
+                  <input
+                    type="text"
+                    name="message"
+                    required
+                    placeholder="Type a reply to PSC Global support team..."
+                    className="flex-1 border border-slate-200 px-4 py-2.5 text-xs text-ink outline-none focus:border-ink"
+                  />
+                  <button
+                    type="submit"
+                    className="flex items-center gap-1.5 bg-navy px-5 py-2.5 text-xs font-bold text-white hover:bg-slate-800"
+                  >
+                    <Send size={13} /> SEND
+                  </button>
+                </form>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
   );
 }
