@@ -8,6 +8,7 @@ import {
   portalTicketReplies,
   portalDocuments,
   portalTasks,
+  portalEngagements,
 } from '@/lib/db/schema';
 import { requirePortalClient } from '@/lib/auth/portalAuth';
 import {
@@ -17,6 +18,59 @@ import {
   createDocumentSchema,
 } from '@/lib/validation/portalValidation';
 import { eq, and } from 'drizzle-orm';
+
+export async function clientRequestEngagementAction(formData: FormData): Promise<void> {
+  const clientCtx = await requirePortalClient();
+  if (!clientCtx.clientId) return;
+
+  const title = formData.get('title') as string;
+  const serviceCategory = (formData.get('serviceCategory') as string) || 'General Advisory';
+  const description = (formData.get('description') as string) || '';
+  const startDate = (formData.get('startDate') as string) || undefined;
+  const endDate = (formData.get('endDate') as string) || undefined;
+
+  if (!title) return;
+
+  await db.insert(portalEngagements).values({
+    clientId: clientCtx.clientId,
+    title,
+    serviceCategory,
+    description,
+    startDate,
+    endDate,
+    status: 'PENDING_APPROVAL',
+  });
+
+  revalidatePath('/client-portal/engagements');
+  revalidatePath('/client-portal');
+  revalidatePath('/client-portal/admin/engagements');
+  revalidatePath('/client-portal/admin');
+}
+
+export async function clientCreateTaskAction(formData: FormData): Promise<void> {
+  const clientCtx = await requirePortalClient();
+  if (!clientCtx.clientId) return;
+
+  const name = formData.get('name') as string;
+  const engagementId = formData.get('engagementId') ? Number(formData.get('engagementId')) : null;
+  const dueDate = (formData.get('dueDate') as string) || undefined;
+  const priority = (formData.get('priority') as string) || 'NORMAL';
+
+  if (!name) return;
+
+  await db.insert(portalTasks).values({
+    clientId: clientCtx.clientId,
+    engagementId,
+    name,
+    dueDate,
+    priority,
+    status: 'UPCOMING',
+  });
+
+  revalidatePath('/client-portal/tasks');
+  revalidatePath('/client-portal');
+  revalidatePath('/client-portal/admin/tasks');
+}
 
 export async function clientBookMeetingAction(formData: FormData): Promise<void> {
   const clientCtx = await requirePortalClient();

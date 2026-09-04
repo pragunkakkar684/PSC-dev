@@ -134,6 +134,20 @@ export async function createEngagementAction(formData: FormData): Promise<void> 
   revalidatePath(`/client-portal/admin/clients/${parsed.data.clientId}`);
 }
 
+export async function approveEngagementAction(engagementId: number, status: 'ACTIVE' | 'REJECTED'): Promise<void> {
+  await requirePortalAdmin();
+
+  await db
+    .update(portalEngagements)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(portalEngagements.id, engagementId));
+
+  revalidatePath('/client-portal/admin/engagements');
+  revalidatePath('/client-portal/admin');
+  revalidatePath('/client-portal/engagements');
+  revalidatePath('/client-portal');
+}
+
 // ─── TASKS ───────────────────────────────────────────────────────────────────
 
 export async function createTaskAction(formData: FormData): Promise<void> {
