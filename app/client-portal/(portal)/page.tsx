@@ -11,7 +11,7 @@ import {
 import { count, eq, and, ne } from 'drizzle-orm';
 import { getPortalContext } from '@/lib/auth/portalAuth';
 import { ArrowRight, Briefcase, CheckCircle2, ClipboardList, FileText } from 'lucide-react';
-import PortalAssistanceCTA from '../components/PortalAssistanceCTA';
+import PortalAssistanceCTA from '@/app/components/PortalAssistanceCTA';
 
 function StatusPill({ status }: { status: string }) {
   const isDueSoon = status === 'DUE SOON';
