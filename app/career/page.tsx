@@ -1,15 +1,11 @@
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, MapPin, Briefcase, Building2 } from 'lucide-react';
 import AnimatedSection from '../components/AnimatedSection';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import Link from 'next/link';
-
-// Replace with a real query (e.g. getPublicOpenRoles()) once careers data lives in the DB.
-const openRoles = [
-  { id: 'role-1', title: 'Associate — Tax Advisory', location: 'Mumbai', department: 'Tax Advisory', type: 'Full Time' },
-  { id: 'role-2', title: 'Senior Associate — Risk & Assurance', location: 'Delhi', department: 'Risk & Assurance', type: 'Full Time' },
-  { id: 'role-3', title: 'Manager — Business Advisory', location: 'Bengaluru', department: 'Business Advisory', type: 'Full Time' },
-];
+import { db } from '@/lib/db';
+import { careersPositions } from '@/lib/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 const whyPSC = [
   ['01', 'LEARN', 'Engage with complex, high-stakes challenges that demand rigorous analytical thinking and continuous intellectual expansion.'],
@@ -25,7 +21,6 @@ const journey = [
   ['04', 'Join', 'Begin your impactful career with comprehensive onboarding and mentorship.'],
 ];
 
-// Static culture testimonials -- swap for a query if these should be editable via CMS.
 const voices = [
   {
     id: 'voice-1',
@@ -50,7 +45,13 @@ const voices = [
   },
 ];
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const publishedJobs = await db
+    .select()
+    .from(careersPositions)
+    .where(eq(careersPositions.isPublished, true))
+    .orderBy(desc(careersPositions.createdAt));
+
   return (
     <main id="top">
       <SiteHeader />
@@ -77,14 +78,8 @@ export default function CareersPage() {
               href="#open-roles"
               className="inline-flex items-center gap-3 bg-white px-5 py-3 text-xs font-bold text-ink transition hover:bg-slate-100"
             >
-              VIEW OPEN POSITIONS
+              VIEW OPEN POSITIONS ({publishedJobs.length})
             </a>
-            <Link
-              href="/careers/life-at-psc"
-              className="inline-flex items-center gap-3 border border-white px-5 py-3 text-xs font-bold text-white transition hover:bg-white hover:text-ink"
-            >
-              LIFE AT PSC
-            </Link>
           </div>
         </div>
       </AnimatedSection>
@@ -92,55 +87,53 @@ export default function CareersPage() {
       {/* FIND YOUR OPPORTUNITY */}
       <AnimatedSection id="open-roles" className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
-          <h2 className="font-serif text-4xl lg:text-5xl">Find Your Opportunity</h2>
-
-          <div className="mt-8 flex flex-col gap-3 md:flex-row md:items-center">
-            <div className="relative flex-1">
-              <Search
-                size={16}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                placeholder="Keyword Search..."
-                className="w-full border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm text-ink placeholder:text-slate-400 focus:border-navy focus:outline-none"
-              />
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="font-serif text-4xl lg:text-5xl">Find Your Opportunity</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Explore current career openings across our advisory, tax, and consulting practices.
+              </p>
             </div>
-            <select className="border border-slate-300 bg-white px-4 py-3 text-sm text-ink focus:border-navy focus:outline-none md:w-56">
-              <option>All Locations</option>
-              <option>Mumbai</option>
-              <option>Delhi</option>
-              <option>Bengaluru</option>
-            </select>
-            <select className="border border-slate-300 bg-white px-4 py-3 text-sm text-ink focus:border-navy focus:outline-none md:w-56">
-              <option>All Practice Areas</option>
-              <option>Tax Advisory</option>
-              <option>Risk & Assurance</option>
-              <option>Business Advisory</option>
-            </select>
-            <button className="bg-navy px-6 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800 md:w-auto">
-              SEARCH ROLES
-            </button>
           </div>
 
-          <div className="mt-10 divide-y divide-slate-200 border-t border-slate-200">
-            {openRoles.map((role) => (
-              <div
-                key={role.id}
-                className="grid grid-cols-2 items-center gap-4 py-6 md:grid-cols-[2fr_1fr_1fr_1fr_auto]"
-              >
-                <h3 className="font-serif text-2xl leading-tight">{role.title}</h3>
-                <span className="text-sm text-slate-600">{role.location}</span>
-                <span className="text-sm text-slate-600">{role.department}</span>
-                <span className="text-sm text-slate-600">{role.type}</span>
-                <Link
-                  href={`/careers/${role.id}`}
-                  className="col-span-2 flex items-center gap-2 text-xs font-bold tracking-wide text-navy hover:underline md:col-span-1 md:justify-self-end"
-                >
-                  VIEW ROLE <ArrowRight size={14} />
-                </Link>
+          <div className="mt-10 divide-y divide-slate-200 border-t border-b border-slate-200">
+            {publishedJobs.length === 0 ? (
+              <div className="py-12 text-center text-slate-500 text-sm">
+                There are currently no active job openings. Please check back soon or submit a general inquiry.
               </div>
-            ))}
+            ) : (
+              publishedJobs.map((role) => (
+                <div
+                  key={role.id}
+                  className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_auto] items-center gap-4 py-6 hover:bg-slate-50/50 px-2 transition"
+                >
+                  <div>
+                    <Link href={`/career/${role.id}`} className="font-serif text-2xl leading-tight text-ink hover:underline">
+                      {role.title}
+                    </Link>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-1">{role.description}</p>
+                  </div>
+                  <span className="flex items-center gap-1.5 text-sm text-slate-600">
+                    <MapPin size={14} className="text-slate-400" />
+                    {role.location}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-sm text-slate-600">
+                    <Building2 size={14} className="text-slate-400" />
+                    {role.department}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-sm text-slate-600">
+                    <Briefcase size={14} className="text-slate-400" />
+                    {role.type}
+                  </span>
+                  <Link
+                    href={`/career/${role.id}`}
+                    className="inline-flex items-center gap-2 bg-navy px-4 py-2 text-xs font-bold tracking-wide text-white hover:bg-slate-800 transition"
+                  >
+                    APPLY NOW <ArrowRight size={14} />
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </AnimatedSection>

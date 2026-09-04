@@ -15,6 +15,7 @@ import {
   BarChart3,
   LifeBuoy,
   ShieldAlert,
+  UserCheck,
   LogOut,
   LayoutDashboard,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ const adminNavItems = [
   { label: 'PAYMENTS', icon: Wallet, href: '/client-portal/admin/payments' },
   { label: 'MEETINGS', icon: Calendar, href: '/client-portal/admin/meetings' },
   { label: 'REPORTS', icon: BarChart3, href: '/client-portal/admin/reports' },
+  { label: 'CAREERS & RECRUITMENT', icon: UserCheck, href: '/client-portal/admin/careers' },
   { label: 'SUPPORT INBOX', icon: LifeBuoy, href: '/client-portal/admin/support' },
 ];
 

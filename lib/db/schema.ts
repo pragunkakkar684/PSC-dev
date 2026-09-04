@@ -599,11 +599,27 @@ export const careersPositions = pgTable('careers_positions', {
   type: varchar('type', { length: 50 }).notNull().default('Full-time'),
   description: text('description'),
   requirements: text('requirements'),
+  questions: jsonb('questions'),
   applicationUrl: varchar('application_url', { length: 500 }).default('/contact'),
   sortOrder: integer('sort_order').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const portalJobApplications = pgTable('portal_job_applications', {
+  id: serial('id').primaryKey(),
+  jobId: integer('job_id')
+    .notNull()
+    .references(() => careersPositions.id, { onDelete: 'cascade' }),
+  applicantName: varchar('applicant_name', { length: 255 }).notNull(),
+  applicantEmail: varchar('applicant_email', { length: 320 }).notNull(),
+  applicantPhone: varchar('applicant_phone', { length: 50 }).notNull(),
+  resumeUrl: varchar('resume_url', { length: 1000 }),
+  coverLetter: text('cover_letter'),
+  answers: jsonb('answers'),
+  status: varchar('status', { length: 50 }).notNull().default('NEW'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
 // ─── SITE-WIDE CMS TABLES ───────────────────────────────────────────────────
