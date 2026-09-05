@@ -18,32 +18,22 @@ export function FormField({
   children,
 }: FormFieldProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-      <label
-        htmlFor={htmlFor}
-        style={{
-          fontSize: '13px',
-          fontWeight: 600,
-          color: 'var(--text-primary, #f1f5f9)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}
-      >
+    <div className="form-field">
+      <label htmlFor={htmlFor} className="form-field-label">
         {label}
-        {required && <span style={{ color: '#ef4444' }}>*</span>}
+        {required && <span className="form-field-required">*</span>}
       </label>
 
       {children}
 
       {hint && !error && (
-        <span style={{ fontSize: '12px', color: 'var(--text-muted, #475569)' }}>
+        <span className="form-field-hint">
           {hint}
         </span>
       )}
 
       {error && (
-        <span style={{ fontSize: '12px', color: '#f87171', fontWeight: 500 }}>
+        <span className="form-field-error">
           {error}
         </span>
       )}

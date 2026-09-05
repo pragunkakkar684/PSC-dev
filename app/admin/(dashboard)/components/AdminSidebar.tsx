@@ -69,7 +69,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 
       const savedGroups = localStorage.getItem('psc_cms_sidebar_groups');
       if (savedGroups) setCollapsedGroups(JSON.parse(savedGroups));
-    } catch (e) {
+    } catch {
       // Ignore fallback
     }
   }, []);
@@ -92,7 +92,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 
   return (
     <>
-      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`} aria-label={`${user.name || 'Administrator'} navigation`}>
         {/* Brand Header */}
         <div className="sidebar-brand flex items-center justify-between p-3 border-b border-[var(--border)]">
           {!isCollapsed ? (
@@ -304,27 +304,11 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           </div>
         </nav>
 
-        {/* User Footer */}
-        <div className="sidebar-footer p-2.5 border-t border-[var(--border)] flex items-center justify-between">
-          {!isCollapsed ? (
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] flex-shrink-0">
-                {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-medium text-[var(--text-primary)] truncate">{user.name || user.email}</div>
-                <div className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">{user.role}</div>
-              </div>
-            </div>
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] mx-auto">
-              {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
-            </div>
-          )}
-
+        <div className="sidebar-footer">
+          {!isCollapsed && <><span className="status-dot" /> <span>All systems operational</span></>}
           <button
             onClick={() => signOut({ callbackUrl: '/admin/login' })}
-            className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-red-500/10 transition"
+            className="sidebar-signout"
             title="Sign out"
           >
             <LogOut size={15} />
@@ -336,4 +320,3 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     </>
   );
 }
-

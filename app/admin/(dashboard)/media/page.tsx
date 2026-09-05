@@ -9,7 +9,7 @@ import { ImageUploadInput } from '../components/ImageUploadInput';
 import { getMediaFiles, deleteMediaFileAction } from './actions';
 import type { MediaFile } from '@/lib/db/schema';
 import { CLOUDINARY_FOLDERS, type CloudinaryFolder } from '@/lib/constants/cloudinary';
-import { Search, FileText, Trash2, Copy, Check, Filter, Image as ImageIcon } from 'lucide-react';
+import { Search, FileText, Trash2, Copy, Check, Image as ImageIcon, Upload } from 'lucide-react';
 
 export default function MediaLibraryPage() {
   const [files, setFiles] = useState<MediaFile[]>([]);
@@ -70,219 +70,107 @@ export default function MediaLibraryPage() {
 
       <div className="admin-content">
         <PageHeader
-          title="Cloudinary Media Library"
-          description="Upload and manage firm images, headshots, covers, and research PDFs stored securely in Cloudinary."
+          eyebrow="Administration"
+          title="Media Library"
+          description="Keep your content operations organized with a calm, focused workspace."
         />
 
-        {/* Upload Box Container */}
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px', marginBottom: '28px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '16px' }}>
-            <div>
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>Upload New File to Cloudinary</h3>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Files will be validated, uploaded to Cloudinary, and registered in the media database.</p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Destination Folder:</span>
-              <select
-                value={uploadFolder}
-                onChange={(e) => setUploadFolder(e.target.value as CloudinaryFolder)}
-                className="form-input"
-                style={{ width: '180px', height: '36px', fontSize: '12px' }}
-              >
-                {Object.entries(CLOUDINARY_FOLDERS).map(([key, val]) => (
-                  <option key={key} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="upload-zone">
+          <Upload size={22} />
+          <div>
+            <strong>Drop files here to upload</strong>
+            <span>or choose files from your computer · JPG, PNG, PDF up to 10 MB</span>
           </div>
-
-          <ImageUploadInput
-            folder={uploadFolder}
-            label="Click or Drop File to Upload to Cloudinary (Images or PDFs)"
-            accept="image/jpeg,image/png,image/webp,application/pdf"
-            onChange={() => loadData()}
-          />
+          <select
+            value={uploadFolder}
+            onChange={(e) => setUploadFolder(e.target.value as CloudinaryFolder)}
+            className="filter-button"
+          >
+            {Object.entries(CLOUDINARY_FOLDERS).map(([key, val]) => (
+              <option key={key} value={val}>
+                {val}
+              </option>
+            ))}
+          </select>
         </div>
+        <ImageUploadInput
+          folder={uploadFolder}
+          label="Choose files"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          onChange={() => loadData()}
+        />
 
-        {/* Filter Controls Bar */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', flex: 1 }}>
-            <div style={{ position: 'relative', width: '260px' }}>
-              <Search
-                size={15}
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)',
-                }}
-              />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search files by name..."
-                className="form-input"
-                style={{ paddingLeft: '34px', height: '38px', fontSize: '13px' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Filter size={14} style={{ color: 'var(--text-muted)' }} />
-              <select
-                value={folder}
-                onChange={(e) => setFolder(e.target.value)}
-                className="form-input"
-                style={{ width: '180px', height: '38px', fontSize: '13px' }}
-              >
-                <option value="all">All Folders</option>
-                {Object.entries(CLOUDINARY_FOLDERS).map(([key, val]) => (
-                  <option key={key} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <select
-              value={resourceType}
-              onChange={(e) => setResourceType(e.target.value)}
-              className="form-input"
-              style={{ width: '140px', height: '38px', fontSize: '13px' }}
-            >
-              <option value="all">All Types</option>
-              <option value="image">Images</option>
-              <option value="document">Documents (PDFs)</option>
-            </select>
+        <div className="toolbar">
+          <div className="field-search">
+            <Search size={16} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search media library"
+            />
           </div>
-
-          <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-            Showing {files.length} file{files.length === 1 ? '' : 's'}
-          </div>
+          <select value={folder} onChange={(e) => setFolder(e.target.value)} className="filter-button">
+            <option value="all">All folders</option>
+            {Object.entries(CLOUDINARY_FOLDERS).map(([key, val]) => (
+              <option key={key} value={val}>
+                {val}
+              </option>
+            ))}
+          </select>
+          <select value={resourceType} onChange={(e) => setResourceType(e.target.value)} className="filter-button">
+            <option value="all">All types</option>
+            <option value="image">Images</option>
+            <option value="document">Documents</option>
+          </select>
+          <span className="result-count">{files.length} assets</span>
         </div>
 
         {/* Media Grid */}
         {loading ? (
           <LoadingState message="Loading media assets..." />
         ) : files.length === 0 ? (
-          <div style={{ padding: '60px 24px', textAlign: 'center', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', color: 'var(--text-muted)' }}>
-            <ImageIcon size={36} style={{ marginBottom: '12px', opacity: 0.4 }} />
-            <h4 style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '4px' }}>No media assets found</h4>
-            <p style={{ fontSize: '13px' }}>Upload a file above to add images or PDFs to the Cloudinary library.</p>
-          </div>
+          <section className="panel empty-panel">
+            <div className="empty-icon">
+              <ImageIcon size={21} />
+            </div>
+            <h2>No media assets found</h2>
+            <p>Upload a file above to add images or PDFs to the library.</p>
+          </section>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-            {files.map((file) => (
-              <div
-                key={file.id}
-                style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.15s, border-color 0.15s',
-                }}
-              >
-                {/* Thumbnail */}
-                <div style={{ height: '140px', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div className="media-grid">
+            {files.map((file, i) => (
+              <div className="media-card" key={file.id}>
+                <div className={`media-thumb thumb-${i % 3}`}>
                   {file.resourceType === 'image' ? (
-                    <img
-                      src={file.url}
-                      alt={file.originalName || 'Media file'}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    <img src={file.url} alt={file.originalName || 'Media file'} />
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#60a5fa' }}>
-                      <FileText size={40} />
-                      <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>PDF DOCUMENT</span>
-                    </div>
+                    <FileText size={28} />
                   )}
-
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '8px',
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      background: 'rgba(0,0,0,0.65)',
-                      color: 'white',
-                      backdropFilter: 'blur(4px)',
-                    }}
-                  >
-                    {file.folder?.replace('psc-global/', '')}
-                  </span>
                 </div>
-
-                {/* File info */}
-                <div style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div
-                      title={file.originalName || 'Untitled'}
-                      style={{
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      {file.originalName || 'Untitled file'}
-                    </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{formatSize(file.sizeBytes)}</span>
-                      <span>{new Date(file.uploadedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Card Action Buttons */}
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border)' }}>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(file.url, file.id)}
-                      className="btn btn-secondary"
-                      style={{ flex: 1, padding: '6px 8px', fontSize: '11px', justifyContent: 'center' }}
-                    >
-                      {copiedId === file.id ? (
-                        <>
-                          <Check size={12} style={{ color: '#34d399' }} />
-                          <span style={{ color: '#34d399' }}>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={12} />
-                          <span>Copy URL</span>
-                        </>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDeleteTarget({ id: file.id, cloudinaryId: file.publicId, type: file.resourceType as any })}
-                      style={{
-                        padding: '6px 10px',
-                        borderRadius: '6px',
-                        background: 'rgba(239,68,68,0.1)',
-                        color: '#f87171',
-                        border: '1px solid rgba(239,68,68,0.2)',
-                        cursor: 'pointer',
-                      }}
-                      title="Delete file"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
+                <div>
+                  <strong title={file.originalName || 'Untitled'}>{file.originalName || 'Untitled file'}</strong>
+                  <small>
+                    {file.folder?.replace('psc-global/', '') || 'Website assets'} · {formatSize(file.sizeBytes)}
+                  </small>
                 </div>
+                <button type="button" onClick={() => copyToClipboard(file.url, file.id)} title="Copy URL">
+                  {copiedId === file.id ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDeleteTarget({
+                      id: file.id,
+                      cloudinaryId: file.publicId,
+                      type: file.resourceType as 'image' | 'document',
+                    })
+                  }
+                  title="Delete file"
+                  style={{ right: 32 }}
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             ))}
           </div>

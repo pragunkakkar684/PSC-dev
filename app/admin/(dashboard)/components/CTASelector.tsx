@@ -66,15 +66,15 @@ export function CTASelector({ label, textValue, urlValue, onChange, hint }: CTAS
   const isEmptyUrl = text.trim().length > 0 && !url.trim();
 
   return (
-    <div style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '12px', padding: '16px', display: 'grid', gap: '12px' }}>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="cta-selector" style={{ padding: '16px', display: 'grid', gap: '12px' }}>
+      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span>{label}</span>
         {isHashFallback || isEmptyUrl ? (
-          <span style={{ fontSize: '11px', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--danger)', background: 'rgba(177,107,92,.12)', padding: '2px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <AlertTriangle size={12} /> Invalid Link Target
           </span>
         ) : (
-          <span style={{ fontSize: '11px', color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--success)', background: 'rgba(118,152,119,.12)', padding: '2px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <CheckCircle2 size={12} /> Valid Destination
           </span>
         )}
@@ -114,7 +114,7 @@ export function CTASelector({ label, textValue, urlValue, onChange, hint }: CTAS
             onChange={(e) => handleUrlChange(e.target.value)}
             className="admin-input"
             style={{
-              borderColor: isHashFallback || isEmptyUrl ? '#ef4444' : undefined,
+              borderColor: isHashFallback || isEmptyUrl ? 'var(--danger)' : undefined,
               flex: 1,
             }}
             placeholder="e.g. /practice-areas#capabilities"
@@ -135,7 +135,7 @@ export function CTASelector({ label, textValue, urlValue, onChange, hint }: CTAS
       </FormField>
 
       {isHashFallback && (
-        <div style={{ fontSize: '12px', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '8px 12px', borderRadius: '6px' }}>
+        <div style={{ fontSize: '12px', color: 'var(--danger)', background: 'rgba(177,107,92,.12)', padding: '8px 12px', borderRadius: '4px' }}>
           ⚠ <strong>Validation Error:</strong> &quot;<code>#</code>&quot; is not an acceptable CTA destination. Please select a valid route above.
         </div>
       )}

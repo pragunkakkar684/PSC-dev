@@ -2,18 +2,23 @@ interface PageHeaderProps {
   title: string;
   description?: string;
   actions?: React.ReactNode;
+  eyebrow?: string;
 }
 
-export function PageHeader({ title, description, actions }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  eyebrow = 'Content management',
+}: PageHeaderProps) {
   return (
-    <div className="page-header">
-      <div className="page-header-text">
-        <h2 className="page-header-title">{title}</h2>
-        {description && (
-          <p className="page-header-description">{description}</p>
-        )}
+    <div className="page-heading inner">
+      <div>
+        <div className="eyebrow">{eyebrow}</div>
+        <h1>{title}</h1>
+        {description && <p>{description}</p>}
       </div>
-      {actions && <div className="page-header-actions">{actions}</div>}
+      {actions}
     </div>
   );
 }

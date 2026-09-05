@@ -101,12 +101,22 @@ export default function TestimonialsPage() {
     {
       header: 'Quote',
       render: (t) => (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', maxWidth: '420px' }}>
           <MessageSquare size={16} style={{ color: '#60a5fa', marginTop: '3px', flexShrink: 0 }} />
-          <div>
-            <div style={{ fontStyle: 'italic', color: 'var(--text-primary)', fontSize: '13px', lineHeight: 1.5 }}>
-              &quot;{t.quote}&quot;
-            </div>
+          <div
+            title={t.quote}
+            style={{
+              fontStyle: 'italic',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              lineHeight: 1.5,
+              minWidth: 0,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            &quot;{t.quote}&quot;
           </div>
         </div>
       ),

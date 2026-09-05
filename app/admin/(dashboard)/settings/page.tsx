@@ -72,8 +72,9 @@ export default function SettingsPage() {
 
       <div className="admin-content">
         <PageHeader
-          title="Global Site Settings"
-          description="Configure firm brand identity, footer summary texts, copyright disclosures, and primary contact email."
+          eyebrow="Administration"
+          title="Settings"
+          description="Keep your content operations organized with a calm, focused workspace."
         />
 
         {error && (
@@ -90,13 +91,19 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid var(--border)', color: '#60a5fa', fontSize: '14px', fontWeight: 600 }}>
-            <ShieldCheck size={18} />
-            <span>Administrator Restricted Configuration</span>
+        <form onSubmit={handleSubmit} className="settings-grid" style={{ background: 'transparent', border: 0, padding: 0 }}>
+          <div className="setting-card" style={{ gridColumn: '1 / -1' }}>
+            <div className="setting-icon">
+              <ShieldCheck size={16} />
+            </div>
+            <div>
+              <div className="eyebrow">Administrative preferences</div>
+              <h3>Administrator restricted configuration</h3>
+              <p>Brand identity, footer copy, and primary contact details.</p>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+          <div className="panel setting-card" style={{ display: 'block' }}>
             <FormField label="Site Name" required>
               <input
                 type="text"

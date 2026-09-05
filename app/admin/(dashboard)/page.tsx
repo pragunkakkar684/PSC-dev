@@ -1,36 +1,28 @@
 import { AdminHeader } from './components/AdminHeader';
 import { StatCard } from './components/StatCard';
-import { Breadcrumbs } from './components/Breadcrumbs';
 import { requireEditor } from '@/lib/auth/permissions';
 import { db } from '@/lib/db';
 import {
   sitePages,
-  teamMembers,
-  events,
   insightsArticles,
   contactSubmissions,
-  newsletterSubscribers,
   practiceAreas,
   industries,
-  mediaFiles,
   cmsAuditLogs,
 } from '@/lib/db/schema';
-import { count, eq, and, desc } from 'drizzle-orm';
+import { count, eq, desc } from 'drizzle-orm';
 import Link from 'next/link';
 import {
   FileText,
-  Layers,
-  Building2,
+  BriefcaseBusiness,
+  Globe2,
   BookOpen,
-  Calendar,
-  Users,
-  Image as ImageIcon,
-  Mail,
-  Send,
-  PlusCircle,
-  ExternalLink,
-  Clock,
-  CheckCircle2,
+  Inbox,
+  ArrowUpRight,
+  FolderOpen,
+  CalendarDays,
+  SlidersHorizontal,
+  ChevronRight,
 } from 'lucide-react';
 
 export const metadata = {
@@ -41,185 +33,181 @@ async function getDashboardData() {
   const [
     [totalPagesCount],
     [publishedPagesCount],
-    [teamCount],
-    [publishedTeamCount],
-    [eventCount],
-    [upcomingEventCount],
     [insightCount],
     [newSubmissionsCount],
     [totalSubmissionsCount],
-    [subscriberCount],
     [practiceAreaCount],
     [industryCount],
-    [mediaCount],
     recentLogs,
   ] = await Promise.all([
     db.select({ value: count() }).from(sitePages),
     db.select({ value: count() }).from(sitePages).where(eq(sitePages.isPublished, true)),
-    db.select({ value: count() }).from(teamMembers),
-    db.select({ value: count() }).from(teamMembers).where(eq(teamMembers.isPublished, true)),
-    db.select({ value: count() }).from(events),
-    db.select({ value: count() }).from(events).where(
-      and(eq(events.isPublished, true), eq(events.status, 'upcoming'))
-    ),
     db.select({ value: count() }).from(insightsArticles),
     db.select({ value: count() }).from(contactSubmissions).where(eq(contactSubmissions.status, 'new')),
     db.select({ value: count() }).from(contactSubmissions),
-    db.select({ value: count() }).from(newsletterSubscribers).where(eq(newsletterSubscribers.isActive, true)),
     db.select({ value: count() }).from(practiceAreas),
     db.select({ value: count() }).from(industries),
-    db.select({ value: count() }).from(mediaFiles),
     db.select().from(cmsAuditLogs).orderBy(desc(cmsAuditLogs.createdAt)).limit(6),
   ]);
 
   return {
     pages: { total: totalPagesCount.value || 17, published: publishedPagesCount.value || 17 },
-    team: { total: teamCount.value, published: publishedTeamCount.value },
-    events: { total: eventCount.value, upcoming: upcomingEventCount.value },
     insights: insightCount.value,
     submissions: { new: newSubmissionsCount.value, total: totalSubmissionsCount.value },
-    subscribers: subscriberCount.value,
     practiceAreas: practiceAreaCount.value,
     industries: industryCount.value,
-    media: mediaCount.value,
     logs: recentLogs || [],
   };
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function formatToday() {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatRelative(date: Date) {
+  const diff = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${Math.max(1, mins)} min ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  return 'Yesterday';
 }
 
 export default async function AdminDashboard() {
   const user = await requireEditor();
   const data = await getDashboardData();
+  const firstName = (user.name || 'Admin').split(' ')[0];
 
   return (
     <>
       <AdminHeader title="Control Room Dashboard" user={user} />
 
-      <div className="admin-content" style={{ maxWidth: '1280px' }}>
-        <Breadcrumbs items={[{ label: 'Dashboard' }]} />
-
-        {/* Welcome Header */}
-        <div style={{ marginBottom: '24px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="admin-content">
+        <div className="page-heading">
           <div>
-            <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>
-              Good morning, {user.name || 'Admin'}
+            <div className="eyebrow">{formatToday()}</div>
+            <h1>
+              {getGreeting()}, {firstName}
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              Here is your website content status, quick actions, and recent activity overview.
-            </p>
+            <p>Here&apos;s what&apos;s happening across your digital estate.</p>
           </div>
-          <Link
-            href="/"
-            target="_blank"
-            className="btn btn-secondary"
-          >
-            <ExternalLink size={14} /> View Live Website
+          <Link href="/" target="_blank" className="button button-dark">
+            <Globe2 size={16} /> View live website <ArrowUpRight size={15} />
           </Link>
         </div>
 
-        {/* Stats Grid */}
-        <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '10px' }}>
-          Content Overview
-        </div>
-        <div className="dashboard-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
+        <div className="stats-grid">
           <StatCard
-            label="Managed Site Pages"
-            value={data.pages.total}
-            sub={`${data.pages.published} pages active`}
-            icon={<FileText size={18} />}
+            label="Managed site pages"
+            value={String(data.pages.total).padStart(2, '0')}
+            sub={`${data.pages.published} published`}
+            icon={<FileText size={17} />}
           />
           <StatCard
-            label="Core Practice Areas"
-            value={data.practiceAreas}
-            sub="Active core practices"
-            icon={<Layers size={18} />}
+            label="Core practice areas"
+            value={String(data.practiceAreas).padStart(2, '0')}
+            sub="All published"
+            icon={<BriefcaseBusiness size={17} />}
           />
           <StatCard
-            label="Industry Verticals"
-            value={data.industries}
-            sub="Active sector verticals"
-            icon={<Building2 size={18} />}
+            label="Industry verticals"
+            value={String(data.industries).padStart(2, '0')}
+            sub="Active sectors"
+            icon={<Globe2 size={17} />}
           />
           <StatCard
-            label="Insights & Articles"
-            value={data.insights}
+            label="Insights & articles"
+            value={String(data.insights).padStart(2, '0')}
             sub="Published research"
-            icon={<BookOpen size={18} />}
+            icon={<BookOpen size={17} />}
           />
           <StatCard
-            label="Contact Inquiries"
-            value={data.submissions.total}
-            sub={`${data.submissions.new} unread submissions`}
-            icon={<Mail size={18} />}
+            label="Contact inquiries"
+            value={String(data.submissions.total).padStart(2, '0')}
+            sub={`${data.submissions.new} new this week`}
+            icon={<Inbox size={17} />}
           />
         </div>
 
-        {/* Main 2-Column Section: Recent Activity & Quick Actions */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px', alignItems: 'start' }}>
-          {/* Left Column: Recent Audit Activity Timeline */}
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Clock size={16} className="text-[var(--accent)]" /> Recent Audit Activity
+        <div className="dashboard-grid">
+          <section className="panel">
+            <div className="panel-header">
+              <div>
+                <div className="eyebrow">Security & activity</div>
+                <h2>Recent audit activity</h2>
               </div>
-              <Link href="/admin/audit-logs" className="text-xs font-semibold text-[var(--accent)] hover:underline">
-                View Full Audit Logs →
+              <Link href="/admin/audit-logs" className="text-button">
+                View all <ArrowUpRight size={14} />
               </Link>
             </div>
-
             {data.logs.length === 0 ? (
-              <div style={{ fontSize: '13px', color: 'var(--text-muted)', padding: '20px 0', textAlign: 'center' }}>
-                No recent activity recorded yet. Audit logs will appear here when content changes occur.
-              </div>
+              <div className="dashboard-empty-state">No recent activity recorded yet.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="timeline">
                 {data.logs.map((log) => (
-                  <div key={log.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid var(--border)' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(37,99,235,0.15)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', flexShrink: 0, marginTop: '2px' }}>
-                      {log.userName ? log.userName.charAt(0).toUpperCase() : 'A'}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)' }}>
-                        {log.userName || log.userRole || 'Admin'} <span style={{ fontWeight: '400', color: 'var(--text-secondary)' }}>{log.action}</span> <span style={{ color: 'var(--accent)' }}>{log.resource}</span>
-                      </div>
-                      {typeof log.details === 'string' && (
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                          {log.details}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                      {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className="timeline-item" key={log.id}>
+                    <div className="timeline-dot" />
+                    <div>
+                      <p>
+                        <strong>{log.userName || log.userRole || 'Admin'}</strong> {log.action}{' '}
+                        <b>{log.resource}</b>
+                      </p>
+                      <span>{formatRelative(log.createdAt)} · Content management</span>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Right Column: Quick Management Shortcuts */}
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '14px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
-              Quick Actions
+          <section className="panel">
+            <div className="panel-header">
+              <div>
+                <div className="eyebrow">Shortcuts</div>
+                <h2>Quick actions</h2>
+              </div>
+              <SlidersHorizontal size={17} className="muted" />
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Link href="/admin/pages" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <FileText size={15} className="text-[var(--accent)]" /> Edit Website Pages
+            <div className="quick-list">
+              <Link className="quick-row" href="/admin/pages">
+                <FileText size={17} />
+                <span>Edit website pages</span>
+                <ChevronRight size={15} />
               </Link>
-              <Link href="/admin/practice-areas/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <PlusCircle size={15} className="text-[var(--accent)]" /> Create Practice Area
+              <Link className="quick-row" href="/admin/practice-areas/new">
+                <BriefcaseBusiness size={17} />
+                <span>Create practice area</span>
+                <ChevronRight size={15} />
               </Link>
-              <Link href="/admin/insights/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <PlusCircle size={15} className="text-[var(--accent)]" /> Publish Insight Article
+              <Link className="quick-row" href="/admin/insights/new">
+                <BookOpen size={17} />
+                <span>Publish insight article</span>
+                <ChevronRight size={15} />
               </Link>
-              <Link href="/admin/events/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <PlusCircle size={15} className="text-[var(--accent)]" /> Create Event / Webinar
+              <Link className="quick-row" href="/admin/events/new">
+                <CalendarDays size={17} />
+                <span>Create event / webinar</span>
+                <ChevronRight size={15} />
               </Link>
-              <Link href="/admin/media" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <ImageIcon size={15} className="text-[var(--accent)]" /> Manage Media Library
+              <Link className="quick-row" href="/admin/media">
+                <FolderOpen size={17} />
+                <span>Manage media library</span>
+                <ChevronRight size={15} />
               </Link>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </>
