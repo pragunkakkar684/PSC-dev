@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { requireEditor } from '@/lib/auth/permissions';
 import { AdminShell } from './components/AdminShell';
 import { ThemeProvider } from './components/ThemeProvider';
-import '../admin.css';
 
 export const metadata: Metadata = {
   title: {
