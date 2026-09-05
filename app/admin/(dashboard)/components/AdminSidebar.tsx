@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -25,9 +25,12 @@ import {
   Moon,
   ShieldCheck,
   ChevronDown,
+  ChevronRight,
   Navigation,
   Compass,
   UserCheck,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { GlobalSearchModal } from './GlobalSearchModal';
@@ -43,209 +46,288 @@ interface AdminSidebarProps {
   user: CmsUser;
 }
 
+type NavGroupKey = 'OVERVIEW' | 'WEBSITE' | 'CONTENT' | 'MEDIA' | 'INBOX' | 'SYSTEM';
+
 export function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [operationalArea, setOperationalArea] = useState<'CMS' | 'PORTAL' | 'CAREERS'>('CMS');
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<NavGroupKey, boolean>>({
+    OVERVIEW: false,
+    WEBSITE: false,
+    CONTENT: false,
+    MEDIA: false,
+    INBOX: false,
+    SYSTEM: false,
+  });
+
+  useEffect(() => {
+    try {
+      const savedRail = localStorage.getItem('psc_cms_sidebar_collapsed');
+      if (savedRail === 'true') setIsCollapsed(true);
+
+      const savedGroups = localStorage.getItem('psc_cms_sidebar_groups');
+      if (savedGroups) setCollapsedGroups(JSON.parse(savedGroups));
+    } catch (e) {
+      // Ignore fallback
+    }
+  }, []);
+
+  const toggleRail = () => {
+    const nextRail = !isCollapsed;
+    setIsCollapsed(nextRail);
+    localStorage.setItem('psc_cms_sidebar_collapsed', String(nextRail));
+  };
+
+  const toggleGroup = (group: NavGroupKey) => {
+    setCollapsedGroups((prev) => {
+      const next = { ...prev, [group]: !prev[group] };
+      localStorage.setItem('psc_cms_sidebar_groups', JSON.stringify(next));
+      return next;
+    });
+  };
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
   return (
     <>
-      <aside className="sidebar">
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         {/* Brand Header */}
-        <div className="sidebar-brand">
-          <div className="flex items-center gap-2.5">
-            <div className="sidebar-logo">PSC</div>
-            <div>
-              <div className="sidebar-title">PSC Global</div>
-              <div className="sidebar-cms-label">Control Room</div>
+        <div className="sidebar-brand flex items-center justify-between p-3 border-b border-[var(--border)]">
+          {!isCollapsed ? (
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded bg-[var(--accent)] text-black font-extrabold flex items-center justify-center text-xs">
+                PSC
+              </div>
+              <div className="min-w-0">
+                <div className="sidebar-title text-xs font-bold text-[var(--text-primary)] truncate">PSC Global</div>
+                <div className="sidebar-cms-label text-[9px] text-[var(--text-muted)] tracking-wider uppercase">CMS Control Room</div>
+              </div>
             </div>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition"
-            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
-          >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-        </div>
+          ) : (
+            <div className="w-7 h-7 rounded bg-[var(--accent)] text-black font-extrabold flex items-center justify-center text-xs mx-auto">
+              PSC
+            </div>
+          )}
 
-        {/* Operational Context Switcher */}
-        <div className="px-3 pt-3 pb-2 border-b border-slate-800/60">
-          <label className="block text-[9px] font-bold tracking-widest text-slate-500 uppercase mb-1">
-            OPERATIONAL CONTEXT
-          </label>
-          <div className="relative">
-            <select
-              value={operationalArea}
-              onChange={(e) => setOperationalArea(e.target.value as any)}
-              className="w-full bg-[#181a24] border border-slate-700/60 rounded px-2.5 py-1.5 text-xs font-bold text-slate-200 focus:outline-none focus:border-amber-400"
+          <div className="flex items-center gap-1">
+            {!isCollapsed && (
+              <button
+                onClick={toggleTheme}
+                className="p-1.5 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
+                title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              >
+                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+              </button>
+            )}
+            <button
+              onClick={toggleRail}
+              className="p-1.5 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition hidden md:block"
+              title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
             >
-              <option value="CMS">🌐 Website Content CMS</option>
-              <option value="PORTAL">💼 Client Portal Admin</option>
-              <option value="CAREERS">🎓 Recruitment & Careers</option>
-            </select>
+              {isCollapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
+            </button>
           </div>
         </div>
 
-        {/* Quick Search Button */}
-        <div className="px-3 pt-3">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center justify-between bg-[#181a24] hover:bg-[#202330] border border-slate-700/60 rounded px-3 py-2 text-xs text-slate-400 transition"
-          >
-            <span className="flex items-center gap-2">
-              <Search size={14} className="text-amber-400" />
-              <span>Search CMS...</span>
-            </span>
-            <kbd className="bg-slate-800 text-[10px] font-mono px-1.5 py-0.5 rounded text-slate-300">⌘K</kbd>
-          </button>
-        </div>
+        {/* Search Quick Button */}
+        {!isCollapsed && (
+          <div className="px-3 pt-3">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-full flex items-center justify-between bg-[var(--bg-elevated)] hover:bg-[var(--bg-base)] border border-[var(--border)] rounded px-2.5 py-1.5 text-xs text-[var(--text-secondary)] transition"
+            >
+              <span className="flex items-center gap-2">
+                <Search size={14} className="text-[var(--accent)]" />
+                <span>Search CMS...</span>
+              </span>
+              <kbd className="bg-[var(--bg-surface)] border border-[var(--border)] text-[9px] font-mono px-1 py-0.5 rounded text-[var(--text-muted)]">⌘K</kbd>
+            </button>
+          </div>
+        )}
 
         {/* Navigation Sections */}
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav flex-1 p-2 overflow-y-auto no-scrollbar space-y-1">
           {/* 1. OVERVIEW */}
-          <Link
-            href="/admin"
-            className={`sidebar-link ${pathname === '/admin' ? 'sidebar-link-active' : ''}`}
-          >
-            <span className="sidebar-icon"><LayoutDashboard size={15} /></span>
-            <span className="sidebar-label">Dashboard Overview</span>
-          </Link>
+          <div>
+            <Link
+              href="/admin"
+              className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium transition ${
+                pathname === '/admin' ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+              }`}
+              title={isCollapsed ? 'Dashboard Overview' : ''}
+            >
+              <LayoutDashboard size={15} className="flex-shrink-0" />
+              {!isCollapsed && <span>Dashboard</span>}
+            </Link>
+          </div>
 
           {/* 2. WEBSITE STRUCTURE */}
-          <div className="sidebar-section-label">Website Structure</div>
-          <Link href="/admin/pages/home" className={`sidebar-link ${isActive('/admin/pages/home') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Globe size={15} /></span>
-            <span className="sidebar-label">Home Page</span>
-          </Link>
-          <Link href="/admin/pages/about" className={`sidebar-link ${isActive('/admin/pages/about') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Compass size={15} /></span>
-            <span className="sidebar-label">About Us Page</span>
-          </Link>
-          <Link href="/admin/pages/practice-areas" className={`sidebar-link ${isActive('/admin/pages/practice-areas') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Briefcase size={15} /></span>
-            <span className="sidebar-label">Practice Areas Page</span>
-          </Link>
-          <Link href="/admin/pages/industries" className={`sidebar-link ${isActive('/admin/pages/industries') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Building2 size={15} /></span>
-            <span className="sidebar-label">Industries Page</span>
-          </Link>
-          <Link href="/admin/pages/insights" className={`sidebar-link ${isActive('/admin/pages/insights') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><FileText size={15} /></span>
-            <span className="sidebar-label">Insights Page</span>
-          </Link>
-          <Link href="/admin/pages/events" className={`sidebar-link ${isActive('/admin/pages/events') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Calendar size={15} /></span>
-            <span className="sidebar-label">Events Page</span>
-          </Link>
-          <Link href="/admin/pages/team" className={`sidebar-link ${isActive('/admin/pages/team') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Users size={15} /></span>
-            <span className="sidebar-label">Team Page</span>
-          </Link>
-          <Link href="/admin/pages/career" className={`sidebar-link ${isActive('/admin/pages/career') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><UserCheck size={15} /></span>
-            <span className="sidebar-label">Careers Page</span>
-          </Link>
-          <Link href="/admin/pages/contact" className={`sidebar-link ${isActive('/admin/pages/contact') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><MapPin size={15} /></span>
-            <span className="sidebar-label">Contact Page</span>
-          </Link>
-          <Link href="/admin/pages" className={`sidebar-link ${pathname === '/admin/pages' ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Globe size={15} /></span>
-            <span className="sidebar-label">All Site Pages</span>
-          </Link>
-          <Link href="/admin/navigation" className={`sidebar-link ${isActive('/admin/navigation') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Navigation size={15} /></span>
-            <span className="sidebar-label">Navigation Menu</span>
-          </Link>
+          <div className="pt-2">
+            {!isCollapsed && (
+              <button
+                onClick={() => toggleGroup('WEBSITE')}
+                className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase hover:text-[var(--text-primary)] transition"
+              >
+                <span>Website</span>
+                {collapsedGroups.WEBSITE ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+            {(!collapsedGroups.WEBSITE || isCollapsed) && (
+              <div className="space-y-0.5 mt-0.5">
+                <Link href="/admin/pages/home" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/pages/home') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Home Page' : ''}>
+                  <Globe size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Home Page</span>}
+                </Link>
+                <Link href="/admin/pages/about" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/pages/about') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'About Page' : ''}>
+                  <Compass size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>About Us</span>}
+                </Link>
+                <Link href="/admin/pages" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${pathname === '/admin/pages' ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'All Pages' : ''}>
+                  <FileText size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>All Pages</span>}
+                </Link>
+                <Link href="/admin/navigation" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/navigation') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Navigation' : ''}>
+                  <Navigation size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Navigation</span>}
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* 3. CONTENT ENTITIES */}
-          <div className="sidebar-section-label">Content Entities</div>
-          <Link href="/admin/practice-areas" className={`sidebar-link ${isActive('/admin/practice-areas') && !pathname.includes('/pages/') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Briefcase size={15} /></span>
-            <span className="sidebar-label">Practice Areas List</span>
-          </Link>
-          <Link href="/admin/industries" className={`sidebar-link ${isActive('/admin/industries') && !pathname.includes('/pages/') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Building2 size={15} /></span>
-            <span className="sidebar-label">Industries List</span>
-          </Link>
-          <Link href="/admin/insights" className={`sidebar-link ${isActive('/admin/insights') && !pathname.includes('/pages/') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><FileText size={15} /></span>
-            <span className="sidebar-label">Insights & Articles</span>
-          </Link>
-          <Link href="/admin/events" className={`sidebar-link ${isActive('/admin/events') && !pathname.includes('/pages/') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Calendar size={15} /></span>
-            <span className="sidebar-label">Events & Webinars</span>
-          </Link>
-          <Link href="/admin/team" className={`sidebar-link ${isActive('/admin/team') && !pathname.includes('/pages/') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Users size={15} /></span>
-            <span className="sidebar-label">Team Profiles</span>
-          </Link>
-          <Link href="/admin/testimonials" className={`sidebar-link ${isActive('/admin/testimonials') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><MessageSquareQuote size={15} /></span>
-            <span className="sidebar-label">Testimonials</span>
-          </Link>
-          <Link href="/admin/office-locations" className={`sidebar-link ${isActive('/admin/office-locations') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><MapPin size={15} /></span>
-            <span className="sidebar-label">Office Locations</span>
-          </Link>
-          <Link href="/admin/faqs" className={`sidebar-link ${isActive('/admin/faqs') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><HelpCircle size={15} /></span>
-            <span className="sidebar-label">FAQs</span>
-          </Link>
+          <div className="pt-2">
+            {!isCollapsed && (
+              <button
+                onClick={() => toggleGroup('CONTENT')}
+                className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase hover:text-[var(--text-primary)] transition"
+              >
+                <span>Content</span>
+                {collapsedGroups.CONTENT ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+            {(!collapsedGroups.CONTENT || isCollapsed) && (
+              <div className="space-y-0.5 mt-0.5">
+                <Link href="/admin/practice-areas" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/practice-areas') && !pathname.includes('/pages/') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Practice Areas' : ''}>
+                  <Briefcase size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Practice Areas</span>}
+                </Link>
+                <Link href="/admin/industries" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/industries') && !pathname.includes('/pages/') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Industries' : ''}>
+                  <Building2 size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Industries</span>}
+                </Link>
+                <Link href="/admin/insights" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/insights') && !pathname.includes('/pages/') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Insights' : ''}>
+                  <FileText size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Insights</span>}
+                </Link>
+                <Link href="/admin/events" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/events') && !pathname.includes('/pages/') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Events' : ''}>
+                  <Calendar size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Events</span>}
+                </Link>
+                <Link href="/admin/team" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/team') && !pathname.includes('/pages/') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Team' : ''}>
+                  <Users size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Team</span>}
+                </Link>
+                <Link href="/admin/testimonials" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/testimonials') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Testimonials' : ''}>
+                  <MessageSquareQuote size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Testimonials</span>}
+                </Link>
+                <Link href="/admin/office-locations" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/office-locations') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Offices' : ''}>
+                  <MapPin size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Offices</span>}
+                </Link>
+                <Link href="/admin/faqs" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/faqs') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'FAQs' : ''}>
+                  <HelpCircle size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>FAQs</span>}
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* 4. MEDIA & INBOX */}
-          <div className="sidebar-section-label">Media & Inbox</div>
-          <Link href="/admin/media" className={`sidebar-link ${isActive('/admin/media') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Folder size={15} /></span>
-            <span className="sidebar-label">Media Library</span>
-          </Link>
-          <Link href="/admin/contact-submissions" className={`sidebar-link ${isActive('/admin/contact-submissions') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Inbox size={15} /></span>
-            <span className="sidebar-label">Contact Inquiries</span>
-          </Link>
-          <Link href="/admin/newsletter" className={`sidebar-link ${isActive('/admin/newsletter') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><MailCheck size={15} /></span>
-            <span className="sidebar-label">Subscribers</span>
-          </Link>
-          <Link href="/client-portal/admin/careers" className="sidebar-link">
-            <span className="sidebar-icon"><UserCheck size={15} /></span>
-            <span className="sidebar-label">Candidate Inbox</span>
-          </Link>
+          <div className="pt-2">
+            {!isCollapsed && (
+              <button
+                onClick={() => toggleGroup('MEDIA')}
+                className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase hover:text-[var(--text-primary)] transition"
+              >
+                <span>Media & Inbox</span>
+                {collapsedGroups.MEDIA ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+            {(!collapsedGroups.MEDIA || isCollapsed) && (
+              <div className="space-y-0.5 mt-0.5">
+                <Link href="/admin/media" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/media') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Media Library' : ''}>
+                  <Folder size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Media</span>}
+                </Link>
+                <Link href="/admin/contact-submissions" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/contact-submissions') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Inquiries' : ''}>
+                  <Inbox size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Inquiries</span>}
+                </Link>
+                <Link href="/admin/newsletter" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/newsletter') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Subscribers' : ''}>
+                  <MailCheck size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Subscribers</span>}
+                </Link>
+                <Link href="/client-portal/admin/careers" className="sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition" title={isCollapsed ? 'Careers Inbox' : ''}>
+                  <UserCheck size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Candidates</span>}
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* 5. SYSTEM */}
-          <div className="sidebar-section-label">System</div>
-          <Link href="/admin/settings" className={`sidebar-link ${isActive('/admin/settings') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><Settings size={15} /></span>
-            <span className="sidebar-label">Site Settings</span>
-          </Link>
-          <Link href="/admin/audit-logs" className={`sidebar-link ${isActive('/admin/audit-logs') ? 'sidebar-link-active' : ''}`}>
-            <span className="sidebar-icon"><ShieldCheck size={15} /></span>
-            <span className="sidebar-label">Audit Logs</span>
-          </Link>
+          <div className="pt-2">
+            {!isCollapsed && (
+              <button
+                onClick={() => toggleGroup('SYSTEM')}
+                className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase hover:text-[var(--text-primary)] transition"
+              >
+                <span>System</span>
+                {collapsedGroups.SYSTEM ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+            {(!collapsedGroups.SYSTEM || isCollapsed) && (
+              <div className="space-y-0.5 mt-0.5">
+                <Link href="/admin/settings" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/settings') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Site Settings' : ''}>
+                  <Settings size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Settings</span>}
+                </Link>
+                <Link href="/admin/audit-logs" className={`sidebar-link flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs transition ${isActive('/admin/audit-logs') ? 'sidebar-link-active bg-[var(--bg-elevated)] text-[var(--text-primary)] font-semibold border-l-2 border-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`} title={isCollapsed ? 'Audit Logs' : ''}>
+                  <ShieldCheck size={15} className="flex-shrink-0" />
+                  {!isCollapsed && <span>Audit Logs</span>}
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* User Footer */}
-        <div className="sidebar-footer">
-          <div className="sidebar-user">
-            <div className="sidebar-avatar">
+        <div className="sidebar-footer p-2.5 border-t border-[var(--border)] flex items-center justify-between">
+          {!isCollapsed ? (
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="w-7 h-7 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] flex-shrink-0">
+                {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-medium text-[var(--text-primary)] truncate">{user.name || user.email}</div>
+                <div className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">{user.role}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-7 h-7 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center font-bold text-xs text-[var(--text-primary)] mx-auto">
               {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
             </div>
-            <div className="sidebar-user-info">
-              <div className="sidebar-user-name">{user.name || user.email}</div>
-              <div className="sidebar-user-role">{user.role}</div>
-            </div>
-          </div>
+          )}
 
           <button
             onClick={() => signOut({ callbackUrl: '/admin/login' })}
-            className="sidebar-signout"
+            className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-red-500/10 transition"
             title="Sign out"
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </aside>
@@ -254,3 +336,4 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     </>
   );
 }
+

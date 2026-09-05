@@ -31,17 +31,17 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
           :root {
-            --bg-base: #090a0f;
-            --bg-surface: #12131a;
-            --bg-elevated: #181a24;
-            --bg-input: #0f1017;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.16);
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --accent: #c59b27;
-            --accent-hover: #b48a1f;
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-elevated: #f1f5f9;
+            --bg-input: #ffffff;
+            --border: #cbd5e1;
+            --border-strong: #94a3b8;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -49,17 +49,31 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           }
 
           [data-theme="light"] {
-            --bg-base: #fdf9f8;
+            --bg-base: #f8fafc;
             --bg-surface: #ffffff;
             --bg-elevated: #f1f5f9;
             --bg-input: #ffffff;
-            --border: #e2e8f0;
-            --border-strong: #cbd5e1;
+            --border: #cbd5e1;
+            --border-strong: #94a3b8;
             --text-primary: #0f172a;
-            --text-secondary: #475569;
+            --text-secondary: #334155;
             --text-muted: #64748b;
-            --accent: #0f172a;
-            --accent-hover: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+          }
+
+          [data-theme="dark"] {
+            --bg-base: #090a0f;
+            --bg-surface: #12131a;
+            --bg-elevated: #181a24;
+            --bg-input: #0d0e14;
+            --border: #262938;
+            --border-strong: #3f435a;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #c59b27;
+            --accent-hover: #b48a1f;
           }
 
           html, body { height: 100%; background: var(--bg-base); color: var(--text-primary); }
@@ -74,7 +88,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
           /* ── Sidebar ─────────────────────────────────────── */
           .sidebar {
-            width: 250px;
+            width: 240px;
             flex-shrink: 0;
             background: var(--bg-surface);
             border-right: 1px solid var(--border);
@@ -84,6 +98,14 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
             top: 0;
             height: 100vh;
             overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          .sidebar::-webkit-scrollbar { display: none; }
+
+          .sidebar.collapsed {
+            width: 64px;
           }
 
           .sidebar-brand {

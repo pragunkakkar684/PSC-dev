@@ -10,6 +10,7 @@ import { CTASelector } from '../../components/CTASelector';
 import { LoadingState } from '../../components/LoadingState';
 import { SEOEditor } from '../../components/SEOEditor';
 import { IconPicker } from '../../components/IconPicker';
+import { Breadcrumbs } from '../../components/Breadcrumbs';
 import {
   getPracticeAreaWithRelations,
   updatePracticeAreaAction,
@@ -312,116 +313,111 @@ export default function EditPracticeAreaPage({ params }: { params: Promise<{ id:
     <>
       <AdminHeader title={`Edit Practice Area: ${areaData.name}`} />
 
-      <div style={{ padding: '24px', maxWidth: '1280px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '16px' }}>
-          <Link
-            href="/admin/practice-areas"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              color: 'var(--text-secondary, #94a3b8)',
-              textDecoration: 'none',
-              fontSize: '13px',
-            }}
-          >
-            <ArrowLeft size={16} /> Back to Practice Areas Management
-          </Link>
-        </div>
+      <div className="admin-content" style={{ maxWidth: '1400px' }}>
+        <Breadcrumbs items={[{ label: 'Website', href: '/admin/pages' }, { label: 'Practice Areas', href: '/admin/practice-areas' }, { label: areaData.name }]} />
 
-        <PageHeader
-          title={areaData.name}
-          description={`Public Route: /practice-areas/${areaData.slug}`}
-          actions={
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link
-                href={`/practice-areas/${areaData.slug}`}
-                target="_blank"
-                style={{
-                  padding: '8px 16px',
-                  background: 'var(--bg-elevated, #21253a)',
-                  color: 'white',
-                  borderRadius: '6px',
-                  textDecoration: 'none',
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <ExternalLink size={15} /> Preview Live Page
-              </Link>
-              <button
-                type="button"
-                onClick={() => handleSave()}
-                disabled={saving}
-                style={{
-                  padding: '8px 18px',
-                  background: 'var(--accent, #c59b27)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <Save size={16} /> {saving ? 'Saving...' : 'Save Practice Area'}
-              </button>
-            </div>
-          }
-        />
-
-        {error && (
-          <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', borderRadius: '8px', marginBottom: '20px' }}>
-            {error}
+        <div style={{ marginBottom: '20px', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h1 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+              {areaData.name}
+            </h1>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Public Route: <code>/practice-areas/{areaData.slug}</code>
+            </p>
           </div>
-        )}
 
-        {success && (
-          <div style={{ padding: '12px 16px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '8px', marginBottom: '20px' }}>
-            ✓ Practice Area saved successfully! Public page /practice-areas/{areaData.slug} revalidated.
-          </div>
-        )}
-
-        {/* TABS HEADER */}
-        <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', borderBottom: '1px solid var(--border, rgba(255,255,255,0.07))', marginBottom: '24px', paddingBottom: '2px' }}>
-          {[
-            { id: 'HERO', label: '1. HERO' },
-            { id: 'OVERVIEW', label: '2. OVERVIEW' },
-            { id: 'SERVICES', label: `3. SERVICES (${servicesList.length})` },
-            { id: 'CAPABILITIES', label: `4. CAPABILITIES (${areaData.capabilities?.length || 0})` },
-            { id: 'INDUSTRIES', label: `5. INDUSTRIES (${areaData.industries?.length || 0})` },
-            { id: 'EXPERTS', label: `6. EXPERTS (${areaData.experts?.length || 0})` },
-            { id: 'INSIGHTS', label: `7. INSIGHTS (${areaData.insights?.length || 0})` },
-            { id: 'FINAL_CTA', label: '8. FINAL CTA' },
-            { id: 'SEO', label: '9. SEO' },
-            { id: 'SETTINGS', label: '10. SETTINGS' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id as Tab)}
-              style={{
-                padding: '10px 14px',
-                whiteSpace: 'nowrap',
-                background: activeTab === tab.id ? 'var(--bg-surface, #1a1d27)' : 'transparent',
-                color: activeTab === tab.id ? 'var(--accent, #3b82f6)' : 'var(--text-secondary, #94a3b8)',
-                border: 'none',
-                borderBottom: activeTab === tab.id ? '2px solid var(--accent, #3b82f6)' : '2px solid transparent',
-                fontWeight: 600,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <Link
+              href={`/practice-areas/${areaData.slug}`}
+              target="_blank"
+              className="btn btn-secondary"
             >
-              {tab.label}
+              <ExternalLink size={14} /> Preview Live Page
+            </Link>
+            <button
+              type="button"
+              onClick={() => handleSave()}
+              disabled={saving}
+              className="btn btn-primary"
+            >
+              <Save size={14} /> {saving ? 'Saving...' : 'Save Practice Area'}
             </button>
-          ))}
+          </div>
         </div>
+
+        {/* 3-COLUMN EDITOR LAYOUT */}
+        <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr 260px', gap: '20px', alignItems: 'start' }}>
+          {/* COLUMN 1: VERTICAL SECTION NAVIGATION */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '14px', position: 'sticky', top: '20px' }}>
+            <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+              PAGE SECTIONS
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '16px' }}>
+              {[
+                { id: 'HERO', label: '1. Hero Banner' },
+                { id: 'OVERVIEW', label: '2. Overview & Philosophy' },
+                { id: 'SERVICES', label: `3. Services (${servicesList.length})` },
+                { id: 'CAPABILITIES', label: `4. Capabilities (${areaData.capabilities?.length || 0})` },
+                { id: 'INDUSTRIES', label: `5. Industries (${areaData.industries?.length || 0})` },
+                { id: 'EXPERTS', label: `6. Practice Experts (${areaData.experts?.length || 0})` },
+                { id: 'INSIGHTS', label: `7. Related Insights (${areaData.insights?.length || 0})` },
+                { id: 'FINAL_CTA', label: '8. Final Call to Action' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as Tab)}
+                  style={{
+                    textAlign: 'left',
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: activeTab === tab.id ? 700 : 500,
+                    background: activeTab === tab.id ? 'var(--bg-elevated)' : 'transparent',
+                    color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    borderLeft: activeTab === tab.id ? '3px solid var(--accent)' : '3px solid transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+              PAGE SETTINGS
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {[
+                { id: 'SEO', label: '9. SEO Metadata' },
+                { id: 'SETTINGS', label: '10. General Settings' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as Tab)}
+                  style={{
+                    textAlign: 'left',
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: activeTab === tab.id ? 700 : 500,
+                    background: activeTab === tab.id ? 'var(--bg-elevated)' : 'transparent',
+                    color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    borderLeft: activeTab === tab.id ? '3px solid var(--accent)' : '3px solid transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* COLUMN 2: MAIN EDITOR FORM */}
+          <div style={{ minWidth: 0 }}>
 
         {/* TAB 1: HERO */}
         {activeTab === 'HERO' && (
@@ -1155,6 +1151,105 @@ export default function EditPracticeAreaPage({ params }: { params: Promise<{ id:
             </div>
           </div>
         )}
+      </div>
+
+      {/* COLUMN 3: RIGHT PUBLISHING & CONTEXT PANEL */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', position: 'sticky', top: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+              Publishing Context
+            </div>
+
+            <div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>Publication Status</div>
+              <span style={{
+                display: 'inline-block',
+                padding: '4px 10px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 700,
+                background: areaData.isPublished ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                color: areaData.isPublished ? '#10b981' : '#f59e0b',
+                border: areaData.isPublished ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)',
+              }}>
+                {areaData.isPublished ? '● Published' : '○ Draft'}
+              </span>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>URL Slug</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+                /practice-areas/{areaData.slug}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>Configured Services</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {servicesList.length} Practice Services
+              </div>
+            </div>
+
+            <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link
+                href={`/practice-areas/${areaData.slug}`}
+                target="_blank"
+                className="btn btn-secondary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                <ExternalLink size={14} /> Preview Live Page
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => handleSave()}
+                disabled={saving}
+                className="btn btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                <Save size={14} /> {saving ? 'Saving...' : 'Save Practice Area'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* STICKY BOTTOM ACTION BAR */}
+        <div style={{
+          position: 'sticky',
+          bottom: '16px',
+          marginTop: '24px',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          borderRadius: '10px',
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          zIndex: 40,
+        }}>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: saving ? '#f59e0b' : '#10b981' }} />
+            <span>{saving ? 'Saving changes...' : 'Ready to save or publish changes'}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Link
+              href={`/practice-areas/${areaData.slug}`}
+              target="_blank"
+              className="btn btn-secondary"
+            >
+              <ExternalLink size={14} /> Preview Live
+            </Link>
+            <button
+              type="button"
+              onClick={() => handleSave()}
+              disabled={saving}
+              className="btn btn-primary"
+            >
+              <Save size={14} /> {saving ? 'Saving...' : 'Save Practice Area'}
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

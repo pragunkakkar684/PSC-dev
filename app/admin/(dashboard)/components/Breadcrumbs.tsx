@@ -21,21 +21,21 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   });
 
   return (
-    <nav className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-4">
-      <Link href="/admin" className="flex items-center gap-1 hover:text-slate-200 transition">
+    <nav className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)]">
+      <Link href="/admin" className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
         <Home size={13} />
-        <span>ADMIN</span>
+        <span>CMS</span>
       </Link>
 
       {generatedItems.map((item, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <ChevronRight size={12} className="text-slate-600 shrink-0" />
+        <div key={index} className="flex items-center gap-1.5">
+          <ChevronRight size={12} className="text-[var(--text-muted)] shrink-0" />
           {item.href ? (
-            <Link href={item.href} className="hover:text-slate-200 transition">
+            <Link href={item.href} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
               {item.label}
             </Link>
           ) : (
-            <span className="text-slate-200 font-bold">{item.label}</span>
+            <span className="text-[var(--text-primary)] font-bold">{item.label}</span>
           )}
         </div>
       ))}

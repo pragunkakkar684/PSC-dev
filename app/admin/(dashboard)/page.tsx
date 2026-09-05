@@ -1,6 +1,7 @@
 import { AdminHeader } from './components/AdminHeader';
 import { StatCard } from './components/StatCard';
-import { requireAuth } from '@/lib/auth/permissions';
+import { Breadcrumbs } from './components/Breadcrumbs';
+import { requireEditor } from '@/lib/auth/permissions';
 import { db } from '@/lib/db';
 import {
   sitePages,
@@ -12,8 +13,9 @@ import {
   practiceAreas,
   industries,
   mediaFiles,
+  cmsAuditLogs,
 } from '@/lib/db/schema';
-import { count, eq, and } from 'drizzle-orm';
+import { count, eq, and, desc } from 'drizzle-orm';
 import Link from 'next/link';
 import {
   FileText,
@@ -27,13 +29,15 @@ import {
   Send,
   PlusCircle,
   ExternalLink,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const metadata = {
   title: 'Dashboard',
 };
 
-async function getDashboardCounts() {
+async function getDashboardData() {
   const [
     [totalPagesCount],
     [publishedPagesCount],
@@ -48,6 +52,7 @@ async function getDashboardCounts() {
     [practiceAreaCount],
     [industryCount],
     [mediaCount],
+    recentLogs,
   ] = await Promise.all([
     db.select({ value: count() }).from(sitePages),
     db.select({ value: count() }).from(sitePages).where(eq(sitePages.isPublished, true)),
@@ -64,6 +69,7 @@ async function getDashboardCounts() {
     db.select({ value: count() }).from(practiceAreas),
     db.select({ value: count() }).from(industries),
     db.select({ value: count() }).from(mediaFiles),
+    db.select().from(cmsAuditLogs).orderBy(desc(cmsAuditLogs.createdAt)).limit(6),
   ]);
 
   return {
@@ -76,180 +82,144 @@ async function getDashboardCounts() {
     practiceAreas: practiceAreaCount.value,
     industries: industryCount.value,
     media: mediaCount.value,
+    logs: recentLogs || [],
   };
 }
 
 export default async function AdminDashboard() {
-  const user = await requireAuth();
-  const counts = await getDashboardCounts();
+  const user = await requireEditor();
+  const data = await getDashboardData();
 
   return (
     <>
-      <AdminHeader title="Site-Wide CMS Dashboard" user={user} />
+      <AdminHeader title="Control Room Dashboard" user={user} />
 
-      <div className="admin-content">
-        {/* Welcome Banner */}
-        <div style={{ marginBottom: '28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="admin-content" style={{ maxWidth: '1280px' }}>
+        <Breadcrumbs items={[{ label: 'Dashboard' }]} />
+
+        {/* Welcome Header */}
+        <div style={{ marginBottom: '24px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '6px' }}>
-              Site-Wide CMS Management — Welcome back{user.name ? `, ${user.name}` : ''}
-            </h2>
-            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Manage all 17 public routes, content entities, SEO metadata, and Cloudinary media from one central system.
+            <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>
+              Good morning, {user.name || 'Admin'}
+            </h1>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Here is your website content status, quick actions, and recent activity overview.
             </p>
           </div>
           <Link
             href="/"
             target="_blank"
-            className="admin-button secondary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+            className="btn btn-secondary"
           >
-            Preview Live Website <ExternalLink size={14} />
+            <ExternalLink size={14} /> View Live Website
           </Link>
         </div>
 
-        {/* Stats: Pages & Core Entities */}
-        <div className="dashboard-section-title">Website & Pages</div>
-        <div className="dashboard-stats">
+        {/* Stats Grid */}
+        <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '10px' }}>
+          Content Overview
+        </div>
+        <div className="dashboard-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
           <StatCard
-            label="Managed Public Pages"
-            value={counts.pages.total}
-            sub={`${counts.pages.published} published live`}
+            label="Managed Site Pages"
+            value={data.pages.total}
+            sub={`${data.pages.published} pages active`}
             icon={<FileText size={18} />}
           />
           <StatCard
-            label="Practice Areas"
-            value={counts.practiceAreas}
+            label="Core Practice Areas"
+            value={data.practiceAreas}
             sub="Active core practices"
             icon={<Layers size={18} />}
           />
           <StatCard
             label="Industry Verticals"
-            value={counts.industries}
+            value={data.industries}
             sub="Active sector verticals"
             icon={<Building2 size={18} />}
           />
           <StatCard
             label="Insights & Articles"
-            value={counts.insights}
+            value={data.insights}
             sub="Published research"
             icon={<BookOpen size={18} />}
           />
-        </div>
-
-        {/* Stats: Events & People */}
-        <div className="dashboard-section-title" style={{ marginTop: '24px' }}>Events, People & Media</div>
-        <div className="dashboard-stats">
           <StatCard
-            label="Events & Briefings"
-            value={counts.events.total}
-            sub={`${counts.events.upcoming} upcoming`}
-            icon={<Calendar size={18} />}
-          />
-          <StatCard
-            label="Team Members"
-            value={counts.team.total}
-            sub={`${counts.team.published} published`}
-            icon={<Users size={18} />}
-          />
-          <StatCard
-            label="Media Library"
-            value={counts.media}
-            sub="Cloudinary images"
-            icon={<ImageIcon size={18} />}
-          />
-        </div>
-
-        {/* Stats: Leads */}
-        <div className="dashboard-section-title" style={{ marginTop: '24px' }}>Leads & Engagement</div>
-        <div className="dashboard-stats">
-          <StatCard
-            label="Contact Submissions"
-            value={counts.submissions.total}
-            sub={`${counts.submissions.new} unread`}
+            label="Contact Inquiries"
+            value={data.submissions.total}
+            sub={`${data.submissions.new} unread submissions`}
             icon={<Mail size={18} />}
           />
-          <StatCard
-            label="Newsletter Subscribers"
-            value={counts.subscribers}
-            sub="active subscribers"
-            icon={<Send size={18} />}
-          />
         </div>
 
-        {/* Quick Management Actions Grid */}
-        <div className="dashboard-section-title" style={{ marginTop: '28px' }}>Central Management Shortcuts</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-          <Link href="/admin/pages" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText size={16} style={{ color: 'var(--accent)' }} /> 1. Central Pages Grid
+        {/* Main 2-Column Section: Recent Activity & Quick Actions */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px', alignItems: 'start' }}>
+          {/* Left Column: Recent Audit Activity Timeline */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Clock size={16} className="text-[var(--accent)]" /> Recent Audit Activity
+              </div>
+              <Link href="/admin/audit-logs" className="text-xs font-semibold text-[var(--accent)] hover:underline">
+                View Full Audit Logs →
+              </Link>
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Select, compose sections, update hero banners, and edit SEO for all 17 public routes.
-            </div>
-          </Link>
 
-          <Link href="/admin/practice-areas/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 2. Add Practice Area
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Create a new practice area which automatically powers `/practice-areas/[slug]`.
-            </div>
-          </Link>
+            {data.logs.length === 0 ? (
+              <div style={{ fontSize: '13px', color: 'var(--text-muted)', padding: '20px 0', textAlign: 'center' }}>
+                No recent activity recorded yet. Audit logs will appear here when content changes occur.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {data.logs.map((log) => (
+                  <div key={log.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(37,99,235,0.15)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', flexShrink: 0, marginTop: '2px' }}>
+                      {log.userName ? log.userName.charAt(0).toUpperCase() : 'A'}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                        {log.userName || log.userRole || 'Admin'} <span style={{ fontWeight: '400', color: 'var(--text-secondary)' }}>{log.action}</span> <span style={{ color: 'var(--accent)' }}>{log.resource}</span>
+                      </div>
+                      {typeof log.details === 'string' && (
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {log.details}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <Link href="/admin/industries/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 3. Add Industry Vertical
+          {/* Right Column: Quick Management Shortcuts */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '20px' }}>
+            <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '14px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+              Quick Actions
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Add sector expertise to power `/industries/[slug]`.
-            </div>
-          </Link>
 
-          <Link href="/admin/insights/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 4. Publish Insight Article
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Link href="/admin/pages" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+                <FileText size={15} className="text-[var(--accent)]" /> Edit Website Pages
+              </Link>
+              <Link href="/admin/practice-areas/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+                <PlusCircle size={15} className="text-[var(--accent)]" /> Create Practice Area
+              </Link>
+              <Link href="/admin/insights/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+                <PlusCircle size={15} className="text-[var(--accent)]" /> Publish Insight Article
+              </Link>
+              <Link href="/admin/events/new" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+                <PlusCircle size={15} className="text-[var(--accent)]" /> Create Event / Webinar
+              </Link>
+              <Link href="/admin/media" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+                <ImageIcon size={15} className="text-[var(--accent)]" /> Manage Media Library
+              </Link>
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Publish regulatory briefings to power `/insights/[slug]`.
-            </div>
-          </Link>
-
-          <Link href="/admin/events/new" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PlusCircle size={16} style={{ color: 'var(--accent)' }} /> 5. Create Event / Webinar
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Schedule executive webinars to power `/events/[slug]`.
-            </div>
-          </Link>
-
-          <Link href="/admin/media" style={{ textDecoration: 'none', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', color: 'var(--text-primary)', transition: 'border-color 0.15s, background 0.15s' }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#f3f4f6', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ImageIcon size={16} style={{ color: 'var(--accent)' }} /> 6. Cloudinary Media Manager
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Upload, search, and manage high-resolution images for pages and SEO cards.
-            </div>
-          </Link>
-        </div>
-
-        {/* System Health */}
-        <div style={{
-          marginTop: '12px',
-          padding: '14px 18px',
-          background: 'rgba(16,185,129,0.04)',
-          border: '1px solid rgba(16,185,129,0.12)',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
-          <span style={{ fontSize: '13px', color: '#34d399', fontWeight: '500' }}>
-            Site-Wide CMS Active · Real-time Neon Database Sync & Next.js On-Demand Revalidation Operational
-          </span>
+          </div>
         </div>
       </div>
     </>
