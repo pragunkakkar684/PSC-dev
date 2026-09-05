@@ -1,8 +1,9 @@
 import { AdminHeader } from '../components/AdminHeader';
 import { PageHeader } from '../components/PageHeader';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 import { db } from '@/lib/db';
 import { sitePages, pageSections } from '@/lib/db/schema';
-import { requireAuth } from '@/lib/auth/permissions';
+import { requireEditor } from '@/lib/auth/permissions';
 import Link from 'next/link';
 import {
   FileText,
@@ -61,7 +62,7 @@ const DYNAMIC_ENTITIES_REGISTRY = [
 ];
 
 export default async function PagesCMSPage() {
-  const user = await requireAuth();
+  const user = await requireEditor();
 
   let dbPages: (typeof sitePages.$inferSelect)[] = [];
   let dbSections: (typeof pageSections.$inferSelect)[] = [];

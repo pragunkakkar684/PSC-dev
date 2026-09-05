@@ -23,6 +23,7 @@ import {
   time,
   jsonb,
   primaryKey,
+  index,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
 
@@ -899,4 +900,34 @@ export type PortalReport = typeof portalReports.$inferSelect;
 export type PortalSupportTicket = typeof portalSupportTickets.$inferSelect;
 export type PortalTicketReply = typeof portalTicketReplies.$inferSelect;
 export type PortalNotification = typeof portalNotifications.$inferSelect;
+
+// ─── AUDIT LOGS & REVISION HISTORY ──────────────────────────────────────────
+
+export const cmsAuditLogs = pgTable('cms_audit_logs', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id'),
+  userName: varchar('user_name', { length: 255 }),
+  userRole: varchar('user_role', { length: 50 }),
+  action: varchar('action', { length: 50 }).notNull(), // 'CREATE' | 'UPDATE' | 'DELETE' | 'PUBLISH' | etc.
+  resource: varchar('resource', { length: 100 }).notNull(), // 'Event', 'InsightArticle', 'PageSection', etc.
+  resourceId: varchar('resource_id', { length: 100 }),
+  details: jsonb('details'),
+  ipAddress: varchar('ip_address', { length: 100 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const contentRevisions = pgTable('content_revisions', {
+  id: serial('id').primaryKey(),
+  resourceType: varchar('resource_type', { length: 100 }).notNull(), // 'page_section', 'insight_article', etc.
+  resourceId: varchar('resource_id', { length: 100 }).notNull(),
+  version: integer('version').notNull().default(1),
+  title: varchar('title', { length: 500 }),
+  content: jsonb('content').notNull(),
+  createdById: text('created_by_id'),
+  createdByName: varchar('created_by_name', { length: 255 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export type CmsAuditLog = typeof cmsAuditLogs.$inferSelect;
+export type ContentRevision = typeof contentRevisions.$inferSelect;
 

@@ -70,13 +70,19 @@ export async function getInsightById(id: number) {
   return insight || null;
 }
 
+import { sanitizeHtml } from '@/lib/security/sanitize';
+import { recordAuditLog } from '@/lib/services/audit';
+
 export async function createInsightAction(data: any) {
-  await requireEditor();
+  const user = await requireEditor();
 
   const autoSlug = data.slug ? slugify(data.slug) : slugify(data.title);
 
+  const sanitizedBody = sanitizeHtml(data.body);
+
   const parsed = insightArticleSchema.parse({
     ...data,
+    body: sanitizedBody,
     slug: autoSlug,
     publishedAt: data.publishedAt || new Date().toISOString(),
   });
@@ -90,18 +96,28 @@ export async function createInsightAction(data: any) {
     })
     .returning();
 
+  await recordAuditLog({
+    action: 'CREATE',
+    resource: 'InsightArticle',
+    resourceId: created.id,
+    details: { title: created.title, slug: created.slug },
+  });
+
   revalidatePath('/admin/insights');
   revalidatePath('/');
   return created;
 }
 
 export async function updateInsightAction(id: number, data: any) {
-  await requireEditor();
+  const user = await requireEditor();
 
   const autoSlug = data.slug ? slugify(data.slug) : slugify(data.title);
 
+  const sanitizedBody = sanitizeHtml(data.body);
+
   const parsed = insightArticleSchema.parse({
     ...data,
+    body: sanitizedBody,
     slug: autoSlug,
   });
 
@@ -115,6 +131,13 @@ export async function updateInsightAction(id: number, data: any) {
     .where(eq(insightsArticles.id, id))
     .returning();
 
+  await recordAuditLog({
+    action: 'UPDATE',
+    resource: 'InsightArticle',
+    resourceId: id,
+    details: { title: updated.title, isPublished: updated.isPublished },
+  });
+
   revalidatePath('/admin/insights');
   revalidatePath(`/admin/insights/${id}`);
   revalidatePath('/');
@@ -122,9 +145,16 @@ export async function updateInsightAction(id: number, data: any) {
 }
 
 export async function deleteInsightAction(id: number) {
-  await requireEditor();
+  const user = await requireEditor();
 
   await db.delete(insightsArticles).where(eq(insightsArticles.id, id));
+
+  await recordAuditLog({
+    action: 'DELETE',
+    resource: 'InsightArticle',
+    resourceId: id,
+  });
+
   revalidatePath('/admin/insights');
   revalidatePath('/');
   return { success: true };

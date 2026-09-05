@@ -65,7 +65,11 @@ export async function requireAdmin(): Promise<CmsUser> {
  * (Currently all authenticated users are at least editors.)
  */
 export async function requireEditor(): Promise<CmsUser> {
-  return requireAuth();
+  const user = await requireAuth();
+  if (user.role !== 'admin' && user.role !== 'editor') {
+    redirect('/admin/login?error=unauthorized');
+  }
+  return user;
 }
 
 /**

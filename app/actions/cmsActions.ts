@@ -1,4 +1,3 @@
-'use me';
 /**
  * PSC Global — Site-Wide CMS Server Actions
  */
@@ -17,10 +16,10 @@ import {
 } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { requireAuth } from '@/lib/auth/permissions';
+import { requireEditor } from '@/lib/auth/permissions';
 
 export async function updateSitePageStatus(slug: string, isPublished: boolean) {
-  await requireAuth();
+  await requireEditor();
 
   const [existing] = await db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1);
 
@@ -43,7 +42,7 @@ export async function updateSitePageStatus(slug: string, isPublished: boolean) {
 }
 
 export async function updatePageSection(id: number, data: Partial<typeof pageSections.$inferInsert>) {
-  await requireAuth();
+  await requireEditor();
 
   const [updated] = await db
     .update(pageSections)
@@ -62,7 +61,7 @@ export async function updatePageSection(id: number, data: Partial<typeof pageSec
 }
 
 export async function reorderPageSections(pageSlug: string, sectionIds: number[]) {
-  await requireAuth();
+  await requireEditor();
 
   for (let i = 0; i < sectionIds.length; i++) {
     await db
@@ -76,7 +75,7 @@ export async function reorderPageSections(pageSlug: string, sectionIds: number[]
 }
 
 export async function createPageSection(data: typeof pageSections.$inferInsert) {
-  await requireAuth();
+  await requireEditor();
 
   const [created] = await db.insert(pageSections).values(data).returning();
 
@@ -85,7 +84,7 @@ export async function createPageSection(data: typeof pageSections.$inferInsert) 
 }
 
 export async function deletePageSection(id: number) {
-  await requireAuth();
+  await requireEditor();
 
   const [deleted] = await db.delete(pageSections).where(eq(pageSections.id, id)).returning();
 
@@ -100,7 +99,7 @@ export async function updatePageSEO(
   targetIdentifier: string,
   data: Partial<typeof pageSeo.$inferInsert>
 ) {
-  await requireAuth();
+  await requireEditor();
 
   const [existing] = await db
     .select()
@@ -137,7 +136,7 @@ export async function updatePageSEO(
 }
 
 export async function saveCareersPosition(data: Partial<typeof careersPositions.$inferInsert>) {
-  await requireAuth();
+  await requireEditor();
 
   let result;
   if (data.id) {
@@ -171,7 +170,7 @@ export async function saveCareersPosition(data: Partial<typeof careersPositions.
 }
 
 export async function deleteCareersPosition(id: number) {
-  await requireAuth();
+  await requireEditor();
 
   await db.delete(careersPositions).where(eq(careersPositions.id, id));
   revalidatePath('/career');
@@ -179,7 +178,7 @@ export async function deleteCareersPosition(id: number) {
 }
 
 export async function updatePageHero(pageSlug: string, data: Partial<typeof heroSections.$inferInsert>) {
-  await requireAuth();
+  await requireEditor();
 
   const [existing] = await db
     .select()
@@ -219,7 +218,7 @@ export async function updatePageHero(pageSlug: string, data: Partial<typeof hero
 }
 
 export async function updateStatMetric(id: number, data: Partial<typeof stats.$inferInsert>) {
-  await requireAuth();
+  await requireEditor();
 
   const [updated] = await db
     .update(stats)
@@ -237,7 +236,7 @@ export async function updateStatMetric(id: number, data: Partial<typeof stats.$i
 }
 
 export async function updatePracticeAreaInline(id: number, data: Partial<typeof practiceAreas.$inferInsert>) {
-  await requireAuth();
+  await requireEditor();
 
   const [updated] = await db
     .update(practiceAreas)
