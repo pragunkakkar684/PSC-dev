@@ -217,7 +217,7 @@ export default async function OurTeamPage() {
 
       {/* PARTNERS */}
       {partnersSec?.isVisible !== false && partnersList.length > 0 && (
-        <AnimatedSection className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
+        <AnimatedSection id="partners" className="mx-auto max-w-7xl border-t border-slate-200 px-6 py-24 lg:px-10">
           <h2 className="border-b border-slate-200 pb-8 font-serif text-5xl text-ink lg:text-6xl">{partnersSec?.title || 'Partners'}</h2>
           <div className="mt-12 grid gap-10 md:grid-cols-3">
             {partnersList.map((m) => (
@@ -245,7 +245,7 @@ export default async function OurTeamPage() {
 
       {/* MENTORS */}
       {mentorsSec?.isVisible !== false && mentors.length > 0 && (
-        <AnimatedSection className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-24 lg:px-10">
+        <AnimatedSection id="mentors" className="border-t border-slate-200 bg-[#fdf9f8] px-6 py-24 lg:px-10">
           <div className="mx-auto max-w-7xl">
             <h2 className="font-serif text-5xl text-ink lg:text-6xl">{mentorsSec?.title || 'Mentors'}</h2>
             <div className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-2">

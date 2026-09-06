@@ -62,16 +62,23 @@ export default function ClientPortalNav() {
           SUPPORT & ACCOUNT
         </p>
         <nav className="mt-3 space-y-1">
-          {supportItems.map(([label, Icon, href]) => (
-            <Link
-              key={label}
-              href={href}
-              className="flex items-center gap-3 px-3 py-3 text-xs font-bold tracking-wide text-slate-600 hover:text-ink"
-            >
-              <Icon size={16} strokeWidth={1.75} />
-              {label}
-            </Link>
-          ))}
+          {supportItems.map(([label, Icon, href]) => {
+            const isActive = pathname?.startsWith(href);
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={`flex items-center gap-3 px-3 py-3 text-xs font-bold tracking-wide transition ${
+                  isActive
+                    ? 'border-l-2 border-ink bg-slate-100 text-ink'
+                    : 'text-slate-600 hover:text-ink'
+                }`}
+              >
+                <Icon size={16} strokeWidth={1.75} />
+                {label}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </aside>

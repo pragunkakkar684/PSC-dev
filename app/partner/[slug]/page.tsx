@@ -98,7 +98,7 @@ export default async function DynamicPartnerProfilePage({ params }: { params: Pr
           )}
 
           <div className="mt-8 flex gap-3">
-            <a href="#contact" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white">
+            <a href="/book-consultation" className="bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white">
               SCHEDULE A DISCUSSION
             </a>
             <a href="/book-consultation" className="border border-ink px-5 py-3 text-xs font-bold tracking-wide">
@@ -151,10 +151,10 @@ export default async function DynamicPartnerProfilePage({ params }: { params: Pr
           Let&apos;s Discuss Your Business Challenges.
         </h2>
         <div className="mt-9 flex justify-center gap-3">
-          <a href="#top" className="bg-white px-5 py-3 text-xs font-bold tracking-wide text-navy">
+          <a href="/book-consultation" className="bg-white px-5 py-3 text-xs font-bold tracking-wide text-navy">
             SCHEDULE A DISCUSSION
           </a>
-          <a href="#top" className="border border-white px-5 py-3 text-xs font-bold tracking-wide">
+          <a href="/contact#contact-form" className="border border-white px-5 py-3 text-xs font-bold tracking-wide">
             CONTACT PSC
           </a>
         </div>

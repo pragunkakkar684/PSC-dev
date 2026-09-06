@@ -80,8 +80,8 @@ const ABOUT_HREFS: Record<string, string> = {
 
 const TEAM_HREFS: Record<string, string> = {
   Leadership: "/team#leadership",
-  Partners: "/partner",
-  Mentors: "/team",
+  Partners: "/team#partners",
+  Mentors: "/team#mentors",
 };
 
 const PRACTICE_HREFS: Record<string, string> = {
@@ -565,7 +565,7 @@ export default function SiteHeader() {
                     <strong>Global Capability Center</strong>
                     <p>Our CC Capital model helps enterprise leaders scale specialized functions with architectural precision.</p>
                   </div>
-                  <a href="/gcc" className="psc-gcc-link">Explore CC Capital →</a>
+                  <a href="/cc" className="psc-gcc-link">Explore CC Capital →</a>
                   <Link href="/practice-areas" className="psc-gcc-view">View All Practice Areas <ArrowRight size={14} /></Link>
                 </div>
               </div>

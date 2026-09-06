@@ -13,6 +13,7 @@ import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import CountdownTimer from '../components/CountdownTimer';
 import UpcomingEventsGrid from '../components/UpcomingEventsGrid';
+import RegistrationModal from './[slug]/RegistrationModal';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getPublicHeroSection, getPublicEvents, buildPageMetadata } from '@/lib/queries/public';
@@ -246,13 +247,7 @@ export default async function EventsPage() {
                     <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                   {featured.registrationUrl && (
-                    <Link
-                      href={featured.registrationUrl.startsWith('/') ? featured.registrationUrl : '/contact'}
-                      className="group flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink"
-                    >
-                      REGISTER FOR EVENT
-                      <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </Link>
+                    <RegistrationModal eventTitle={featured.title} />
                   )}
                   {(featured as any).agendaUrl && (
                     <a href={(featured as any).agendaUrl} className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-slate-600 hover:text-ink">
@@ -311,10 +306,10 @@ export default async function EventsPage() {
                 </div>
                 <h3 className="mt-4 font-serif text-xl text-ink">{speaker.name}</h3>
                 <p className="mt-1 text-xs tracking-wide text-slate-500 uppercase">{speaker.role}</p>
-                <Link href="/team" className="mt-2 flex items-center gap-1 text-xs font-bold text-ink">
+                {/* <Link href="/team" className="mt-2 flex items-center gap-1 text-xs font-bold text-ink">
                   VIEW PROFILE
                   <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-                </Link>
+                </Link> */}
               </div>
             ))}
           </div>
