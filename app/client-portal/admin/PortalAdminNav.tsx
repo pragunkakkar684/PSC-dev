@@ -15,10 +15,12 @@ import {
   ShieldAlert,
   UserCheck,
   LayoutDashboard,
+  PhoneCall,
 } from 'lucide-react';
 
 const adminNavItems = [
   { label: 'OVERVIEW', icon: LayoutDashboard, href: '/client-portal/admin' },
+  { label: 'CONSULTATIONS & INQUIRIES', icon: PhoneCall, href: '/client-portal/admin/consultations' },
   { label: 'CLIENT ACCOUNTS', icon: Users, href: '/client-portal/admin/clients' },
   { label: 'ENGAGEMENTS', icon: Briefcase, href: '/client-portal/admin/engagements' },
   { label: 'TASKS', icon: CheckCircle2, href: '/client-portal/admin/tasks' },

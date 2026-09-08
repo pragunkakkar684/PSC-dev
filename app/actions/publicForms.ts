@@ -24,11 +24,11 @@ export async function submitContactFormAction(formData: any) {
   const [created] = await db
     .insert(contactSubmissions)
     .values({
-      name: parsed.fullName,
+      fullName: parsed.fullName,
       company: parsed.company || null,
       email: parsed.email.toLowerCase().trim(),
       phone: parsed.phone || null,
-      serviceInterest: parsed.practiceArea || 'General Inquiry',
+      practiceArea: parsed.practiceArea || 'General Inquiry',
       message: parsed.message,
       status: 'new',
     })

@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
+import PublicContactForm from '../components/PublicContactForm';
 import type { Metadata } from 'next';
 import { getPublicHeroSection, buildPageMetadata } from '@/lib/queries/public';
 
@@ -33,34 +34,10 @@ export default async function BookConsultationPage() {
               'Our team is available to help you discuss your business requirements and connect you with the right PSC Global specialist.'}
           </p>
 
-          <div className="mt-8 border border-slate-200 bg-white p-8">
-            <h2 className="font-serif text-2xl text-ink">Online Consultation Booking</h2>
-            <p className="mt-4 text-sm leading-6 text-slate-600">
-              Submit your inquiry directly through our contact form and our partners will review your submission and respond within one business day.
-            </p>
+          <div className="mt-8">
+            <h2 className="mb-4 font-serif text-2xl text-ink">Schedule Your Consultation</h2>
+            <PublicContactForm />
           </div>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/contact"
-              className="flex items-center gap-2 bg-ink px-5 py-3 text-xs font-bold tracking-wide text-white transition hover:bg-slate-800"
-            >
-              SCHEDULE VIA CONTACT FORM <ArrowRight size={14} />
-            </Link>
-            <Link
-              href="/"
-              className="border border-ink px-5 py-3 text-xs font-bold tracking-wide transition hover:bg-slate-100"
-            >
-              BACK TO HOME
-            </Link>
-          </div>
-
-          <Link
-            href="/contact"
-            className="mt-6 inline-flex items-center gap-2 text-sm text-ink underline underline-offset-4"
-          >
-            Need to speak with us now? Contact our team <ArrowRight size={14} />
-          </Link>
         </div>
 
         <div className="relative">

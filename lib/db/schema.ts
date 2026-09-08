@@ -569,14 +569,15 @@ export const stats = pgTable('stats', {
 
 export const contactSubmissions = pgTable('contact_submissions', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 200 }).notNull(),
+  fullName: varchar('full_name', { length: 200 }).notNull(),
   email: varchar('email', { length: 320 }).notNull(),
   phone: varchar('phone', { length: 50 }),
   company: varchar('company', { length: 200 }),
-  serviceInterest: varchar('service_interest', { length: 200 }),
+  practiceArea: varchar('practice_area', { length: 200 }),
   message: text('message').notNull(),
   status: varchar('status', { length: 20 }).notNull().default('new'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  createdAt: timestamp('submitted_at').notNull().defaultNow(),
+  ipAddress: varchar('ip_address', { length: 100 }),
 });
 
 // ─── NEWSLETTER SUBSCRIBERS ──────────────────────────────────────────────────

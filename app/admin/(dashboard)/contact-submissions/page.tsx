@@ -49,13 +49,13 @@ export default function ContactSubmissionsPage() {
   const exportCSV = () => {
     if (submissions.length === 0) return;
 
-    const headers = ['Name', 'Company', 'Email', 'Phone', 'ServiceInterest', 'CreatedAt', 'Status'];
+    const headers = ['Name', 'Company', 'Email', 'Phone', 'PracticeArea', 'CreatedAt', 'Status'];
     const rows = submissions.map((s) => [
-      `"${(s.name || '').replace(/"/g, '""')}"`,
+      `"${(s.fullName || '').replace(/"/g, '""')}"`,
       `"${(s.company || '').replace(/"/g, '""')}"`,
       `"${(s.email || '').replace(/"/g, '""')}"`,
       `"${(s.phone || '').replace(/"/g, '""')}"`,
-      `"${(s.serviceInterest || '').replace(/"/g, '""')}"`,
+      `"${(s.practiceArea || '').replace(/"/g, '""')}"`,
       `"${new Date(s.createdAt).toISOString()}"`,
       `"${s.status}"`,
     ]);
@@ -90,7 +90,7 @@ export default function ContactSubmissionsPage() {
       header: 'Full Name & Company',
       render: (s) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.name}</div>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.fullName}</div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.company || '—'}</div>
         </div>
       ),
@@ -103,7 +103,7 @@ export default function ContactSubmissionsPage() {
       header: 'Service Interest',
       render: (s) => (
         <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 7px', borderRadius: '4px', background: 'rgba(99,102,241,0.1)', color: '#a5b4fc' }}>
-          {s.serviceInterest || 'General Inquiry'}
+          {s.practiceArea || 'General Inquiry'}
         </span>
       ),
     },
@@ -202,7 +202,7 @@ export default function ContactSubmissionsPage() {
                 <Building size={16} style={{ color: '#60a5fa' }} />
                 <div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Full Name & Company</div>
-                  <div style={{ fontWeight: 600 }}>{selectedSub.name} ({selectedSub.company || 'N/A'})</div>
+                  <div style={{ fontWeight: 600 }}>{selectedSub.fullName} ({selectedSub.company || 'N/A'})</div>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ export default function ContactSubmissionsPage() {
                 <Tag size={16} style={{ color: '#60a5fa' }} />
                 <div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Practice Interest</div>
-                  <div style={{ fontWeight: 600 }}>{selectedSub.serviceInterest || 'General'}</div>
+                  <div style={{ fontWeight: 600 }}>{selectedSub.practiceArea || 'General'}</div>
                 </div>
               </div>
             </div>
